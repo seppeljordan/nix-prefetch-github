@@ -1,0 +1,5 @@
+#!/usr/bin/env sh
+
+pypi2nix -V 3 \
+         --default-overrides \
+         -r requirements.txt

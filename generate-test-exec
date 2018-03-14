@@ -1,0 +1,6 @@
+#!/usr/bin/env sh
+
+pypi2nix -V 3 \
+         -e .#egg=nix-prefetch-github \
+         --basename test-exec \
+         --default-overrides

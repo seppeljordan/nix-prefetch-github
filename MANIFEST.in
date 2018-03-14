@@ -1,0 +1,1 @@
+include src/nix_prefetch_github/templates/*.j2

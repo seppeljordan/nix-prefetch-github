@@ -1,0 +1,5 @@
+#!/usr/bin/env sh
+
+rm -rf \
+   src/nix_prefetch_github.egg-info \
+   build

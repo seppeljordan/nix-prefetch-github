@@ -1,0 +1,11 @@
+#!/usr/bin/env sh
+
+./clean
+
+nix-build test-exec.nix \
+          -A packages.nix-prefetch-github \
+          -o build-package
+
+build-package/bin/nix-prefetch-github \
+    seppeljordan \
+    pypi2nix
