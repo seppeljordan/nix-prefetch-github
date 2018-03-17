@@ -4,7 +4,7 @@ let
     owner = "{{ owner }}";
     repo = "{{ repo }}";
     rev = "{{ rev }}";
-    sha256 = "{{ fake_hash }}";
+    sha256 = "{{ sha256 }}";
   };
 in
   import "${src}/overrides.nix" { inherit pkgs; python = pkgs.python3; }

@@ -216,7 +216,7 @@ let
   localOverridesFile = ./test-exec_override.nix;
   overrides = import localOverridesFile { inherit pkgs python; };
   commonOverrides = [
-        (let src = pkgs.fetchFromGitHub { owner = "garbas"; repo = "nixpkgs-python"; rev = "dc49a364e1023d1f68f9ec9d18b2227a18f836f1"; sha256 = "0pvmk6pcifjky8pdad59g5slga9al3v7rvfkz0llyzjxwp0x62h3"; } ; in import "${src}/overrides.nix" { inherit pkgs python; })
+        (let src = pkgs.fetchFromGitHub { owner = "garbas"; repo = "nixpkgs-python"; rev = "094ee0b2584f1aa4d3470732283d1d35135b4548"; sha256 = "0gjnb2xlw87a8ndc8if3dy5c0m3zammphk785vb8ilbf2hdr6kpx"; } ; in import "${src}/overrides.nix" { inherit pkgs python; })
   ];
   allOverrides =
     (if (builtins.pathExists localOverridesFile)
