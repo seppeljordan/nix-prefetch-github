@@ -129,11 +129,6 @@ def prefetch_github(owner, repo, hash_only=False, rev=None):
     }))
 
 
-@click.command('nix-prefetch-github')
-@click.argument('owner')
-@click.argument('repo')
-@click.option('--hash-only/--no-hash-only', default=False)
-@click.option('--rev', default=None, type=str)
 def main(owner, repo, hash_only, rev):
 
     @do
@@ -144,16 +139,28 @@ def main(owner, repo, hash_only, rev):
             hash_only,
             rev=rev
         )
-        output_to_user = json.dumps(
-            {
+        output_dictionary = {
                 "owner": owner,
                 "repo": repo,
                 "rev": prefetch_results['rev'],
                 "sha256": prefetch_results['sha256'],
             },
+
+        output_to_user = json.dumps(
+            output_dictionary,
             indent=4,
         )
 
-        return Effect(Display(output_to_user))
+        yield Effect(Display(output_to_user))
+        return output_dictionary
 
-    sync_perform(dispatcher(), main_intent())
+    return sync_perform(dispatcher(), main_intent())[0]
+
+
+@click.command('nix-prefetch-github')
+@click.argument('owner')
+@click.argument('repo')
+@click.option('--hash-only/--no-hash-only', default=False)
+@click.option('--rev', default=None, type=str)
+def _main(owner, repo, hash_only, rev):
+    main(owner, repo, hash_only, rev)

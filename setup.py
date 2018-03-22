@@ -15,7 +15,7 @@ setup(
     ],
     entry_points={
         'console_scripts': [
-            'nix-prefetch-github = nix_prefetch_github:main'
+            'nix-prefetch-github = nix_prefetch_github:_main'
         ]
     },
     include_package_data=True,

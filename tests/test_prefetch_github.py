@@ -100,3 +100,14 @@ def test_prefetch_github_rev_given():
     prefetch_result = perform_sequence(seq, eff)
     assert prefetch_result['rev'] == 'TEST_REVISION'
     assert prefetch_result['sha256'] == 'TEST_ACTUALHASH'
+
+
+def test_life_mode():
+    results = nix_prefetch_github.main(
+        owner='seppeljordan',
+        repo='pypi2nix',
+        hash_only=False,
+        rev=None
+    )
+    print(results)
+    assert 'sha256' in results.keys()
