@@ -144,7 +144,7 @@ def main(owner, repo, hash_only, rev):
                 "repo": repo,
                 "rev": prefetch_results['rev'],
                 "sha256": prefetch_results['sha256'],
-            },
+            }
 
         output_to_user = json.dumps(
             output_dictionary,
@@ -154,7 +154,7 @@ def main(owner, repo, hash_only, rev):
         yield Effect(Display(output_to_user))
         return output_dictionary
 
-    return sync_perform(dispatcher(), main_intent())[0]
+    return sync_perform(dispatcher(), main_intent())
 
 
 @click.command('nix-prefetch-github')
