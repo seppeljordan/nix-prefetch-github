@@ -110,6 +110,22 @@ let
       };
     };
 
+    "attrs" = python.mkDerivation {
+      name = "attrs-17.4.0";
+      src = pkgs.fetchurl { url = "https://pypi.python.org/packages/8b/0b/a06cfcb69d0cb004fde8bc6f0fd192d96d565d1b8aa2829f0f20adb796e5/attrs-17.4.0.tar.gz"; sha256 = "1c7960ccfd6a005cd9f7ba884e6316b5e430a3f1a6c37c5f87d8b43f83b54ec9"; };
+      doCheck = commonDoCheck;
+      buildInputs = commonBuildInputs;
+      propagatedBuildInputs = [
+      self."pytest"
+      self."six"
+    ];
+      meta = with pkgs.stdenv.lib; {
+        homepage = "http://www.attrs.org/";
+        license = licenses.mit;
+        description = "Classes Without Boilerplate";
+      };
+    };
+
     "certifi" = python.mkDerivation {
       name = "certifi-2018.1.18";
       src = pkgs.fetchurl { url = "https://pypi.python.org/packages/15/d4/2f888fc463d516ff7bf2379a4e9a552fef7f22a94147655d9b1097108248/certifi-2018.1.18.tar.gz"; sha256 = "edbc3f203427eef571f79a7692bb160a2b0f7ccaa31953e99bd17e307cf63f7d"; };
@@ -149,6 +165,22 @@ let
       };
     };
 
+    "effect" = python.mkDerivation {
+      name = "effect-0.11.0";
+      src = pkgs.fetchurl { url = "https://pypi.python.org/packages/8a/9a/25a881d1a48847ae95742a30ad0471d9fd71f28a506d30e09dc8cdf4b3ac/effect-0.11.0.tar.gz"; sha256 = "0607530ef589b59f907cfebcb681b5ed4ed56bff1fc2a5de430dcfa72ae1e5e0"; };
+      doCheck = commonDoCheck;
+      buildInputs = commonBuildInputs;
+      propagatedBuildInputs = [
+      self."attrs"
+      self."six"
+    ];
+      meta = with pkgs.stdenv.lib; {
+        homepage = "http://github.com/python-effect/effect/";
+        license = licenses.mit;
+        description = "pure effects for Python";
+      };
+    };
+
     "idna" = python.mkDerivation {
       name = "idna-2.6";
       src = pkgs.fetchurl { url = "https://pypi.python.org/packages/f4/bd/0467d62790828c23c47fc1dfa1b1f052b24efdf5290f071c7a91d0d82fd3/idna-2.6.tar.gz"; sha256 = "2c6a5de3089009e3da7c5dde64a141dbc8551d5b7f6cf4ed7c2568d0cc520a8f"; };
@@ -159,6 +191,50 @@ let
         homepage = "https://github.com/kjd/idna";
         license = licenses.bsdOriginal;
         description = "Internationalized Domain Names in Applications (IDNA)";
+      };
+    };
+
+    "pluggy" = python.mkDerivation {
+      name = "pluggy-0.6.0";
+      src = pkgs.fetchurl { url = "https://pypi.python.org/packages/11/bf/cbeb8cdfaffa9f2ea154a30ae31a9d04a1209312e2919138b4171a1f8199/pluggy-0.6.0.tar.gz"; sha256 = "7f8ae7f5bdf75671a718d2daf0a64b7885f74510bcd98b1a0bb420eb9a9d0cff"; };
+      doCheck = commonDoCheck;
+      buildInputs = commonBuildInputs;
+      propagatedBuildInputs = [ ];
+      meta = with pkgs.stdenv.lib; {
+        homepage = "https://github.com/pytest-dev/pluggy";
+        license = licenses.mit;
+        description = "plugin and hook calling mechanisms for python";
+      };
+    };
+
+    "py" = python.mkDerivation {
+      name = "py-1.5.3";
+      src = pkgs.fetchurl { url = "https://pypi.python.org/packages/f7/84/b4c6e84672c4ceb94f727f3da8344037b62cee960d80e999b1cd9b832d83/py-1.5.3.tar.gz"; sha256 = "29c9fab495d7528e80ba1e343b958684f4ace687327e6f789a94bf3d1915f881"; };
+      doCheck = commonDoCheck;
+      buildInputs = commonBuildInputs;
+      propagatedBuildInputs = [ ];
+      meta = with pkgs.stdenv.lib; {
+        homepage = "http://py.readthedocs.io/";
+        license = licenses.mit;
+        description = "library with cross-python path, ini-parsing, io, code, log facilities";
+      };
+    };
+
+    "pytest" = python.mkDerivation {
+      name = "pytest-3.4.2";
+      src = pkgs.fetchurl { url = "https://pypi.python.org/packages/dd/05/4579d3028ba1740467690c3427d3991eff91f95cbaa6bb0280f40708721a/pytest-3.4.2.tar.gz"; sha256 = "117bad36c1a787e1a8a659df35de53ba05f9f3398fb9e4ac17e80ad5903eb8c5"; };
+      doCheck = commonDoCheck;
+      buildInputs = commonBuildInputs;
+      propagatedBuildInputs = [
+      self."attrs"
+      self."pluggy"
+      self."py"
+      self."six"
+    ];
+      meta = with pkgs.stdenv.lib; {
+        homepage = "http://pytest.org";
+        license = licenses.mit;
+        description = "pytest: simple powerful testing with Python";
       };
     };
 
@@ -177,6 +253,19 @@ let
         homepage = "http://python-requests.org";
         license = licenses.asl20;
         description = "Python HTTP for Humans.";
+      };
+    };
+
+    "six" = python.mkDerivation {
+      name = "six-1.11.0";
+      src = pkgs.fetchurl { url = "https://pypi.python.org/packages/16/d8/bc6316cf98419719bd59c91742194c111b6f2e85abac88e496adefaf7afe/six-1.11.0.tar.gz"; sha256 = "70e8a77beed4562e7f14fe23a786b54f6296e34344c23bc42f07b15018ff98e9"; };
+      doCheck = commonDoCheck;
+      buildInputs = commonBuildInputs;
+      propagatedBuildInputs = [ ];
+      meta = with pkgs.stdenv.lib; {
+        homepage = "http://pypi.python.org/pypi/six/";
+        license = licenses.mit;
+        description = "Python 2 and 3 compatibility utilities";
       };
     };
 
@@ -199,7 +288,7 @@ let
   localOverridesFile = ./requirements_override.nix;
   overrides = import localOverridesFile { inherit pkgs python; };
   commonOverrides = [
-        (let src = pkgs.fetchFromGitHub { owner = "garbas"; repo = "nixpkgs-python"; rev = "dc49a364e1023d1f68f9ec9d18b2227a18f836f1"; sha256 = "0pvmk6pcifjky8pdad59g5slga9al3v7rvfkz0llyzjxwp0x62h3"; } ; in import "${src}/overrides.nix" { inherit pkgs python; })
+        (let src = pkgs.fetchFromGitHub { owner = "garbas"; repo = "nixpkgs-python"; rev = "a3c20d79843adc24425ecf737acab854f5f828f3"; sha256 = "1dk8xd7kv0fbk779wpwvbn2c7yi20q3pi2fw2kix8pkdc7w9k64l"; } ; in import "${src}/overrides.nix" { inherit pkgs python; })
   ];
   allOverrides =
     (if (builtins.pathExists localOverridesFile)

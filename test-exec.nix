@@ -110,6 +110,21 @@ let
       };
     };
 
+    "attrs" = python.mkDerivation {
+      name = "attrs-17.4.0";
+      src = pkgs.fetchurl { url = "https://pypi.python.org/packages/8b/0b/a06cfcb69d0cb004fde8bc6f0fd192d96d565d1b8aa2829f0f20adb796e5/attrs-17.4.0.tar.gz"; sha256 = "1c7960ccfd6a005cd9f7ba884e6316b5e430a3f1a6c37c5f87d8b43f83b54ec9"; };
+      doCheck = commonDoCheck;
+      buildInputs = commonBuildInputs;
+      propagatedBuildInputs = [
+      self."six"
+    ];
+      meta = with pkgs.stdenv.lib; {
+        homepage = "http://www.attrs.org/";
+        license = licenses.mit;
+        description = "Classes Without Boilerplate";
+      };
+    };
+
     "certifi" = python.mkDerivation {
       name = "certifi-2018.1.18";
       src = pkgs.fetchurl { url = "https://pypi.python.org/packages/15/d4/2f888fc463d516ff7bf2379a4e9a552fef7f22a94147655d9b1097108248/certifi-2018.1.18.tar.gz"; sha256 = "edbc3f203427eef571f79a7692bb160a2b0f7ccaa31953e99bd17e307cf63f7d"; };
@@ -149,6 +164,22 @@ let
       };
     };
 
+    "effect" = python.mkDerivation {
+      name = "effect-0.11.0";
+      src = pkgs.fetchurl { url = "https://pypi.python.org/packages/8a/9a/25a881d1a48847ae95742a30ad0471d9fd71f28a506d30e09dc8cdf4b3ac/effect-0.11.0.tar.gz"; sha256 = "0607530ef589b59f907cfebcb681b5ed4ed56bff1fc2a5de430dcfa72ae1e5e0"; };
+      doCheck = commonDoCheck;
+      buildInputs = commonBuildInputs;
+      propagatedBuildInputs = [
+      self."attrs"
+      self."six"
+    ];
+      meta = with pkgs.stdenv.lib; {
+        homepage = "http://github.com/python-effect/effect/";
+        license = licenses.mit;
+        description = "pure effects for Python";
+      };
+    };
+
     "idna" = python.mkDerivation {
       name = "idna-2.6";
       src = pkgs.fetchurl { url = "https://pypi.python.org/packages/f4/bd/0467d62790828c23c47fc1dfa1b1f052b24efdf5290f071c7a91d0d82fd3/idna-2.6.tar.gz"; sha256 = "2c6a5de3089009e3da7c5dde64a141dbc8551d5b7f6cf4ed7c2568d0cc520a8f"; };
@@ -169,7 +200,9 @@ let
       buildInputs = commonBuildInputs;
       propagatedBuildInputs = [
       self."Jinja2"
+      self."attrs"
       self."click"
+      self."effect"
       self."requests"
     ];
       meta = with pkgs.stdenv.lib; {
@@ -197,6 +230,19 @@ let
       };
     };
 
+    "six" = python.mkDerivation {
+      name = "six-1.11.0";
+      src = pkgs.fetchurl { url = "https://pypi.python.org/packages/16/d8/bc6316cf98419719bd59c91742194c111b6f2e85abac88e496adefaf7afe/six-1.11.0.tar.gz"; sha256 = "70e8a77beed4562e7f14fe23a786b54f6296e34344c23bc42f07b15018ff98e9"; };
+      doCheck = commonDoCheck;
+      buildInputs = commonBuildInputs;
+      propagatedBuildInputs = [ ];
+      meta = with pkgs.stdenv.lib; {
+        homepage = "http://pypi.python.org/pypi/six/";
+        license = licenses.mit;
+        description = "Python 2 and 3 compatibility utilities";
+      };
+    };
+
     "urllib3" = python.mkDerivation {
       name = "urllib3-1.22";
       src = pkgs.fetchurl { url = "https://pypi.python.org/packages/ee/11/7c59620aceedcc1ef65e156cc5ce5a24ef87be4107c2b74458464e437a5d/urllib3-1.22.tar.gz"; sha256 = "cc44da8e1145637334317feebd728bd869a35285b93cbb4cca2577da7e62db4f"; };
@@ -216,7 +262,7 @@ let
   localOverridesFile = ./test-exec_override.nix;
   overrides = import localOverridesFile { inherit pkgs python; };
   commonOverrides = [
-        (let src = pkgs.fetchFromGitHub { owner = "garbas"; repo = "nixpkgs-python"; rev = "094ee0b2584f1aa4d3470732283d1d35135b4548"; sha256 = "0gjnb2xlw87a8ndc8if3dy5c0m3zammphk785vb8ilbf2hdr6kpx"; } ; in import "${src}/overrides.nix" { inherit pkgs python; })
+        (let src = pkgs.fetchFromGitHub { owner = "garbas"; repo = "nixpkgs-python"; rev = "a3c20d79843adc24425ecf737acab854f5f828f3"; sha256 = "1dk8xd7kv0fbk779wpwvbn2c7yi20q3pi2fw2kix8pkdc7w9k64l"; } ; in import "${src}/overrides.nix" { inherit pkgs python; })
   ];
   allOverrides =
     (if (builtins.pathExists localOverridesFile)

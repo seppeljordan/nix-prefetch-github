@@ -1,3 +1,6 @@
-jinja2
-requests
+attrs
 click
+effect
+jinja2
+pytest
+requests

@@ -4,7 +4,9 @@ setup(
     name='nix-prefetch-github',
     package_dir={'': 'src'},
     install_requires=[
+        'attrs',
         'click',
+        'effect',
         'jinja2',
         'requests',
     ],

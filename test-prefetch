@@ -1,9 +1,13 @@
 #!/usr/bin/env sh
 
+set -e
+
 ./clean
 
+nix-shell --command 'PYTHONPATH=${PWD}/src:${PYTHON_PATH} pytest tests/'
+
 nix-build test-exec.nix \
-          -A packages.nix-prefetch-github \
+          -A interpreter \
           -o build-package
 
 build-package/bin/nix-prefetch-github \
