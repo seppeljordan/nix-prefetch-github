@@ -74,3 +74,29 @@ def test_prefetch_github_no_actual_prefetch():
     prefetch_result = perform_sequence(seq, eff)
     assert prefetch_result['rev'] == 'TEST_REVISION'
     assert prefetch_result['sha256'] == 'TEST_ACTUALHASH'
+
+
+def test_prefetch_github_rev_given():
+    seq = [
+        (
+            nix_prefetch_github.TryPrefetch(
+                owner='seppeljordan',
+                repo='pypi2nix',
+                rev='TEST_REVISION',
+                sha256=nix_prefetch_github.trash_sha256
+            ),
+            lambda i: {
+                'output':
+                "garbage_output\noutput path TESTPATH has TEST hash 'TEST_ACTUALHASH' when TESTREST"
+            }
+        )
+    ]
+    eff = nix_prefetch_github.prefetch_github(
+        owner='seppeljordan',
+        repo='pypi2nix',
+        hash_only=True,
+        rev='TEST_REVISION'
+    )
+    prefetch_result = perform_sequence(seq, eff)
+    assert prefetch_result['rev'] == 'TEST_REVISION'
+    assert prefetch_result['sha256'] == 'TEST_ACTUALHASH'

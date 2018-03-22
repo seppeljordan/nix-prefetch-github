@@ -3,4 +3,5 @@ click
 effect
 jinja2
 pytest
+pytest-cov
 requests

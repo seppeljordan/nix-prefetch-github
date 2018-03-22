@@ -26,9 +26,6 @@ class GetCommitInfo(object):
     owner = attr.ib()
     repo = attr.ib()
 
-    def __init__(self, owner, repo):
-        self.owner = owner
-        self.repo = repo
 
 @sync_performer
 def get_commit_info_performer(dispatcher, get_commit_info):
@@ -61,12 +58,6 @@ class TryPrefetch(object):
     sha256 = attr.ib()
     rev = attr.ib()
 
-    def __init__(self, owner, repo, sha256, rev):
-        self.owner = owner
-        self.repo = repo
-        self.sha256 = sha256
-        self.rev = rev
-
 
 @sync_performer
 def try_prefetch_performer(dispatcher, try_prefetch):
@@ -91,10 +82,7 @@ def try_prefetch_performer(dispatcher, try_prefetch):
 def prefetch_github(owner, repo, hash_only=False, rev=None):
     def select_hash_from_match(match):
         hash_untrimmed = match.group(1) or match.group(2)
-        if hash_untrimmed:
-            return hash_untrimmed[1:-1]
-        else:
-            return None
+        return hash_untrimmed[1:-1]
 
     if rev:
         actual_rev = rev

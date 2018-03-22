@@ -2,6 +2,7 @@ attrs==17.4.0
 certifi==2018.1.18
 chardet==3.0.4
 click==6.7
+coverage==4.5.1
 effect==0.11.0
 idna==2.6
 Jinja2==2.10
@@ -9,6 +10,7 @@ MarkupSafe==1.0
 pluggy==0.6.0
 py==1.5.3
 pytest==3.4.2
+pytest-cov==2.5.1
 requests==2.18.4
 six==1.11.0
 urllib3==1.22

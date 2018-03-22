@@ -4,7 +4,12 @@ set -e
 
 ./clean
 
-nix-shell --command 'PYTHONPATH=${PWD}/src:${PYTHON_PATH} pytest tests/'
+nix-shell --command \
+          'PYTHONPATH=${PWD}/src:${PYTHON_PATH} \
+               py.test \
+               --cov=nix_prefetch_github \
+               --cov-report html:coverage/html \
+               --cov-report term'
 
 nix-build test-exec.nix \
           -A interpreter \

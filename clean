@@ -4,4 +4,6 @@ rm -rf \
    src/nix_prefetch_github.egg-info \
    build \
    *~ \
-   build-package
+   build-package \
+   coverage \
+   .coverage
