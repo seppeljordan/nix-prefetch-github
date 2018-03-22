@@ -146,12 +146,6 @@ def main(owner, repo, hash_only, rev):
                 "sha256": prefetch_results['sha256'],
             }
 
-        output_to_user = json.dumps(
-            output_dictionary,
-            indent=4,
-        )
-
-        yield Effect(Display(output_to_user))
         return output_dictionary
 
     return sync_perform(dispatcher(), main_intent())
@@ -163,4 +157,10 @@ def main(owner, repo, hash_only, rev):
 @click.option('--hash-only/--no-hash-only', default=False)
 @click.option('--rev', default=None, type=str)
 def _main(owner, repo, hash_only, rev):
-    main(owner, repo, hash_only, rev)
+    output_dictionary = main(owner, repo, hash_only, rev)
+    output_to_user = json.dumps(
+        output_dictionary,
+        indent=4,
+    )
+
+    print(output_to_user)
