@@ -6,4 +6,5 @@ rm -rf \
    *~ \
    build-package \
    coverage \
-   .coverage
+   .coverage \
+   dist

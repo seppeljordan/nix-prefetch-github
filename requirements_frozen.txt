@@ -7,10 +7,15 @@ effect==0.11.0
 idna==2.6
 Jinja2==2.10
 MarkupSafe==1.0
+more-itertools==4.1.0
+pkginfo==1.4.2
 pluggy==0.6.0
 py==1.5.3
-pytest==3.4.2
+pytest==3.5.0
 pytest-cov==2.5.1
 requests==2.18.4
+requests-toolbelt==0.8.0
 six==1.11.0
+tqdm==4.19.8
+twine==1.11.0
 urllib3==1.22

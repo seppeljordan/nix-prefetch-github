@@ -208,6 +208,36 @@ let
       };
     };
 
+    "more-itertools" = python.mkDerivation {
+      name = "more-itertools-4.1.0";
+      src = pkgs.fetchurl { url = "https://pypi.python.org/packages/db/0b/f5660bf6299ec5b9f17bd36096fa8148a1c843fa77ddfddf9bebac9301f7/more-itertools-4.1.0.tar.gz"; sha256 = "c9ce7eccdcb901a2c75d326ea134e0886abfbea5f93e91cc95de9507c0816c44"; };
+      doCheck = commonDoCheck;
+      buildInputs = commonBuildInputs;
+      propagatedBuildInputs = [
+      self."six"
+    ];
+      meta = with pkgs.stdenv.lib; {
+        homepage = "https://github.com/erikrose/more-itertools";
+        license = licenses.mit;
+        description = "More routines for operating on iterables, beyond itertools";
+      };
+    };
+
+    "pkginfo" = python.mkDerivation {
+      name = "pkginfo-1.4.2";
+      src = pkgs.fetchurl { url = "https://pypi.python.org/packages/39/c9/111ececbeed8e69cd1b6bec79a32a0b0f6074038a4244e58e285ad278248/pkginfo-1.4.2.tar.gz"; sha256 = "5878d542a4b3f237e359926384f1dde4e099c9f5525d236b1840cf704fa8d474"; };
+      doCheck = commonDoCheck;
+      buildInputs = commonBuildInputs;
+      propagatedBuildInputs = [
+      self."coverage"
+    ];
+      meta = with pkgs.stdenv.lib; {
+        homepage = "https://code.launchpad.net/~tseaver/pkginfo/trunk";
+        license = licenses.mit;
+        description = "Query metadatdata from sdists / bdists / installed packages.";
+      };
+    };
+
     "pluggy" = python.mkDerivation {
       name = "pluggy-0.6.0";
       src = pkgs.fetchurl { url = "https://pypi.python.org/packages/11/bf/cbeb8cdfaffa9f2ea154a30ae31a9d04a1209312e2919138b4171a1f8199/pluggy-0.6.0.tar.gz"; sha256 = "7f8ae7f5bdf75671a718d2daf0a64b7885f74510bcd98b1a0bb420eb9a9d0cff"; };
@@ -235,12 +265,13 @@ let
     };
 
     "pytest" = python.mkDerivation {
-      name = "pytest-3.4.2";
-      src = pkgs.fetchurl { url = "https://pypi.python.org/packages/dd/05/4579d3028ba1740467690c3427d3991eff91f95cbaa6bb0280f40708721a/pytest-3.4.2.tar.gz"; sha256 = "117bad36c1a787e1a8a659df35de53ba05f9f3398fb9e4ac17e80ad5903eb8c5"; };
+      name = "pytest-3.5.0";
+      src = pkgs.fetchurl { url = "https://pypi.python.org/packages/2d/56/6019153cdd743300c5688ab3b07702355283e53c83fbf922242c053ffb7b/pytest-3.5.0.tar.gz"; sha256 = "fae491d1874f199537fd5872b5e1f0e74a009b979df9d53d1553fd03da1703e1"; };
       doCheck = commonDoCheck;
       buildInputs = commonBuildInputs;
       propagatedBuildInputs = [
       self."attrs"
+      self."more-itertools"
       self."pluggy"
       self."py"
       self."six"
@@ -286,6 +317,21 @@ let
       };
     };
 
+    "requests-toolbelt" = python.mkDerivation {
+      name = "requests-toolbelt-0.8.0";
+      src = pkgs.fetchurl { url = "https://pypi.python.org/packages/86/f9/e80fa23edca6c554f1994040064760c12b51daff54b55f9e379e899cd3d4/requests-toolbelt-0.8.0.tar.gz"; sha256 = "f6a531936c6fa4c6cfce1b9c10d5c4f498d16528d2a54a22ca00011205a187b5"; };
+      doCheck = commonDoCheck;
+      buildInputs = commonBuildInputs;
+      propagatedBuildInputs = [
+      self."requests"
+    ];
+      meta = with pkgs.stdenv.lib; {
+        homepage = "https://toolbelt.readthedocs.org";
+        license = licenses.asl20;
+        description = "A utility belt for advanced users of python-requests";
+      };
+    };
+
     "six" = python.mkDerivation {
       name = "six-1.11.0";
       src = pkgs.fetchurl { url = "https://pypi.python.org/packages/16/d8/bc6316cf98419719bd59c91742194c111b6f2e85abac88e496adefaf7afe/six-1.11.0.tar.gz"; sha256 = "70e8a77beed4562e7f14fe23a786b54f6296e34344c23bc42f07b15018ff98e9"; };
@@ -296,6 +342,37 @@ let
         homepage = "http://pypi.python.org/pypi/six/";
         license = licenses.mit;
         description = "Python 2 and 3 compatibility utilities";
+      };
+    };
+
+    "tqdm" = python.mkDerivation {
+      name = "tqdm-4.19.8";
+      src = pkgs.fetchurl { url = "https://pypi.python.org/packages/a6/74/cb6927443849ec849ad7cdcdc8e38f04d81fce41783150c0d5215ec504a8/tqdm-4.19.8.tar.gz"; sha256 = "2aea9f81fdf127048667e0ba22f5fc10ebc879fb838dc52dcf055242037ec1f7"; };
+      doCheck = commonDoCheck;
+      buildInputs = commonBuildInputs;
+      propagatedBuildInputs = [ ];
+      meta = with pkgs.stdenv.lib; {
+        homepage = "https://github.com/tqdm/tqdm";
+        license = licenses.mit;
+        description = "Fast, Extensible Progress Meter";
+      };
+    };
+
+    "twine" = python.mkDerivation {
+      name = "twine-1.11.0";
+      src = pkgs.fetchurl { url = "https://pypi.python.org/packages/9e/89/2971f240b9fc102b2e56ee8b0a9d7c9c3a7cf081b851eb02d85891de20d1/twine-1.11.0.tar.gz"; sha256 = "2fd9a4d9ff0bcacf41fdc40c8cb0cfaef1f1859457c9653fd1b92237cc4e9f25"; };
+      doCheck = commonDoCheck;
+      buildInputs = commonBuildInputs;
+      propagatedBuildInputs = [
+      self."pkginfo"
+      self."requests"
+      self."requests-toolbelt"
+      self."tqdm"
+    ];
+      meta = with pkgs.stdenv.lib; {
+        homepage = "https://twine.readthedocs.io/";
+        license = licenses.asl20;
+        description = "Collection of utilities for publishing packages on PyPI";
       };
     };
 
@@ -318,7 +395,7 @@ let
   localOverridesFile = ./requirements_override.nix;
   overrides = import localOverridesFile { inherit pkgs python; };
   commonOverrides = [
-        (let src = pkgs.fetchFromGitHub { owner = "garbas"; repo = "nixpkgs-python"; rev = "a3c20d79843adc24425ecf737acab854f5f828f3"; sha256 = "1dk8xd7kv0fbk779wpwvbn2c7yi20q3pi2fw2kix8pkdc7w9k64l"; } ; in import "${src}/overrides.nix" { inherit pkgs python; })
+        (let src = pkgs.fetchFromGitHub { owner = "garbas"; repo = "nixpkgs-python"; rev = "b4825791d1e4aecc0f48d3e6d80607405d529b42"; sha256 = "1ai96z7cwkmm10dvzprch8m0sfzjad4zr3iirdk0fg1mav9h1n1s"; } ; in import "${src}/overrides.nix" { inherit pkgs python; })
   ];
   allOverrides =
     (if (builtins.pathExists localOverridesFile)

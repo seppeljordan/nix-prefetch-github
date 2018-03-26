@@ -1,0 +1,43 @@
+#!/usr/bin/env sh
+
+INSTALL_ONLY="false"
+
+while getopts "i" options; do
+    case "${options}" in
+        i)
+            INSTALL_ONLY="true"
+            ;;
+    esac
+done
+
+set -e
+
+VERSION=$(cat VERSION)
+
+function upload_check() {
+
+    nix-shell --command 'python setup.py sdist'
+    nix-shell --command \
+              "twine upload -r test-pypi dist/nix-prefetch-github-${VERSION}.tar.gz"
+}
+
+function install_check() {
+    rm -rf testenv
+    mkdir -p "testenv"
+    nix-shell \
+        -p python3Packages.virtualenv \
+        --command "virtualenv testenv"
+    testenv/bin/pip install -r requirements.txt
+    testenv/bin/pip install \
+                    --no-cache-dir \
+                    --index-url https://test.pypi.org/simple/ \
+                    nix-prefetch-github==${VERSION}
+    testenv/bin/nix-prefetch-github \
+        seppeljordan \
+        pypi2nix
+}
+
+if [ ${INSTALL_ONLY} = "false" ]; then
+    upload_check
+fi
+install_check
