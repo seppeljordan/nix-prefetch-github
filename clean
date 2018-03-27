@@ -1,10 +1,12 @@
 #!/usr/bin/env sh
 
 rm -rf \
-   src/nix_prefetch_github.egg-info \
-   build \
    *~ \
+   .coverage \
+   build \
    build-package \
    coverage \
-   .coverage \
-   dist
+   dist \
+   src/nix_prefetch_github.egg-info \
+   testenv \
+   # end

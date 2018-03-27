@@ -3,8 +3,13 @@ from distutils.core import setup
 with open('VERSION') as f:
     version = f.readlines()[0]
 
+with open('README.rst') as f:
+    long_description = f.read()
+
 setup(
     name='nix-prefetch-github',
+    description='Prefetch source code from github for nix build tool',
+    long_description=long_description,
     version=version,
     package_dir={'': 'src'},
     install_requires=[
