@@ -10,6 +10,10 @@ setup(
     name='nix-prefetch-github',
     description='Prefetch source code from github for nix build tool',
     long_description=long_description,
+    url='https://github.com/seppeljordan/nix-prefetch-github',
+    author='Sebastian Jordan',
+    author_email='sebastian.jordan.mail@googlemail.com',
+    license='GPL3',
     version=version,
     package_dir={'': 'src'},
     install_requires=[
