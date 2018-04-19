@@ -1,11 +1,12 @@
 import subprocess
 
 
-def cmd(command):
+def cmd(command, merge_stderr=True):
+    stderr = subprocess.STDOUT if merge_stderr else subprocess.STDERR
     process_return = subprocess.run(
         command,
         stdout=subprocess.PIPE,
-        stderr=subprocess.STDOUT,
+        stderr=stderr,
         universal_newlines=True,
     )
     return process_return.returncode, process_return.stdout

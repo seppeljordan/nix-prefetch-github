@@ -10,5 +10,6 @@ in
     src = ./.;
     buildInputs = [
       interpreter
+      nix-prefetch-scripts
     ];
   }

@@ -21,10 +21,6 @@ templates_env = jinja2.Environment(
     loader=jinja2.FileSystemLoader(HERE + '/templates'),
 )
 template = templates_env.get_template('prefetch-github.nix.j2')
-@attr.s
-class GetCommitInfo(object):
-    owner = attr.ib()
-    repo = attr.ib()
 
 
 class DownloadException(Exception):
@@ -33,6 +29,12 @@ class DownloadException(Exception):
 
 class GithubRateLimitException(DownloadException):
     pass
+
+
+@attr.s
+class GetCommitInfo(object):
+    owner = attr.ib()
+    repo = attr.ib()
 
 
 @sync_performer
@@ -46,17 +48,6 @@ def get_commit_info_performer(dispatcher, get_commit_info):
     )
     response = requests.get(request_url)
     return response.json()
-
-
-def dispatcher():
-    prefetch_dispatcher = TypeDispatcher({
-        GetCommitInfo: get_commit_info_performer,
-        TryPrefetch: try_prefetch_performer
-    })
-    return ComposedDispatcher([
-        base_dispatcher,
-        prefetch_dispatcher
-    ])
 
 
 @attr.s
@@ -86,6 +77,60 @@ def try_prefetch_performer(dispatcher, try_prefetch):
         }
 
 
+@attr.s
+class PrefetchGit(object):
+    url = attr.ib()
+
+
+@sync_performer
+def prefetch_git_performer(dispatcher, prefetch_git):
+    return_code, stdout = cmd(
+        ["nix-prefetch-git", prefetch_git.url],
+        merge_stderr=False
+    )
+    return json.loads(stdout)
+
+
+def dispatcher():
+    prefetch_dispatcher = TypeDispatcher({
+        GetCommitInfo: get_commit_info_performer,
+        TryPrefetch: try_prefetch_performer,
+        PrefetchGit: prefetch_git_performer,
+    })
+    return ComposedDispatcher([
+        base_dispatcher,
+        prefetch_dispatcher
+    ])
+
+
+@do
+def query_github_api_for_commit(owner, repo):
+    commit_info = yield Effect(GetCommitInfo(owner, repo))
+    try:
+        return commit_info['sha']
+    except KeyError:
+        if 'message' in commit_info and 'API rate limit' in commit_info['message']:
+            raise GithubRateLimitException(
+                'Cannot get info about current commit because the github API rate limit was reached'
+            )
+        else:
+            raise DownloadException(
+                "Cannot extract sha sum from commit info. "
+                "Commit info: {commit_info}".format(commit_info=commit_info)
+            )
+
+
+@do
+def commit_info_from_prefetch_git(owner, repo):
+    prefetch_info = yield Effect(PrefetchGit(
+        url='https://github.com/{owner}/{repo}.git'.format(
+            owner=owner,
+            repo=repo,
+        )
+    ))
+    return prefetch_info['rev']
+
+
 @do
 def prefetch_github(owner, repo, hash_only=False, rev=None):
     def select_hash_from_match(match):
@@ -95,19 +140,11 @@ def prefetch_github(owner, repo, hash_only=False, rev=None):
     if rev:
         actual_rev = rev
     else:
-        commit_info = yield Effect(GetCommitInfo(owner, repo))
         try:
-            actual_rev = commit_info['sha']
-        except KeyError:
-            if 'message' in commit_info and 'API rate limit' in commit_info['message']:
-                raise GithubRateLimitException(
-                    'Cannot get info about current commit because the github API rate limit was reached'
-                )
-            else:
-                raise DownloadException(
-                    "Cannot extract sha sum from commit info. "
-                    "Commit info: {commit_info}".format(commit_info=commit_info)
-                )
+            actual_rev = yield query_github_api_for_commit(owner, repo)
+        except GithubRateLimitException:
+            actual_rev = yield commit_info_from_prefetch_git(owner, repo)
+        
     output=(yield Effect(TryPrefetch(
         owner=owner,
         repo=repo,
