@@ -26,5 +26,5 @@ python example
     [GCC 7.3.0] on linux
     Type "help", "copyright", "credits" or "license" for more information.
     >>> import nix_prefetch_github
-    >>> nix_prefetch_github.main(owner="seppeljordan", repo="nix-prefetch-github", hash_only=False, rev=None)
+    >>> nix_prefetch_github.nix_prefetch_github(owner="seppeljordan", repo="nix-prefetch-github")
     {'owner': 'seppeljordan', 'repo': 'nix-prefetch-github', 'rev': '603f42203db128a7aaa091cf34d406bf7a80e9f0', 'sha256': '1wrvvy85x7yqj4rkgpj93cdnhalyhzpr8pmyca38v59lm5ndh2w4'}

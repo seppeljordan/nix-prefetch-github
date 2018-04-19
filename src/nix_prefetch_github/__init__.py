@@ -213,7 +213,7 @@ def nix_prefetch_github(owner, repo, hash_only=True, rev=None):
 @click.option('--hash-only/--no-hash-only', default=False)
 @click.option('--rev', default=None, type=str)
 def _main(owner, repo, hash_only, rev):
-    output_dictionary = main(owner, repo, hash_only, rev)
+    output_dictionary = nix_prefetch_github(owner, repo, hash_only, rev)
     output_to_user = json.dumps(
         output_dictionary,
         indent=4,
