@@ -2,7 +2,7 @@ import subprocess
 
 
 def cmd(command, merge_stderr=True):
-    stderr = subprocess.STDOUT if merge_stderr else subprocess.STDERR
+    stderr = subprocess.STDOUT if merge_stderr else subprocess.PIPE
     process_return = subprocess.run(
         command,
         stdout=subprocess.PIPE,
