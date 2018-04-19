@@ -103,7 +103,7 @@ def test_prefetch_github_rev_given():
 
 
 def test_life_mode():
-    results = nix_prefetch_github.main(
+    results = nix_prefetch_github.nix_prefetch_github(
         owner='seppeljordan',
         repo='pypi2nix',
         hash_only=False,
@@ -111,3 +111,42 @@ def test_life_mode():
     )
     print(results)
     assert 'sha256' in results.keys()
+
+
+def test_rate_limit_exceeded():
+    seq = [
+        (
+            nix_prefetch_github.GetCommitInfo(
+                owner='seppeljordan',
+                repo='pypi2nix'
+            ),
+            lambda i: {'message': 'API rate limit'}
+        ),
+        (
+            nix_prefetch_github.PrefetchGit(
+                url='https://github.com/seppeljordan/pypi2nix.git'
+            ),
+            lambda i: {'rev': 'TEST_REVISION'}
+        ),
+        (
+            nix_prefetch_github.TryPrefetch(
+                owner='seppeljordan',
+                repo='pypi2nix',
+                rev='TEST_REVISION',
+                sha256=nix_prefetch_github.trash_sha256,
+            ),
+            lambda i: {
+                'output':
+                "output path TESTPATH has TEST hash 'TEST_ACTUALHASH' when TESTREST"
+            }
+        ),
+    ]
+    eff = nix_prefetch_github.prefetch_github(
+        owner='seppeljordan',
+        repo='pypi2nix',
+        hash_only=True
+    )
+    prefetch_result = perform_sequence(seq, eff)
+    assert prefetch_result['rev'] == 'TEST_REVISION'
+    assert prefetch_result['sha256'] == 'TEST_ACTUALHASH'
+    
