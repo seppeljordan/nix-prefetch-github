@@ -31,6 +31,10 @@ class DownloadException(Exception):
     pass
 
 
+class GithubRateLimitException(DownloadException):
+    pass
+
+
 @sync_performer
 def get_commit_info_performer(dispatcher, get_commit_info):
     owner = get_commit_info.owner
@@ -95,10 +99,15 @@ def prefetch_github(owner, repo, hash_only=False, rev=None):
         try:
             actual_rev = commit_info['sha']
         except KeyError:
-            raise DownloadException(
-                "Cannot extract sha sum from commit info. "
-                "Commit info: {commit_info}".format(commit_info=commit_info)
-            )
+            if 'message' in commit_info and 'API rate limit' in commit_info['message']:
+                raise GithubRateLimitException(
+                    'Cannot get info about current commit because the github API rate limit was reached'
+                )
+            else:
+                raise DownloadException(
+                    "Cannot extract sha sum from commit info. "
+                    "Commit info: {commit_info}".format(commit_info=commit_info)
+                )
     output=(yield Effect(TryPrefetch(
         owner=owner,
         repo=repo,
