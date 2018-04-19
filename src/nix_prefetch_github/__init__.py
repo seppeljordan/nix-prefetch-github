@@ -27,6 +27,10 @@ class GetCommitInfo(object):
     repo = attr.ib()
 
 
+class DownloadException(Exception):
+    pass
+
+
 @sync_performer
 def get_commit_info_performer(dispatcher, get_commit_info):
     owner = get_commit_info.owner
@@ -88,7 +92,13 @@ def prefetch_github(owner, repo, hash_only=False, rev=None):
         actual_rev = rev
     else:
         commit_info = yield Effect(GetCommitInfo(owner, repo))
-        actual_rev = commit_info['sha']
+        try:
+            actual_rev = commit_info['sha']
+        except KeyError:
+            raise DownloadException(
+                "Cannot extract sha sum from commit info. "
+                "Commit info: {commit_info}".format(commit_info=commit_info)
+            )
     output=(yield Effect(TryPrefetch(
         owner=owner,
         repo=repo,
@@ -129,7 +139,7 @@ def prefetch_github(owner, repo, hash_only=False, rev=None):
     }))
 
 
-def main(owner, repo, hash_only, rev):
+def nix_prefetch_github(owner, repo, hash_only=True, rev=None):
 
     @do
     def main_intent():

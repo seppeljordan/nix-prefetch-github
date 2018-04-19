@@ -103,7 +103,7 @@ def test_prefetch_github_rev_given():
 
 
 def test_life_mode():
-    results = nix_prefetch_github.main(
+    results = nix_prefetch_github.nix_prefetch_github(
         owner='seppeljordan',
         repo='pypi2nix',
         hash_only=False,
