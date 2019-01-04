@@ -1,8 +1,9 @@
 attrs
-click
+click < 7
 effect
 jinja2
 pytest
 pytest-cov
 requests
 twine
+setuptools-scm

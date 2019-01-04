@@ -2,4 +2,7 @@
 
 pypi2nix -V 3 \
          --default-overrides \
-         -r requirements.txt
+         -r requirements.txt \
+         -s setuptool-scm \
+         -e readme_renderer \
+         -e ./.#egg=nix-prefetch-github

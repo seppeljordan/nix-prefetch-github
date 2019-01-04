@@ -5,8 +5,7 @@ set -e
 ./clean
 
 nix-shell --command \
-          'PYTHONPATH=${PWD}/src:${PYTHON_PATH} \
-               py.test \
+          'pytest \
                --cov=nix_prefetch_github \
                --cov-report html:coverage/html \
                --cov-report term'

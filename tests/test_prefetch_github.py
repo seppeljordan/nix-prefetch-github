@@ -1,22 +1,24 @@
 import nix_prefetch_github
 import pytest
 from effect.testing import perform_sequence
+from effect import sync_perform, Effect
 
 
 def test_prefetch_github_actual_prefetch():
     seq = [
         (
-            nix_prefetch_github.GetCommitInfo(
+            nix_prefetch_github.GetCommitHashForName(
                 owner='seppeljordan',
-                repo='pypi2nix'
+                repo='pypi2nix',
+                rev=None,
             ),
-            lambda i: {'sha': 'TEST_REVISION'}
+            lambda i: 'TEST_COMMIT',
         ),
         (
             nix_prefetch_github.TryPrefetch(
                 owner='seppeljordan',
                 repo='pypi2nix',
-                rev='TEST_REVISION',
+                rev='TEST_COMMIT',
                 sha256=nix_prefetch_github.trash_sha256,
             ),
             lambda i: {
@@ -28,7 +30,7 @@ def test_prefetch_github_actual_prefetch():
             nix_prefetch_github.TryPrefetch(
                 owner='seppeljordan',
                 repo='pypi2nix',
-                rev='TEST_REVISION',
+                rev='TEST_COMMIT',
                 sha256='TEST_ACTUALHASH',
             ),
             lambda i: None
@@ -40,24 +42,25 @@ def test_prefetch_github_actual_prefetch():
         hash_only=False
     )
     prefetch_result = perform_sequence(seq, eff)
-    assert prefetch_result['rev'] == 'TEST_REVISION'
+    assert prefetch_result['rev'] == 'TEST_COMMIT'
     assert prefetch_result['sha256'] == 'TEST_ACTUALHASH'
 
 
 def test_prefetch_github_no_actual_prefetch():
     seq = [
         (
-            nix_prefetch_github.GetCommitInfo(
+            nix_prefetch_github.GetCommitHashForName(
                 owner='seppeljordan',
-                repo='pypi2nix'
+                repo='pypi2nix',
+                rev=None,
             ),
-            lambda i: {'sha': 'TEST_REVISION'}
+            lambda i: 'TEST_COMMIT',
         ),
         (
             nix_prefetch_github.TryPrefetch(
                 owner='seppeljordan',
                 repo='pypi2nix',
-                rev='TEST_REVISION',
+                rev='TEST_COMMIT',
                 sha256=nix_prefetch_github.trash_sha256,
             ),
             lambda i: {
@@ -72,17 +75,18 @@ def test_prefetch_github_no_actual_prefetch():
         hash_only=True
     )
     prefetch_result = perform_sequence(seq, eff)
-    assert prefetch_result['rev'] == 'TEST_REVISION'
+    assert prefetch_result['rev'] == 'TEST_COMMIT'
     assert prefetch_result['sha256'] == 'TEST_ACTUALHASH'
 
 
 def test_prefetch_github_rev_given():
+    commit_hash = '50553a665d2700c353ac41ab28c23b1027b7c1f0'
     seq = [
         (
             nix_prefetch_github.TryPrefetch(
                 owner='seppeljordan',
                 repo='pypi2nix',
-                rev='TEST_REVISION',
+                rev=commit_hash,
                 sha256=nix_prefetch_github.trash_sha256
             ),
             lambda i: {
@@ -95,10 +99,10 @@ def test_prefetch_github_rev_given():
         owner='seppeljordan',
         repo='pypi2nix',
         hash_only=True,
-        rev='TEST_REVISION'
+        rev=commit_hash,
     )
     prefetch_result = perform_sequence(seq, eff)
-    assert prefetch_result['rev'] == 'TEST_REVISION'
+    assert prefetch_result['rev'] == commit_hash
     assert prefetch_result['sha256'] == 'TEST_ACTUALHASH'
 
 
@@ -109,44 +113,27 @@ def test_life_mode():
         hash_only=False,
         rev=None
     )
-    print(results)
     assert 'sha256' in results.keys()
 
 
-def test_rate_limit_exceeded():
-    seq = [
-        (
-            nix_prefetch_github.GetCommitInfo(
-                owner='seppeljordan',
-                repo='pypi2nix'
-            ),
-            lambda i: {'message': 'API rate limit'}
-        ),
-        (
-            nix_prefetch_github.PrefetchGit(
-                url='https://github.com/seppeljordan/pypi2nix.git'
-            ),
-            lambda i: {'rev': 'TEST_REVISION'}
-        ),
-        (
-            nix_prefetch_github.TryPrefetch(
-                owner='seppeljordan',
-                repo='pypi2nix',
-                rev='TEST_REVISION',
-                sha256=nix_prefetch_github.trash_sha256,
-            ),
-            lambda i: {
-                'output':
-                "output path TESTPATH has TEST hash 'TEST_ACTUALHASH' when TESTREST"
-            }
-        ),
-    ]
-    eff = nix_prefetch_github.prefetch_github(
-        owner='seppeljordan',
-        repo='pypi2nix',
-        hash_only=True
+def test_get_commit_hash_for_name_with_actual_github_repo():
+    result = sync_perform(
+        nix_prefetch_github.dispatcher(),
+        Effect(nix_prefetch_github.GetCommitHashForName(
+            owner='seppeljordan',
+            repo='parsemon2',
+            rev='master',
+        ))
     )
-    prefetch_result = perform_sequence(seq, eff)
-    assert prefetch_result['rev'] == 'TEST_REVISION'
-    assert prefetch_result['sha256'] == 'TEST_ACTUALHASH'
-    
+    assert len(result) == 40
+
+
+def test_is_sha1_hash_detects_actual_hash():
+    text = '5a484700f1006389847683a72cd88bf7057fe772'
+    assert nix_prefetch_github.is_sha1_hash(text)
+
+
+def test_is_sha1_hash_returns_false_for_string_to_short():
+    text = '5a484700f1006389847683a72cd88bf7057fe77'
+    assert len(text) < 40
+    assert not nix_prefetch_github.is_sha1_hash(text)

@@ -7,7 +7,7 @@ from tempfile import TemporaryDirectory
 import attr
 import click
 import jinja2
-import requests
+from attr import attrib, attrs
 from effect import (ComposedDispatcher, Constant, Effect, TypeDispatcher,
                     sync_perform, sync_performer)
 from effect.do import do
@@ -27,35 +27,16 @@ class DownloadException(Exception):
     pass
 
 
-class GithubRateLimitException(DownloadException):
-    pass
-
-
-@attr.s
-class GetCommitInfo(object):
-    owner = attr.ib()
-    repo = attr.ib()
-
-
-@sync_performer
-def get_commit_info_performer(dispatcher, get_commit_info):
-    owner = get_commit_info.owner
-    repo = get_commit_info.repo
-    url_template = 'https://api.github.com/repos/{owner}/{repo}/commits/master'
-    request_url = url_template.format(
-        owner=owner,
-        repo=repo,
-    )
-    response = requests.get(request_url)
-    return response.json()
-
-
 @attr.s
 class TryPrefetch(object):
     owner = attr.ib()
     repo = attr.ib()
     sha256 = attr.ib()
     rev = attr.ib()
+
+
+def is_sha1_hash(text):
+    return re.match(r'^[0-9a-f]{40}$', text)
 
 
 @sync_performer
@@ -91,11 +72,39 @@ def prefetch_git_performer(dispatcher, prefetch_git):
     return json.loads(stdout)
 
 
+@attrs
+class GetCommitHashForName:
+    owner = attrib()
+    repo = attrib()
+    rev = attrib()
+
+
+@sync_performer
+def get_commit_hash_for_name_performer(_, intent):
+    repository_url = 'https://github.com/{owner}/{repo}.git'.format(
+        owner=intent.owner,
+        repo=intent.repo,
+    )
+    return_code, output = cmd(
+        command=[
+            'git',
+            'ls-remote',
+            '--heads',
+            '--tags',
+            repository_url,
+        ] + ([intent.rev] if intent.rev else []),
+    )
+    if return_code:
+       return None
+    else:
+        return output.split('\t')[0]
+
+
 def dispatcher():
     prefetch_dispatcher = TypeDispatcher({
-        GetCommitInfo: get_commit_info_performer,
         TryPrefetch: try_prefetch_performer,
         PrefetchGit: prefetch_git_performer,
+        GetCommitHashForName: get_commit_hash_for_name_performer,
     })
     return ComposedDispatcher([
         base_dispatcher,
@@ -104,47 +113,21 @@ def dispatcher():
 
 
 @do
-def query_github_api_for_commit(owner, repo):
-    commit_info = yield Effect(GetCommitInfo(owner, repo))
-    try:
-        return commit_info['sha']
-    except KeyError:
-        if 'message' in commit_info and 'API rate limit' in commit_info['message']:
-            raise GithubRateLimitException(
-                'Cannot get info about current commit because the github API rate limit was reached'
-            )
-        else:
-            raise DownloadException(
-                "Cannot extract sha sum from commit info. "
-                "Commit info: {commit_info}".format(commit_info=commit_info)
-            )
-
-
-@do
-def commit_info_from_prefetch_git(owner, repo):
-    prefetch_info = yield Effect(PrefetchGit(
-        url='https://github.com/{owner}/{repo}.git'.format(
-            owner=owner,
-            repo=repo,
-        )
-    ))
-    return prefetch_info['rev']
-
-
-@do
 def prefetch_github(owner, repo, hash_only=False, rev=None):
     def select_hash_from_match(match):
         hash_untrimmed = match.group(1) or match.group(2)
         return hash_untrimmed[1:-1]
 
-    if rev:
+    if isinstance(rev, str) and is_sha1_hash(rev):
         actual_rev = rev
     else:
-        try:
-            actual_rev = yield query_github_api_for_commit(owner, repo)
-        except GithubRateLimitException:
-            actual_rev = yield commit_info_from_prefetch_git(owner, repo)
-        
+        actual_rev = yield Effect(GetCommitHashForName(
+            owner=owner,
+            repo=repo,
+            rev=rev,
+        ))
+    print('actual_rev', actual_rev)
+
     output=(yield Effect(TryPrefetch(
         owner=owner,
         repo=repo,
