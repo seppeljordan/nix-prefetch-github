@@ -13,7 +13,7 @@ let
   addDependencies = deps: packageName: super."${packageName}".overrideDerivation( old: {
     propagatedBuildInputs = old.propagatedBuildInputs ++
     builtins.map
-    (dependencyName: builtins.trace dependencyName self."${dependencyName}")
+    (dependencyName: self."${dependencyName}")
     deps;
   });
 in
@@ -29,6 +29,6 @@ in
   });
   "nix-prefetch-github" =
     addDependencies
-    ["pytest" "pytest-cov"]
+    ["pytest" "pytest-cov" "twine"]
     "nix-prefetch-github";
 }
