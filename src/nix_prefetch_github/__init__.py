@@ -126,7 +126,6 @@ def prefetch_github(owner, repo, hash_only=False, rev=None):
             repo=repo,
             rev=rev,
         ))
-    print('actual_rev', actual_rev)
 
     output=(yield Effect(TryPrefetch(
         owner=owner,
