@@ -2,6 +2,8 @@ import nix_prefetch_github
 import pytest
 from effect.testing import perform_sequence
 from effect import sync_perform, Effect
+from tempfile import TemporaryDirectory
+from nix_prefetch_github.io import cmd
 
 
 def test_prefetch_github_actual_prefetch():
@@ -137,3 +139,20 @@ def test_is_sha1_hash_returns_false_for_string_to_short():
     text = '5a484700f1006389847683a72cd88bf7057fe77'
     assert len(text) < 40
     assert not nix_prefetch_github.is_sha1_hash(text)
+
+
+def test_is_to_nix_expression_outputs_valid_nix_expr():
+    for hash_only in [False, True]:
+        output_dictionary = nix_prefetch_github.nix_prefetch_github(
+            owner='seppeljordan',
+            repo='pypi2nix',
+            hash_only = hash_only,
+            rev='master')
+        nix_expr_output = nix_prefetch_github.to_nix_expression(output_dictionary)
+
+        with TemporaryDirectory() as temp_dir_name:
+            nix_filename = temp_dir_name + '/output.nix'
+            with open(nix_filename, 'w') as f:
+                f.write(nix_expr_output)
+            returncode, output = cmd(['nix-build', nix_filename, '--no-out-link'])
+            assert returncode == 0

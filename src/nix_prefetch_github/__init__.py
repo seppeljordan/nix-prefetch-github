@@ -21,6 +21,7 @@ templates_env = jinja2.Environment(
     loader=jinja2.FileSystemLoader(HERE + '/templates'),
 )
 template = templates_env.get_template('prefetch-github.nix.j2')
+output_template = templates_env.get_template('nix-output.j2')
 
 
 class DownloadException(Exception):
@@ -33,6 +34,15 @@ class TryPrefetch(object):
     repo = attr.ib()
     sha256 = attr.ib()
     rev = attr.ib()
+
+
+def to_nix_expression(output_dictionary):
+    return output_template.render(
+        owner=output_dictionary['owner'],
+        repo=output_dictionary['repo'],
+        rev=output_dictionary['rev'],
+        sha256=output_dictionary['sha256'],
+    )
 
 
 def is_sha1_hash(text):
@@ -193,12 +203,17 @@ def nix_prefetch_github(owner, repo, hash_only=True, rev=None):
 @click.argument('owner')
 @click.argument('repo')
 @click.option('--hash-only/--no-hash-only', default=False)
+@click.option('--nix', is_flag=True, help="Format output as Nix expression")
 @click.option('--rev', default=None, type=str)
-def _main(owner, repo, hash_only, rev):
+def _main(owner, repo, hash_only, nix, rev):
     output_dictionary = nix_prefetch_github(owner, repo, hash_only, rev)
-    output_to_user = json.dumps(
-        output_dictionary,
-        indent=4,
-    )
 
-    print(output_to_user)
+    if nix:
+        output_to_user = to_nix_expression(output_dictionary)
+    else:
+        output_to_user = json.dumps(
+            output_dictionary,
+            indent=4,
+        )
+
+    print(output_to_user, end='')
