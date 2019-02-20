@@ -1,0 +1,9 @@
+let
+  pkgs = import <nixpkgs> {};
+in
+  pkgs.fetchFromGitHub {
+    owner = "{{ owner }}";
+    repo = "{{ repo }}";
+    rev = "{{ rev }}";
+    sha256 = "{{ sha256 }}";
+  };
