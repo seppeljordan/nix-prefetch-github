@@ -1,9 +1,14 @@
+import os
+from tempfile import TemporaryDirectory
+
 import nix_prefetch_github
 import pytest
+from effect import Effect, sync_perform
 from effect.testing import perform_sequence
-from effect import sync_perform, Effect
-from tempfile import TemporaryDirectory
 from nix_prefetch_github.io import cmd
+
+
+requires_nix_build = pytest.mark.nix_build
 
 
 def test_prefetch_github_actual_prefetch():
@@ -108,6 +113,7 @@ def test_prefetch_github_rev_given():
     assert prefetch_result['sha256'] == 'TEST_ACTUALHASH'
 
 
+@requires_nix_build
 def test_life_mode():
     results = nix_prefetch_github.nix_prefetch_github(
         owner='seppeljordan',
@@ -118,6 +124,7 @@ def test_life_mode():
     assert 'sha256' in results.keys()
 
 
+@requires_nix_build
 def test_get_commit_hash_for_name_with_actual_github_repo():
     result = sync_perform(
         nix_prefetch_github.dispatcher(),
@@ -141,6 +148,7 @@ def test_is_sha1_hash_returns_false_for_string_to_short():
     assert not nix_prefetch_github.is_sha1_hash(text)
 
 
+@requires_nix_build
 def test_is_to_nix_expression_outputs_valid_nix_expr():
     for prefetch in [False, True]:
         output_dictionary = nix_prefetch_github.nix_prefetch_github(
