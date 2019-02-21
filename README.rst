@@ -22,9 +22,24 @@ python example
 
 ::
 
-    Python 3.6.4 (default, Dec 19 2017, 05:36:13) 
+    Python 3.6.4 (default, Dec 19 2017, 05:36:13)
     [GCC 7.3.0] on linux
     Type "help", "copyright", "credits" or "license" for more information.
     >>> import nix_prefetch_github
     >>> nix_prefetch_github.nix_prefetch_github(owner="seppeljordan", repo="nix-prefetch-github")
     {'owner': 'seppeljordan', 'repo': 'nix-prefetch-github', 'rev': '603f42203db128a7aaa091cf34d406bf7a80e9f0', 'sha256': '1wrvvy85x7yqj4rkgpj93cdnhalyhzpr8pmyca38v59lm5ndh2w4'}
+
+
+changes
+-------
+
+v2.0
+^^^^
+
+- The result of nix_pretch_github and its corresponding command line
+  tool now contains always the actual commit hash as detected by the
+  tool instead of the branch or tag name.
+- Add a new flag ``--nix`` that makes the command line tool output a
+  valid nix expression
+- Removed the ``--hash-only`` and ``--no-hash-only`` flags and changed
+  add ``--prefetch`` and ``--no-prefetch`` flags to replace them.
