@@ -145,8 +145,8 @@ def prefetch_github(owner, repo, hash_only=False, rev=None):
     )))['output']
     r = re.compile(
         "|".join(
-            ["output path .* has .* hash (.*) when .*",
-             "fixed\-output derivation produced path .* with sha256 hash (.*) instead of the expected hash .*", # flake8: noqa: E501
+            [r"output path .* has .* hash (.*) when .*",
+             r"fixed\-output derivation produced path .* with sha256 hash (.*) instead of the expected hash .*", # flake8: noqa: E501
             ]
         )
     )
