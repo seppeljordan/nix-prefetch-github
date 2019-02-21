@@ -41,7 +41,7 @@ def test_prefetch_github_actual_prefetch():
     eff = nix_prefetch_github.prefetch_github(
         owner='seppeljordan',
         repo='pypi2nix',
-        hash_only=False
+        prefetch=True
     )
     prefetch_result = perform_sequence(seq, eff)
     assert prefetch_result['rev'] == 'TEST_COMMIT'
@@ -74,7 +74,7 @@ def test_prefetch_github_no_actual_prefetch():
     eff = nix_prefetch_github.prefetch_github(
         owner='seppeljordan',
         repo='pypi2nix',
-        hash_only=True
+        prefetch=False,
     )
     prefetch_result = perform_sequence(seq, eff)
     assert prefetch_result['rev'] == 'TEST_COMMIT'
@@ -100,7 +100,7 @@ def test_prefetch_github_rev_given():
     eff = nix_prefetch_github.prefetch_github(
         owner='seppeljordan',
         repo='pypi2nix',
-        hash_only=True,
+        prefetch=False,
         rev=commit_hash,
     )
     prefetch_result = perform_sequence(seq, eff)
@@ -112,7 +112,7 @@ def test_life_mode():
     results = nix_prefetch_github.nix_prefetch_github(
         owner='seppeljordan',
         repo='pypi2nix',
-        hash_only=False,
+        prefetch=True,
         rev=None
     )
     assert 'sha256' in results.keys()
@@ -142,12 +142,13 @@ def test_is_sha1_hash_returns_false_for_string_to_short():
 
 
 def test_is_to_nix_expression_outputs_valid_nix_expr():
-    for hash_only in [False, True]:
+    for prefetch in [False, True]:
         output_dictionary = nix_prefetch_github.nix_prefetch_github(
             owner='seppeljordan',
             repo='pypi2nix',
-            hash_only = hash_only,
-            rev='master')
+            prefetch=prefetch,
+            rev='master'
+        )
         nix_expr_output = nix_prefetch_github.to_nix_expression(output_dictionary)
 
         with TemporaryDirectory() as temp_dir_name:

@@ -123,7 +123,7 @@ def dispatcher():
 
 
 @do
-def prefetch_github(owner, repo, hash_only=False, rev=None):
+def prefetch_github(owner, repo, prefetch=True, rev=None):
     def select_hash_from_match(match):
         hash_untrimmed = match.group(1) or match.group(2)
         return hash_untrimmed[1:-1]
@@ -164,7 +164,7 @@ def prefetch_github(owner, repo, hash_only=False, rev=None):
                 'in github repo {owner}/{repo}.\n\noutput was: {output}'
             ).format(owner=owner, repo=repo, output=output)
         )
-    if not hash_only:
+    if prefetch:
         yield Effect(TryPrefetch(
             owner=owner,
             repo=repo,
@@ -177,14 +177,14 @@ def prefetch_github(owner, repo, hash_only=False, rev=None):
     }))
 
 
-def nix_prefetch_github(owner, repo, hash_only=True, rev=None):
+def nix_prefetch_github(owner, repo, prefetch=True, rev=None):
 
     @do
     def main_intent():
         prefetch_results = yield prefetch_github(
             owner,
             repo,
-            hash_only,
+            prefetch,
             rev=rev
         )
         output_dictionary = {
@@ -202,11 +202,15 @@ def nix_prefetch_github(owner, repo, hash_only=True, rev=None):
 @click.command('nix-prefetch-github')
 @click.argument('owner')
 @click.argument('repo')
-@click.option('--hash-only/--no-hash-only', default=False)
+@click.option(
+    '--prefetch/--no-prefetch',
+    default=True,
+    help="Prefetch given repository into nix store",
+)
 @click.option('--nix', is_flag=True, help="Format output as Nix expression")
 @click.option('--rev', default=None, type=str)
-def _main(owner, repo, hash_only, nix, rev):
-    output_dictionary = nix_prefetch_github(owner, repo, hash_only, rev)
+def _main(owner, repo, prefetch, nix, rev):
+    output_dictionary = nix_prefetch_github(owner, repo, prefetch, rev)
 
     if nix:
         output_to_user = to_nix_expression(output_dictionary)
