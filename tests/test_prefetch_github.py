@@ -176,6 +176,8 @@ def test_is_to_nix_expression_outputs_valid_nix_expr():
 def test_that_detect_actual_hash_from_nix_output_works_for_multiple_version_of_nix(
         nix_build_output,
 ):
+    # This test checks if the nix-prefetch-github is compatible with
+    # different versions of nix
     actual_sha256_hash = '0x1x9dq4hnkdrdfbvcm6kaivrkgmmr4vp2qqwz15y5pcawvyd0z6'
     assert (
         actual_sha256_hash ==

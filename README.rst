@@ -33,6 +33,12 @@ python example
 changes
 -------
 
+v2.1
+^^^^
+
+- Fix bug (#4) that made ``nix-prefetch-github`` incompatible with
+  ``nix 2.2``.
+
 v2.0
 ^^^^
 
