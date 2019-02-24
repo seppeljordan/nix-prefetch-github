@@ -24,10 +24,6 @@ template = templates_env.get_template('prefetch-github.nix.j2')
 output_template = templates_env.get_template('nix-output.j2')
 
 
-class DownloadException(Exception):
-    pass
-
-
 @attr.s
 class TryPrefetch(object):
     owner = attr.ib()
@@ -62,24 +58,7 @@ def try_prefetch_performer(dispatcher, try_prefetch):
         with open(nix_filename, 'w') as f:
             f.write(nix_code_calculate_hash)
         returncode, output = cmd(['nix-build', nix_filename])
-        return {
-            'returncode': returncode,
-            'output': output
-        }
-
-
-@attr.s
-class PrefetchGit(object):
-    url = attr.ib()
-
-
-@sync_performer
-def prefetch_git_performer(dispatcher, prefetch_git):
-    return_code, stdout = cmd(
-        ["nix-prefetch-git", prefetch_git.url],
-        merge_stderr=False
-    )
-    return json.loads(stdout)
+        return returncode, output
 
 
 @attrs
@@ -110,11 +89,31 @@ def get_commit_hash_for_name_performer(_, intent):
         return output.split('\t')[0]
 
 
+@attrs
+class CalculateSha256Sum:
+    owner = attrib()
+    repo = attrib()
+    revision = attrib()
+
+
+@do
+def calculate_sha256_sum(intent):
+    return_code, nix_output = yield Effect(TryPrefetch(
+        owner=intent.owner,
+        repo=intent.repo,
+        sha256=trash_sha256,
+        rev=intent.revision,
+    ))
+    return detect_actual_hash_from_nix_output(nix_output.splitlines())
+
+
 def dispatcher():
     prefetch_dispatcher = TypeDispatcher({
         TryPrefetch: try_prefetch_performer,
-        PrefetchGit: prefetch_git_performer,
         GetCommitHashForName: get_commit_hash_for_name_performer,
+        CalculateSha256Sum: sync_performer(
+            lambda _, intent: calculate_sha256_sum(intent)
+        ),
     })
     return ComposedDispatcher([
         base_dispatcher,
@@ -122,12 +121,26 @@ def dispatcher():
     ])
 
 
+def detect_actual_hash_from_nix_output(lines):
+    def select_hash_from_match(match):
+        return match.group(1) or match.group(2) or match.group(3)
+
+    nix_1_x_regexp = r"output path .* has .* hash '([a-z0-9]{52})' when .*"
+    nix_2_0_regexp = r"fixed\-output derivation produced path .* with sha256 hash '([a-z0-9]{52})' instead of the expected hash .*"  # flake8: noqa: E501
+    nix_2_2_regexp = r"  got: +sha256:([a-z0-9]{52})"
+    regular_expression = re.compile('|'.join([
+        nix_1_x_regexp,
+        nix_2_0_regexp,
+        nix_2_2_regexp,
+    ]))
+    for line in lines:
+        re_match = regular_expression.match(line)
+        if re_match:
+            print(re_match.groups())
+            return select_hash_from_match(re_match)
+
 @do
 def prefetch_github(owner, repo, prefetch=True, rev=None):
-    def select_hash_from_match(match):
-        hash_untrimmed = match.group(1) or match.group(2)
-        return hash_untrimmed[1:-1]
-
     if isinstance(rev, str) and is_sha1_hash(rev):
         actual_rev = rev
     else:
@@ -137,26 +150,11 @@ def prefetch_github(owner, repo, prefetch=True, rev=None):
             rev=rev,
         ))
 
-    output=(yield Effect(TryPrefetch(
+    calculated_hash = (yield Effect(CalculateSha256Sum(
         owner=owner,
         repo=repo,
-        sha256=trash_sha256,
-        rev=actual_rev
-    )))['output']
-    r = re.compile(
-        "|".join(
-            [r"output path .* has .* hash (.*) when .*",
-             r"fixed\-output derivation produced path .* with sha256 hash (.*) instead of the expected hash .*", # flake8: noqa: E501
-            ]
-        )
-    )
-    calculated_hash = None
-    for line in output.splitlines():
-        re_match = r.match(line)
-        if not re_match:
-            continue
-        calculated_hash = select_hash_from_match(re_match)
-        break
+        revision=actual_rev
+    )))
     if not calculated_hash:
         raise click.ClickException(
             (
