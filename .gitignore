@@ -7,3 +7,5 @@ __pycache__
 /MANIFEST
 /testenv
 *.egg-info
+/result
+/test.nix

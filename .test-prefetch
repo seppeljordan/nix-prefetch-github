@@ -1,0 +1,8 @@
+#!/usr/bin/env sh
+
+set -e
+
+pytest tests/ \
+       --cov=nix_prefetch_github \
+       --cov-report html:coverage/html \
+       --cov-report term

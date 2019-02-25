@@ -1,11 +1,8 @@
 #!/usr/bin/env sh
 
-set -e
-
 ./clean
 
-nix-shell --command \
-          'pytest \
-               --cov=nix_prefetch_github \
-               --cov-report html:coverage/html \
-               --cov-report term'
+nix-shell --command 'exec ./.test-prefetch'
+nix build
+result/bin/nix-prefetch-github seppeljordan nix-prefetch-github --nix > test.nix
+nix build -f test.nix

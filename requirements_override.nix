@@ -24,7 +24,13 @@ in
 
 self: super:
 let
-  addDependencies = deps: old: {
+  addBuildDependencies = deps: old: {
+    buildInputs = old.buildInputs ++
+    builtins.map
+    (dependencyName: self."${dependencyName}")
+    deps;
+  };
+  addRuntimeDependencies = deps: old: {
     propagatedBuildInputs = old.propagatedBuildInputs ++
     builtins.map
     (dependencyName: self."${dependencyName}")
@@ -35,16 +41,22 @@ in
   "attrs" = super.attrs.overrideDerivation (old: {
     propagatedBuildInputs = builtins.filter (x: ! isPytest x) old.propagatedBuildInputs;
   });
-  "py" = super.py.overrideDerivation (old: {
-    buildInputs = old.buildInputs ++ [self.setuptools-scm];
-  });
+  "py" = applyTransformations
+    [
+      (addBuildDependencies [ "setuptools-scm" ])
+    ]
+    super."py";
   "twine" = super.twine.overrideDerivation(old: {
     propagatedBuildInputs = old.propagatedBuildInputs ++ [self.readme-renderer];
   });
   "nix-prefetch-github" =
     applyTransformations
     [
-      (addDependencies ["pytest" "pytest-cov" "twine"])
+      (addBuildDependencies [
+        "pytest"
+        "pytest-cov"
+        "twine"
+      ])
       (addTestPhase ''
         pytest tests/ -m 'not nix_build'
       ''

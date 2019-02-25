@@ -1,9 +1,10 @@
 attrs
 click
 effect
+flake8
 jinja2
 pytest
 pytest-cov
 requests
 twine
-setuptools-scm
+readme_renderer

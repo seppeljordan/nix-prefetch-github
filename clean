@@ -9,4 +9,5 @@ rm -rf \
    dist \
    src/nix_prefetch_github.egg-info \
    testenv \
+   test.nix \
    # end

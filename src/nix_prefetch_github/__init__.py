@@ -136,7 +136,6 @@ def detect_actual_hash_from_nix_output(lines):
     for line in lines:
         re_match = regular_expression.match(line)
         if re_match:
-            print(re_match.groups())
             return select_hash_from_match(re_match)
 
 @do
