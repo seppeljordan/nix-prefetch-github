@@ -22,6 +22,8 @@ templates_env = jinja2.Environment(
 )
 template = templates_env.get_template('prefetch-github.nix.j2')
 output_template = templates_env.get_template('nix-output.j2')
+with open(os.path.join(HERE, 'VERSION')) as f:
+    VERSION_STRING = f.read()
 
 
 @attr.s
@@ -206,6 +208,7 @@ def nix_prefetch_github(owner, repo, prefetch=True, rev=None):
 )
 @click.option('--nix', is_flag=True, help="Format output as Nix expression")
 @click.option('--rev', default=None, type=str)
+@click.version_option(version=VERSION_STRING, prog_name='nix-prefetch-github')
 def _main(owner, repo, prefetch, nix, rev):
     output_dictionary = nix_prefetch_github(owner, repo, prefetch, rev)
 
