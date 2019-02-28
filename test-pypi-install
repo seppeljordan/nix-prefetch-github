@@ -12,7 +12,7 @@ done
 
 set -e
 
-VERSION=$(cat VERSION)
+VERSION=$(cat src/nix_prefetch_github/VERSION)
 
 function upload_check() {
 

@@ -1,2 +1,2 @@
-include VERSION
+include src/nix_prefetch_github/VERSION
 include README.rst

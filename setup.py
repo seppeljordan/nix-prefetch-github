@@ -1,6 +1,6 @@
 from distutils.core import setup
 
-with open('VERSION') as f:
+with open('src/nix_prefetch_github/VERSION') as f:
     version = f.readlines()[0]
 
 with open('README.rst') as f:
