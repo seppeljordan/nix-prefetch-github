@@ -6,26 +6,34 @@ import pytest
 from effect import Effect, sync_perform
 from effect.testing import perform_sequence
 from nix_prefetch_github.io import cmd
-
+from nix_prefetch_github.list_remote import ListRemote
 
 requires_nix_build = pytest.mark.nix_build
 
 
-def test_prefetch_github_actual_prefetch():
+@pytest.fixture
+def pypi2nix_list_remote():
+    return ListRemote.from_git_ls_remote_output('\n'.join([
+        'ref: refs/heads/master\tHEAD',
+        '1234\trefs/heads/dev',
+        '5678\trefs/heads/master',
+    ]))
+
+
+def test_prefetch_github_actual_prefetch(pypi2nix_list_remote):
     seq = [
         (
-            nix_prefetch_github.GetCommitHashForName(
+            nix_prefetch_github.GetListRemote(
                 owner='seppeljordan',
                 repo='pypi2nix',
-                rev=None,
             ),
-            lambda i: 'TEST_COMMIT',
+            lambda i: pypi2nix_list_remote,
         ),
         (
             nix_prefetch_github.CalculateSha256Sum(
                 owner='seppeljordan',
                 repo='pypi2nix',
-                revision='TEST_COMMIT',
+                revision=pypi2nix_list_remote.branch('master'),
             ),
             lambda i: 'TEST_ACTUALHASH',
         ),
@@ -33,7 +41,7 @@ def test_prefetch_github_actual_prefetch():
             nix_prefetch_github.TryPrefetch(
                 owner='seppeljordan',
                 repo='pypi2nix',
-                rev='TEST_COMMIT',
+                rev=pypi2nix_list_remote.branch('master'),
                 sha256='TEST_ACTUALHASH',
             ),
             lambda i: None
@@ -45,25 +53,24 @@ def test_prefetch_github_actual_prefetch():
         prefetch=True
     )
     prefetch_result = perform_sequence(seq, eff)
-    assert prefetch_result['rev'] == 'TEST_COMMIT'
+    assert prefetch_result['rev'] == pypi2nix_list_remote.branch('master')
     assert prefetch_result['sha256'] == 'TEST_ACTUALHASH'
 
 
-def test_prefetch_github_no_actual_prefetch():
+def test_prefetch_github_no_actual_prefetch(pypi2nix_list_remote):
     seq = [
         (
-            nix_prefetch_github.GetCommitHashForName(
+            nix_prefetch_github.GetListRemote(
                 owner='seppeljordan',
                 repo='pypi2nix',
-                rev=None,
             ),
-            lambda i: 'TEST_COMMIT',
+            lambda i: pypi2nix_list_remote,
         ),
         (
             nix_prefetch_github.CalculateSha256Sum(
                 owner='seppeljordan',
                 repo='pypi2nix',
-                revision='TEST_COMMIT',
+                revision=pypi2nix_list_remote.branch('master'),
             ),
             lambda i: 'TEST_ACTUALHASH',
         ),
@@ -74,7 +81,7 @@ def test_prefetch_github_no_actual_prefetch():
         prefetch=False,
     )
     prefetch_result = perform_sequence(seq, eff)
-    assert prefetch_result['rev'] == 'TEST_COMMIT'
+    assert prefetch_result['rev'] == pypi2nix_list_remote.branch('master')
     assert prefetch_result['sha256'] == 'TEST_ACTUALHASH'
 
 
@@ -110,19 +117,6 @@ def test_life_mode():
         rev=None
     )
     assert 'sha256' in results.keys()
-
-
-@requires_nix_build
-def test_get_commit_hash_for_name_with_actual_github_repo():
-    result = sync_perform(
-        nix_prefetch_github.dispatcher(),
-        Effect(nix_prefetch_github.GetCommitHashForName(
-            owner='seppeljordan',
-            repo='parsemon2',
-            rev='master',
-        ))
-    )
-    assert len(result) == 40
 
 
 def test_is_sha1_hash_detects_actual_hash():

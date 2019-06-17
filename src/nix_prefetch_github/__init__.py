@@ -14,6 +14,7 @@ from effect.do import do
 from effect.io import Display
 from nix_prefetch_github.effect import base_dispatcher
 from nix_prefetch_github.io import cmd
+from nix_prefetch_github.list_remote import ListRemote
 
 HERE = os.path.dirname(__file__)
 trash_sha256 = '1y4ly7lgqm03wap4mh01yzcmvryp29w739fy07zzvz15h2z9x3dv'
@@ -26,7 +27,7 @@ with open(os.path.join(HERE, 'VERSION')) as f:
     VERSION_STRING = f.read()
 
 
-@attr.s
+@attrs
 class TryPrefetch(object):
     owner = attr.ib()
     repo = attr.ib()
@@ -64,34 +65,6 @@ def try_prefetch_performer(dispatcher, try_prefetch):
 
 
 @attrs
-class GetCommitHashForName:
-    owner = attrib()
-    repo = attrib()
-    rev = attrib()
-
-
-@sync_performer
-def get_commit_hash_for_name_performer(_, intent):
-    repository_url = 'https://github.com/{owner}/{repo}.git'.format(
-        owner=intent.owner,
-        repo=intent.repo,
-    )
-    return_code, output = cmd(
-        command=[
-            'git',
-            'ls-remote',
-            '--heads',
-            '--tags',
-            repository_url,
-        ] + ([intent.rev] if intent.rev else []),
-    )
-    if return_code:
-       return None
-    else:
-        return output.split('\t')[0]
-
-
-@attrs
 class CalculateSha256Sum:
     owner = attrib()
     repo = attrib()
@@ -109,13 +82,34 @@ def calculate_sha256_sum(intent):
     return detect_actual_hash_from_nix_output(nix_output.splitlines())
 
 
+@attrs
+class GetListRemote:
+    owner = attrib()
+    repo = attrib()
+
+
+@sync_performer
+def get_list_remote_performer(_, intent):
+    repository_url = "https://github.com/{owner}/{repo}.git".format(
+        owner=intent.owner,
+        repo=intent.repo,
+    )
+    _, stdout = cmd([
+        'git',
+        'ls-remote',
+        '--symref',
+        repository_url,
+    ])
+    return ListRemote.from_git_ls_remote_output(stdout)
+
+
 def dispatcher():
     prefetch_dispatcher = TypeDispatcher({
         TryPrefetch: try_prefetch_performer,
-        GetCommitHashForName: get_commit_hash_for_name_performer,
         CalculateSha256Sum: sync_performer(
             lambda _, intent: calculate_sha256_sum(intent)
         ),
+        GetListRemote: get_list_remote_performer,
     })
     return ComposedDispatcher([
         base_dispatcher,
@@ -145,11 +139,16 @@ def prefetch_github(owner, repo, prefetch=True, rev=None):
     if isinstance(rev, str) and is_sha1_hash(rev):
         actual_rev = rev
     else:
-        actual_rev = yield Effect(GetCommitHashForName(
+        list_remote = yield Effect(GetListRemote(
             owner=owner,
             repo=repo,
-            rev=rev,
         ))
+        if rev is None:
+            actual_rev = list_remote.branch(list_remote.symref('HEAD'))
+        else:
+            actual_rev = list_remote.branch(rev)
+            if actual_rev is None:
+                return None
 
     calculated_hash = (yield Effect(CalculateSha256Sum(
         owner=owner,
