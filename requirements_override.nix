@@ -58,7 +58,7 @@ in
         "twine"
       ])
       (addTestPhase ''
-        pytest tests/ -m 'not nix_build'
+        python -m pytest tests/ -m 'not nix_build'
       ''
       )
       enableTests
