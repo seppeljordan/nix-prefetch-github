@@ -18,7 +18,7 @@ function upload_check() {
 
     nix-shell --command 'python setup.py sdist'
     nix-shell --command \
-              "twine upload -r test-pypi dist/nix-prefetch-github-${VERSION}.tar.gz"
+              "python -m twine upload -r test-pypi dist/nix-prefetch-github-${VERSION}.tar.gz"
 }
 
 function install_check() {
