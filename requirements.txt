@@ -5,6 +5,5 @@ flake8
 jinja2
 pytest
 pytest-cov
-requests
 twine
 readme_renderer
