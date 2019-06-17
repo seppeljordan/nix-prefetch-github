@@ -14,6 +14,9 @@ let
   addTestPhase = testPhaseContent: old: {
     installCheckPhase = testPhaseContent;
   };
+  addShellHook = shellHookContent: old: {
+    shellHook = old.shellHook + shellHookContent;
+  };
   enableTests = old: {
     doInstallCheck = true;
   };
@@ -59,6 +62,10 @@ in
       ])
       (addTestPhase ''
         python -m pytest tests/ -m 'not nix_build'
+      ''
+      )
+      (addShellHook ''
+        PYTHONPATH=$PWD/src:$PYTHONPATH
       ''
       )
       enableTests
