@@ -1,10 +1,13 @@
 import os
 from tempfile import TemporaryDirectory
 
-import nix_prefetch_github
 import pytest
 from effect import Effect, sync_perform
 from effect.testing import perform_sequence
+
+import nix_prefetch_github
+from nix_prefetch_github.error import (AbortWithErrorMessage,
+                                       revision_not_found_errormessage)
 from nix_prefetch_github.io import cmd
 from nix_prefetch_github.list_remote import ListRemote
 
@@ -106,6 +109,35 @@ def test_prefetch_github_rev_given():
     prefetch_result = perform_sequence(seq, eff)
     assert prefetch_result['rev'] == commit_hash
     assert prefetch_result['sha256'] == 'TEST_ACTUALHASH'
+
+
+def test_prefetch_aborts_when_rev_is_not_found(pypi2nix_list_remote):
+    sequence = [
+        (
+            nix_prefetch_github.GetListRemote(
+                owner='seppeljordan',
+                repo='pypi2nix',
+            ),
+            lambda _: pypi2nix_list_remote,
+        ),
+        (
+            AbortWithErrorMessage(
+                revision_not_found_errormessage(
+                    owner='seppeljordan',
+                    repo='pypi2nix',
+                    revision='does-not-exist',
+                )
+            ),
+            lambda _: None,
+        )
+    ]
+    effect = nix_prefetch_github.prefetch_github(
+        owner='seppeljordan',
+        repo='pypi2nix',
+        rev='does-not-exist',
+    )
+    prefetch_result = perform_sequence(sequence, effect)
+    assert prefetch_result is None
 
 
 @requires_nix_build

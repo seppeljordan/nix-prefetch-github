@@ -16,6 +16,9 @@ from nix_prefetch_github.effect import base_dispatcher
 from nix_prefetch_github.io import cmd
 from nix_prefetch_github.list_remote import ListRemote
 
+from .error import (AbortWithErrorMessage, abort_with_error_message_performer,
+                    revision_not_found_errormessage)
+
 HERE = os.path.dirname(__file__)
 trash_sha256 = '1y4ly7lgqm03wap4mh01yzcmvryp29w739fy07zzvz15h2z9x3dv'
 templates_env = jinja2.Environment(
@@ -110,6 +113,7 @@ def dispatcher():
             lambda _, intent: calculate_sha256_sum(intent)
         ),
         GetListRemote: get_list_remote_performer,
+        AbortWithErrorMessage: abort_with_error_message_performer,
     })
     return ComposedDispatcher([
         base_dispatcher,
@@ -148,7 +152,14 @@ def prefetch_github(owner, repo, prefetch=True, rev=None):
         else:
             actual_rev = list_remote.branch(rev)
             if actual_rev is None:
-                return None
+                yield Effect(AbortWithErrorMessage(
+                    message=revision_not_found_errormessage(
+                        owner=owner,
+                        repo=repo,
+                        revision=rev,
+                    )
+                ))
+                return
 
     calculated_hash = (yield Effect(CalculateSha256Sum(
         owner=owner,
