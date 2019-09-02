@@ -20,6 +20,7 @@ def pypi2nix_list_remote():
         'ref: refs/heads/master\tHEAD',
         '1234\trefs/heads/dev',
         '5678\trefs/heads/master',
+        '1234\trefs/tags/v1.0',
     ]))
 
 
@@ -57,6 +58,35 @@ def test_prefetch_github_actual_prefetch(pypi2nix_list_remote):
     )
     prefetch_result = perform_sequence(seq, eff)
     assert prefetch_result['rev'] == pypi2nix_list_remote.branch('master')
+    assert prefetch_result['sha256'] == 'TEST_ACTUALHASH'
+
+
+def test_can_prefetch_from_tag_given_as_rev(pypi2nix_list_remote):
+    seq = [
+        (
+            nix_prefetch_github.GetListRemote(
+                owner='seppeljordan',
+                repo='pypi2nix',
+            ),
+            lambda i: pypi2nix_list_remote,
+        ),
+        (
+            nix_prefetch_github.CalculateSha256Sum(
+                owner='seppeljordan',
+                repo='pypi2nix',
+                revision=pypi2nix_list_remote.tag('v1.0'),
+            ),
+            lambda i: 'TEST_ACTUALHASH',
+        ),
+    ]
+    eff = nix_prefetch_github.prefetch_github(
+        owner='seppeljordan',
+        repo='pypi2nix',
+        prefetch=False,
+        rev='v1.0',
+    )
+    prefetch_result = perform_sequence(seq, eff)
+    assert prefetch_result['rev'] == pypi2nix_list_remote.tag('v1.0')
     assert prefetch_result['sha256'] == 'TEST_ACTUALHASH'
 
 

@@ -150,7 +150,7 @@ def prefetch_github(owner, repo, prefetch=True, rev=None):
         if rev is None:
             actual_rev = list_remote.branch(list_remote.symref('HEAD'))
         else:
-            actual_rev = list_remote.branch(rev)
+            actual_rev = list_remote.branch(rev) or list_remote.tag(rev)
             if actual_rev is None:
                 yield Effect(AbortWithErrorMessage(
                     message=revision_not_found_errormessage(
