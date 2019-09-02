@@ -1,1 +1,4 @@
 include README.rst
+include src/nix_prefetch_github/templates/prefetch-github.nix.j2
+include src/nix_prefetch_github/templates/nix-output.j2
+include src/nix_prefetch_github/VERSION
