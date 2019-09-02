@@ -1,5 +1,8 @@
 #!/usr/bin/env sh
 
+set -e
+set -x
+
 ./clean
 
 nix-shell --command 'exec ./.test-prefetch'
