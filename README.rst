@@ -37,7 +37,7 @@ v2.3.1
 ^^^^^^
 
 - Fix bug in generated nix expression
-- Fix bug that prevented targeting tags with prefech command
+- Fix bug that prevented targeting tags with prefetch command
 - Improve error message format in case revision is not found
 
 v2.3
