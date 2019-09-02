@@ -3,5 +3,5 @@
 exec pypi2nix -V 3 \
          --default-overrides \
          -r requirements.txt \
-         -s setuptool-scm \
+         -s setuptools-scm \
          -e ./.#egg=nix-prefetch-github
