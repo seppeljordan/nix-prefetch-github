@@ -33,6 +33,25 @@ python example
 changes
 -------
 
+v2.3.1
+^^^^^^
+
+- Fix bug in generated nix expression
+- Fix bug that prevented targeting tags with prefetch command
+- Improve error message format in case revision is not found
+
+v2.3
+^^^^
+
+- Remove dependency to ``requests``
+- Default to ``master`` branch instead of first branch in list
+
+v2.2
+^^^^
+
+- Add ``--version`` flag
+- Fix bug in output formatting
+
 v2.1
 ^^^^
 
