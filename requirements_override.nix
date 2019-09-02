@@ -5,7 +5,7 @@ let
     let
       name = (parseDrvName drv.name).name;
     in
-      hasSuffix "pytest" name;
+    hasSuffix "pytest" name;
   applyTransformations = transformations: package:
     pkgs.lib.fold
     (transformation: pkg: pkg.overrideDerivation transformation)
@@ -23,21 +23,24 @@ let
   addBuildInputs = inputs: old: {
     buildInputs = old.buildInputs ++ inputs;
   };
+  changeSource = src: old: {
+    src = src;
+  };
 in
 
 self: super:
 let
   addBuildDependencies = deps: old: {
     buildInputs = old.buildInputs ++
-    builtins.map
-    (dependencyName: self."${dependencyName}")
-    deps;
+      builtins.map
+      (dependencyName: self."${dependencyName}")
+      deps;
   };
   addRuntimeDependencies = deps: old: {
     propagatedBuildInputs = old.propagatedBuildInputs ++
-    builtins.map
-    (dependencyName: self."${dependencyName}")
-    deps;
+      builtins.map
+      (dependencyName: self."${dependencyName}")
+      deps;
   };
 in
 {
@@ -70,6 +73,7 @@ in
       )
       enableTests
       (addBuildInputs [pkgs.git])
+      (changeSource ./.)
     ]
     super."nix-prefetch-github";
 }

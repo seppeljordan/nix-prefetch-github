@@ -1,6 +1,7 @@
 #!/usr/bin/env sh
 
 set -e
+set -x
 
 python -m pytest tests/ \
        --cov=nix_prefetch_github \
