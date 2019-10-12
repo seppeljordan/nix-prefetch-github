@@ -15,7 +15,10 @@ let
     installCheckPhase = testPhaseContent;
   };
   addShellHook = shellHookContent: old: {
-    shellHook = old.shellHook + shellHookContent;
+    shellHook =
+      if builtins.hasAttr "shellHook" old
+      then old.shellHook + shellHookContent
+      else shellHookContent;
   };
   enableTests = old: {
     doInstallCheck = true;

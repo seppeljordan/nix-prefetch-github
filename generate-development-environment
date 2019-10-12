@@ -1,6 +1,6 @@
 #!/usr/bin/env sh
 
-exec pypi2nix -V 3 \
+exec pypi2nix \
          --default-overrides \
          -r requirements.txt \
          -s setuptools-scm \
