@@ -76,6 +76,22 @@ let
   python = withPackages {};
 
   generated = self: {
+    "appdirs" = python.mkDerivation {
+      name = "appdirs-1.4.3";
+      src = pkgs.fetchurl {
+        url = "https://files.pythonhosted.org/packages/48/69/d87c60746b393309ca30761f8e2b49473d43450b150cb08f3c6df5c11be5/appdirs-1.4.3.tar.gz";
+        sha256 = "9e5896d1372858f8dd3344faf4e5014d21849c756c8d5701f78f8a103b372d92";
+};
+      doCheck = commonDoCheck;
+      buildInputs = commonBuildInputs ++ [ ];
+      propagatedBuildInputs = [ ];
+      meta = with pkgs.stdenv.lib; {
+        homepage = "http://github.com/ActiveState/appdirs";
+        license = licenses.mit;
+        description = "A small Python module for determining appropriate platform-specific dirs, e.g. a \"user data dir\".";
+      };
+    };
+
     "atomicwrites" = python.mkDerivation {
       name = "atomicwrites-1.3.0";
       src = pkgs.fetchurl {
@@ -105,6 +121,27 @@ let
         homepage = "https://www.attrs.org/";
         license = licenses.mit;
         description = "Classes Without Boilerplate";
+      };
+    };
+
+    "black" = python.mkDerivation {
+      name = "black-19.3b0";
+      src = pkgs.fetchurl {
+        url = "https://files.pythonhosted.org/packages/89/07/aebb10fb8f2ffbac672dfbebffa724643bc84cf012a57737a622d1dabddb/black-19.3b0.tar.gz";
+        sha256 = "68950ffd4d9169716bcb8719a56c07a2f4485354fec061cdd5910aa07369731c";
+};
+      doCheck = commonDoCheck;
+      buildInputs = commonBuildInputs ++ [ ];
+      propagatedBuildInputs = [
+        self."appdirs"
+        self."attrs"
+        self."click"
+        self."toml"
+      ];
+      meta = with pkgs.stdenv.lib; {
+        homepage = "https://github.com/ambv/black";
+        license = licenses.mit;
+        description = "The uncompromising code formatter.";
       };
     };
 
@@ -714,6 +751,22 @@ let
         homepage = "https://github.com/benjaminp/six";
         license = licenses.mit;
         description = "Python 2 and 3 compatibility utilities";
+      };
+    };
+
+    "toml" = python.mkDerivation {
+      name = "toml-0.10.0";
+      src = pkgs.fetchurl {
+        url = "https://files.pythonhosted.org/packages/b9/19/5cbd78eac8b1783671c40e34bb0fa83133a06d340a38b55c645076d40094/toml-0.10.0.tar.gz";
+        sha256 = "229f81c57791a41d65e399fc06bf0848bab550a9dfd5ed66df18ce5f05e73d5c";
+};
+      doCheck = commonDoCheck;
+      buildInputs = commonBuildInputs ++ [ ];
+      propagatedBuildInputs = [ ];
+      meta = with pkgs.stdenv.lib; {
+        homepage = "https://github.com/uiri/toml";
+        license = licenses.mit;
+        description = "Python Library for Tom's Obvious, Minimal Language";
       };
     };
 

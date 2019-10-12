@@ -65,6 +65,7 @@ in
         "pytest"
         "pytest-cov"
         "twine"
+        "black"
       ])
       (addTestPhase ''
         python -m pytest tests/ -m 'not nix_build'
