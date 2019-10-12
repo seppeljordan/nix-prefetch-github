@@ -27,23 +27,24 @@ def remote_list(test_output):
 
 
 def test_contains_master_branch(remote_list):
-    assert remote_list.branch('master') == '9ce3bcc3610ffeb36f53bc690682f48c8d311764'
+    assert remote_list.branch("master") == "9ce3bcc3610ffeb36f53bc690682f48c8d311764"
 
 
 def test_branch_returns_none_for_unknown_branch(remote_list):
-    assert remote_list.branch('does not exist') is None
+    assert remote_list.branch("does not exist") is None
 
 
 def test_contains_HEAD_symref(remote_list):
-    assert remote_list.symref('HEAD') == 'master'
+    assert remote_list.symref("HEAD") == "master"
+
 
 def test_symref_returns_none_for_unknown_reference_name(remote_list):
-    assert remote_list.symref('unknown') is None
+    assert remote_list.symref("unknown") is None
 
 
 def test_contains_tag_v2_0(remote_list):
-    assert remote_list.tag('v2.0') == 'cffdbcb3351f500b5ca8867a65261443b576b215'
+    assert remote_list.tag("v2.0") == "cffdbcb3351f500b5ca8867a65261443b576b215"
 
 
 def test_tag_returns_none_for_unkown_tag(remote_list):
-    assert remote_list.tag('unkown') is None
+    assert remote_list.tag("unkown") is None
