@@ -11,21 +11,21 @@ class ListRemote:
         tags = dict()
         for line in output.splitlines():
             try:
-                prefix, suffix = line.split('\t')
+                prefix, suffix = line.split("\t")
             except ValueError:
                 continue
-            if line.startswith('ref: '):
+            if line.startswith("ref: "):
                 ref = prefix[5:]
-                _, _, branch_name = ref.split('/')
+                _, _, branch_name = ref.split("/")
                 symrefs[suffix] = branch_name
             else:
                 try:
-                    _, kind, name = suffix.split('/')
+                    _, kind, name = suffix.split("/")
                 except ValueError:
                     continue
-                if kind == 'heads':
+                if kind == "heads":
                     heads[name] = prefix
-                elif kind == 'tags':
+                elif kind == "tags":
                     tags[name] = prefix
         return constructor(heads=heads, symrefs=symrefs, tags=tags)
 

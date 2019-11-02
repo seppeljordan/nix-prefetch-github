@@ -3,7 +3,10 @@
 set -e
 set -x
 
-python -m pytest tests/ \
+black --check src tests
+flake8 src tests
+mypy src tests
+pytest tests/ \
        --cov=nix_prefetch_github \
        --cov-report html:coverage/html \
        --cov-report term

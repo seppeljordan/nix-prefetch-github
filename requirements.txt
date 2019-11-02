@@ -7,3 +7,5 @@ pytest
 pytest-cov
 twine
 readme_renderer
+black
+mypy

@@ -1,7 +1,8 @@
 #!/usr/bin/env sh
 
-exec pypi2nix \
-         --default-overrides \
-         -r requirements.txt \
-         -s setuptools-scm \
-         -e ./.#egg=nix-prefetch-github
+set -e
+
+pypi2nix \
+    -r requirements.txt \
+    -s setuptools-scm \
+    -s pytest-runner
