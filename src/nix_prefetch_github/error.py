@@ -1,5 +1,5 @@
-from attr import *
-from effect import *
+from attr import attrs, attrib
+from effect import sync_performer
 
 
 def revision_not_found_errormessage(owner, repo, revision):

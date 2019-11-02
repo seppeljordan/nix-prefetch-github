@@ -1,7 +1,6 @@
 import json
 import os
 import re
-import subprocess
 from tempfile import TemporaryDirectory
 
 import attr
@@ -17,7 +16,6 @@ from effect import (
     sync_performer,
 )
 from effect.do import do
-from effect.io import Display
 from nix_prefetch_github.effect import base_dispatcher
 from nix_prefetch_github.io import cmd
 from nix_prefetch_github.list_remote import ListRemote
@@ -159,15 +157,15 @@ def prefetch_github(owner, repo, prefetch=True, rev=None):
                 )
                 return
 
-    calculated_hash = (
-        yield Effect(CalculateSha256Sum(owner=owner, repo=repo, revision=actual_rev))
+    calculated_hash = yield Effect(
+        CalculateSha256Sum(owner=owner, repo=repo, revision=actual_rev)
     )
     if not calculated_hash:
         raise click.ClickException(
             (
                 "Internal Error: Calculate hash value for sources "
-                "in github repo {owner}/{repo}.\n\noutput was: {output}"
-            ).format(owner=owner, repo=repo, output=output)
+                "in github repo {owner}/{repo}."
+            ).format(owner=owner, repo=repo)
         )
     if prefetch:
         yield Effect(

@@ -1,8 +1,6 @@
-import os
 from tempfile import TemporaryDirectory
 
 import pytest
-from effect import Effect, sync_perform
 from effect.testing import perform_sequence
 
 import nix_prefetch_github
