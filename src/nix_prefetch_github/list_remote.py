@@ -1,3 +1,12 @@
+from enum import Enum, unique
+
+
+@unique
+class RefKind(Enum):
+    Head = 1
+    Tag = 2
+
+
 class ListRemote:
     def __init__(self, symrefs=dict(), heads=dict(), tags=dict()):
         self.heads = heads
@@ -16,16 +25,17 @@ class ListRemote:
                 continue
             if line.startswith("ref: "):
                 ref = prefix[5:]
-                _, _, branch_name = ref.split("/")
+                branch_name = constructor.name_from_ref(ref)
                 symrefs[suffix] = branch_name
             else:
                 try:
-                    _, kind, name = suffix.split("/")
+                    kind = constructor.kind_from_ref(suffix)
                 except ValueError:
                     continue
-                if kind == "heads":
+                name = constructor.name_from_ref(suffix)
+                if kind == RefKind.Head:
                     heads[name] = prefix
-                elif kind == "tags":
+                elif kind == RefKind.Tag:
                     tags[name] = prefix
         return constructor(heads=heads, symrefs=symrefs, tags=tags)
 
@@ -37,3 +47,26 @@ class ListRemote:
 
     def tag(self, tag_name):
         return self.tags.get(tag_name)
+
+    @classmethod
+    def name_from_ref(constructor, ref):
+        fragments = ref.split("/")
+        # the first two fragments are exprected to be "refs" and
+        # "heads", after that the proper ref name should appear
+        return "/".join(fragments[2:])
+
+    @classmethod
+    def kind_from_ref(constructor, ref: str) -> RefKind:
+        fragments = ref.split("/")
+        try:
+            kind = fragments[1]
+        except IndexError:
+            raise ValueError(
+                f"`{ref}` does not look like a proper entry from `git ls-remote`"
+            )
+        if kind == "heads":
+            return RefKind.Head
+        elif kind == "tags":
+            return RefKind.Tag
+        else:
+            raise ValueError(f"Ref kind not recognized: `{kind}`")
