@@ -1,6 +1,6 @@
 import pytest
 
-from nix_prefetch_github.list_remote import ListRemote
+from nix_prefetch_github.list_remote import ListRemote, RefKind
 
 
 @pytest.fixture
@@ -10,6 +10,7 @@ ref: refs/heads/master	HEAD
 9ce3bcc3610ffeb36f53bc690682f48c8d311764	HEAD
 9ce3bcc3610ffeb36f53bc690682f48c8d311764	refs/heads/master
 c4e967f4a80e0c030364884e92f2c3cc39ae3ef2	refs/heads/travis-setup
+1234567789473873487438239389538913598723	refs/heads/test/branch
 c4e967f4a80e0c030364884e92f2c3cc39ae3ef2	refs/pull/1/head
 c4f752b05270fd1ab812c4f6a41ddcd8769eb2e6	refs/pull/2/head
 ac17b18f3ba68bcea84b563523dfe82729e49aa8	refs/pull/5/head
@@ -48,3 +49,13 @@ def test_contains_tag_v2_0(remote_list):
 
 def test_tag_returns_none_for_unkown_tag(remote_list):
     assert remote_list.tag("unkown") is None
+
+
+def test_branch_with_slash_is_recognized(remote_list):
+    assert (
+        remote_list.branch("test/branch") == "1234567789473873487438239389538913598723"
+    )
+
+
+def test_kind_from_ref_can_detect_tags():
+    assert ListRemote.kind_from_ref("refs/tags/my_tag") == RefKind.Tag
