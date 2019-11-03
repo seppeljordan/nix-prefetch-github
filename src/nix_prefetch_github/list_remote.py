@@ -48,12 +48,27 @@ class ListRemote:
     def tag(self, tag_name):
         return self.tags.get(tag_name)
 
+    def full_ref_name(self, ref_name):
+        try:
+            kind = self.kind_from_ref(ref_name)
+        except ValueError:
+            return None
+        name = self.name_from_ref(ref_name)
+        if not name:
+            return None
+        if kind == RefKind.Tag:
+            return self.tag(name)
+        elif kind == RefKind.Head:
+            return self.branch(name)
+        else:
+            return None
+
     @classmethod
     def name_from_ref(constructor, ref):
         fragments = ref.split("/")
         # the first two fragments are exprected to be "refs" and
         # "heads", after that the proper ref name should appear
-        return "/".join(fragments[2:])
+        return "/".join(fragments[2:]) or None
 
     @classmethod
     def kind_from_ref(constructor, ref: str) -> RefKind:

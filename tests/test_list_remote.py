@@ -59,3 +59,14 @@ def test_branch_with_slash_is_recognized(remote_list):
 
 def test_kind_from_ref_can_detect_tags():
     assert ListRemote.kind_from_ref("refs/tags/my_tag") == RefKind.Tag
+
+
+def test_full_ref_name_resolves_refs_heads_master(remote_list):
+    assert (
+        remote_list.full_ref_name("refs/heads/master")
+        == "9ce3bcc3610ffeb36f53bc690682f48c8d311764"
+    )
+
+
+def test_full_ref_name_returns_none_for_invalid_refs(remote_list):
+    assert remote_list.full_ref_name("blabla") is None
