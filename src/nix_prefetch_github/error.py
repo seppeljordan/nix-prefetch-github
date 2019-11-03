@@ -1,3 +1,5 @@
+import sys
+
 from attr import attrs, attrib
 from effect import sync_performer
 
@@ -15,5 +17,5 @@ class AbortWithErrorMessage:
 
 @sync_performer
 def abort_with_error_message_performer(_, intent):
-    print(intent.message)
+    print(intent.message, file=sys.stderr)
     exit(1)
