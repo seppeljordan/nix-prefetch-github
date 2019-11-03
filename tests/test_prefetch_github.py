@@ -208,3 +208,26 @@ def test_that_detect_actual_hash_from_nix_output_works_for_multiple_version_of_n
     assert actual_sha256_hash == nix_prefetch_github.detect_actual_hash_from_nix_output(
         nix_build_output
     )
+
+
+def test_that_prefetch_github_understands_full_ref_names(pypi2nix_list_remote):
+    sequence = [
+        (
+            nix_prefetch_github.GetListRemote(owner="seppeljordan", repo="pypi2nix"),
+            lambda i: pypi2nix_list_remote,
+        ),
+        (
+            nix_prefetch_github.CalculateSha256Sum(
+                owner="seppeljordan",
+                repo="pypi2nix",
+                revision=pypi2nix_list_remote.branch("master"),
+            ),
+            lambda i: "TEST_ACTUALHASH",
+        ),
+    ]
+    effect = nix_prefetch_github.prefetch_github(
+        owner="seppeljordan", repo="pypi2nix", prefetch=False, rev="refs/heads/master"
+    )
+    prefetch_result = perform_sequence(sequence, effect)
+    assert prefetch_result["rev"] == pypi2nix_list_remote.branch("master")
+    assert prefetch_result["sha256"] == "TEST_ACTUALHASH"
