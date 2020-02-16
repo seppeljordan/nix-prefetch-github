@@ -169,7 +169,11 @@ def test_is_sha1_hash_returns_false_for_string_to_short():
 def test_is_to_nix_expression_outputs_valid_nix_expr():
     for prefetch in [False, True]:
         output_dictionary = nix_prefetch_github.nix_prefetch_github(
-            owner="seppeljordan", repo="pypi2nix", prefetch=prefetch, rev="master"
+            owner="seppeljordan",
+            repo="pypi2nix",
+            prefetch=prefetch,
+            rev="master",
+            fetch_submodules=False,
         )
         nix_expr_output = nix_prefetch_github.to_nix_expression(output_dictionary)
 
