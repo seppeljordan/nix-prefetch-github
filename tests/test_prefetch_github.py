@@ -244,6 +244,7 @@ def test_that_prefetch_github_understands_fetch_submodules(pypi2nix_list_remote)
                 owner="seppeljordan",
                 repo="pypi2nix",
                 revision=pypi2nix_list_remote.branch("master"),
+                fetch_submodules=False,
             ),
             lambda i: "TEST_ACTUALHASH",
         ),

@@ -78,6 +78,7 @@ class CalculateSha256Sum:
     owner = attrib()
     repo = attrib()
     revision = attrib()
+    fetch_submodules = attrib(default=False)
 
 
 @do
