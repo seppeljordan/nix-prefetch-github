@@ -50,7 +50,7 @@ def to_nix_expression(output_dictionary):
         repo=output_dictionary["repo"],
         rev=output_dictionary["rev"],
         sha256=output_dictionary["sha256"],
-        fetch_submodules="true" if output_dictionary["fetch_submodules"] else "false",
+        fetch_submodules="true" if output_dictionary["fetchSubmodules"] else "false",
     )
 
 
