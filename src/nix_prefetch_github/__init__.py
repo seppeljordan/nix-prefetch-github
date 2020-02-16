@@ -139,7 +139,7 @@ def detect_actual_hash_from_nix_output(lines):
 
 
 @do
-def prefetch_github(owner, repo, prefetch=True, rev=None):
+def prefetch_github(owner, repo, prefetch=True, rev=None, fetch_submodules=False):
     if isinstance(rev, str) and is_sha1_hash(rev):
         actual_rev = rev
     else:

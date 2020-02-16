@@ -231,3 +231,24 @@ def test_that_prefetch_github_understands_full_ref_names(pypi2nix_list_remote):
     prefetch_result = perform_sequence(sequence, effect)
     assert prefetch_result["rev"] == pypi2nix_list_remote.branch("master")
     assert prefetch_result["sha256"] == "TEST_ACTUALHASH"
+
+
+def test_that_prefetch_github_understands_fetch_submodules(pypi2nix_list_remote):
+    sequence = [
+        (
+            nix_prefetch_github.GetListRemote(owner="seppeljordan", repo="pypi2nix"),
+            lambda i: pypi2nix_list_remote,
+        ),
+        (
+            nix_prefetch_github.CalculateSha256Sum(
+                owner="seppeljordan",
+                repo="pypi2nix",
+                revision=pypi2nix_list_remote.branch("master"),
+            ),
+            lambda i: "TEST_ACTUALHASH",
+        ),
+    ]
+    effect = nix_prefetch_github.prefetch_github(
+        owner="seppeljordan", repo="pypi2nix", prefetch=False, fetch_submodules=False
+    )
+    prefetch_result = perform_sequence(sequence, effect)
