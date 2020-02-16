@@ -33,6 +33,13 @@ python example
 changes
 -------
 
+v2.3.2
+^^^^^^
+
+- fix issues #21, #22
+- nix-prefetch-github now accepts full ref names,
+  e.g. ``refs/heads/master`` which was broken since 2.3 (#23)
+
 v2.3.1
 ^^^^^^
 
