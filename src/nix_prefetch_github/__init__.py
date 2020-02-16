@@ -3,7 +3,6 @@ import os
 import re
 from tempfile import TemporaryDirectory
 
-import attr
 import click
 import jinja2
 from attr import attrib, attrs

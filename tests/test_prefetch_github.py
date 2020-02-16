@@ -252,4 +252,4 @@ def test_that_prefetch_github_understands_fetch_submodules(pypi2nix_list_remote)
     effect = nix_prefetch_github.prefetch_github(
         owner="seppeljordan", repo="pypi2nix", prefetch=False, fetch_submodules=True
     )
-    prefetch_result = perform_sequence(sequence, effect)
+    perform_sequence(sequence, effect)
