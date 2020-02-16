@@ -11,7 +11,7 @@ from nix_prefetch_github.error import (
 from nix_prefetch_github.io import cmd
 from nix_prefetch_github.list_remote import ListRemote
 
-requires_nix_build = pytest.mark.requires_nix_build
+from .markers import requires_nix_build
 
 
 @pytest.fixture
@@ -244,12 +244,12 @@ def test_that_prefetch_github_understands_fetch_submodules(pypi2nix_list_remote)
                 owner="seppeljordan",
                 repo="pypi2nix",
                 revision=pypi2nix_list_remote.branch("master"),
-                fetch_submodules=False,
+                fetch_submodules=True,
             ),
             lambda i: "TEST_ACTUALHASH",
         ),
     ]
     effect = nix_prefetch_github.prefetch_github(
-        owner="seppeljordan", repo="pypi2nix", prefetch=False, fetch_submodules=False
+        owner="seppeljordan", repo="pypi2nix", prefetch=False, fetch_submodules=True
     )
     prefetch_result = perform_sequence(sequence, effect)
