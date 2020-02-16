@@ -1,4 +1,5 @@
 import pytest
+
 from nix_prefetch_github.error import revision_not_found_errormessage
 
 

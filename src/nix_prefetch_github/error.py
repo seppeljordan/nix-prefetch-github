@@ -1,6 +1,6 @@
 import sys
 
-from attr import attrs, attrib
+from attr import attrib, attrs
 from effect import sync_performer
 
 

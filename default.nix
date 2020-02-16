@@ -14,10 +14,12 @@ in pkgs.mkDerivation {
     pytest
     pytest-black
     pytest-cov
+    pytest-isort
     twine
     readme-renderer
     black
     mypy
+    nixpkgs.nixfmt
   ];
   shellHook = ''
     export PYTHONPATH=$PWD/src:$PYTHONPATH

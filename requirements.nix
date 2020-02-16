@@ -453,6 +453,25 @@ let
       };
     };
 
+    "isort" = python.mkDerivation {
+      name = "isort-4.3.21";
+      src = pkgs.fetchurl {
+        url =
+          "https://files.pythonhosted.org/packages/43/00/8705e8d0c05ba22f042634f791a61f4c678c32175763dcf2ca2a133f4739/isort-4.3.21.tar.gz";
+        sha256 =
+          "54da7e92468955c4fceacd0c86bd0ec997b0e1ee80d97f67c35a78b719dccab1";
+      };
+      doCheck = commonDoCheck;
+      format = "setuptools";
+      buildInputs = commonBuildInputs ++ [ ];
+      propagatedBuildInputs = [ ];
+      meta = with pkgs.stdenv.lib; {
+        homepage = "https://github.com/timothycrosley/isort";
+        license = licenses.mit;
+        description = "A Python utility / library to sort Python imports.";
+      };
+    };
+
     "jeepney" = python.mkDerivation {
       name = "jeepney-0.4.2";
       src = pkgs.fetchurl {
@@ -868,6 +887,25 @@ let
         homepage = "https://github.com/pytest-dev/pytest-cov";
         license = licenses.bsdOriginal;
         description = "Pytest plugin for measuring coverage.";
+      };
+    };
+
+    "pytest-isort" = python.mkDerivation {
+      name = "pytest-isort-0.3.1";
+      src = pkgs.fetchurl {
+        url =
+          "https://files.pythonhosted.org/packages/80/4c/0361c59b69ab463c648d8c928e66b15f06b37bb523a9e6f73a50032b6fc7/pytest-isort-0.3.1.tar.gz";
+        sha256 =
+          "4bfee60dad1870b51700d55a85f5ceda766bd9d3d2878c1bbabee80e61b1be1a";
+      };
+      doCheck = commonDoCheck;
+      format = "setuptools";
+      buildInputs = commonBuildInputs ++ [ ];
+      propagatedBuildInputs = [ self."isort" self."pytest" ];
+      meta = with pkgs.stdenv.lib; {
+        homepage = "http://github.com/moccu/pytest-isort/";
+        license = licenses.bsdOriginal;
+        description = "py.test plugin to check import ordering using isort";
       };
     };
 

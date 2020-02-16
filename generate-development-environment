@@ -7,3 +7,4 @@ pypi2nix \
     -s setuptools-scm \
     -s pytest-runner \
     -E "openssl libffi"
+nixfmt *.nix

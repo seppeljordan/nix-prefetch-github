@@ -8,5 +8,6 @@ mypy
 pytest
 pytest-black
 pytest-cov
+pytest-isort
 readme_renderer
 twine

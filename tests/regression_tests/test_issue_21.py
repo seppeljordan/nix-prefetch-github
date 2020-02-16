@@ -3,12 +3,14 @@
 https://github.com/seppeljordan/nix-prefetch-github/issues/21
 """
 
-import pytest
 import os
+
+import pytest
 from effect.testing import perform_sequence
+
 from nix_prefetch_github import (
-    GetListRemote,
     CalculateSha256Sum,
+    GetListRemote,
     ListRemote,
     prefetch_github,
 )

@@ -11,7 +11,7 @@ from nix_prefetch_github.error import (
 from nix_prefetch_github.io import cmd
 from nix_prefetch_github.list_remote import ListRemote
 
-requires_nix_build = pytest.mark.nix_build
+requires_nix_build = pytest.mark.requires_nix_build
 
 
 @pytest.fixture
