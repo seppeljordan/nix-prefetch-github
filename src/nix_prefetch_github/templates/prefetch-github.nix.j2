@@ -5,6 +5,7 @@ let
     repo = "{{ repo }}";
     rev = "{{ rev }}";
     sha256 = "{{ sha256 }}";
+    fetchSubmodules = {{ fetch_submodules }};
   };
 in
   import "${src}/overrides.nix" { inherit pkgs; python = pkgs.python3; }

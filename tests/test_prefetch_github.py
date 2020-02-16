@@ -11,7 +11,7 @@ from nix_prefetch_github.error import (
 from nix_prefetch_github.io import cmd
 from nix_prefetch_github.list_remote import ListRemote
 
-requires_nix_build = pytest.mark.requires_nix_build
+from .markers import requires_nix_build
 
 
 @pytest.fixture
@@ -169,7 +169,11 @@ def test_is_sha1_hash_returns_false_for_string_to_short():
 def test_is_to_nix_expression_outputs_valid_nix_expr():
     for prefetch in [False, True]:
         output_dictionary = nix_prefetch_github.nix_prefetch_github(
-            owner="seppeljordan", repo="pypi2nix", prefetch=prefetch, rev="master"
+            owner="seppeljordan",
+            repo="pypi2nix",
+            prefetch=prefetch,
+            rev="master",
+            fetch_submodules=False,
         )
         nix_expr_output = nix_prefetch_github.to_nix_expression(output_dictionary)
 
@@ -231,3 +235,25 @@ def test_that_prefetch_github_understands_full_ref_names(pypi2nix_list_remote):
     prefetch_result = perform_sequence(sequence, effect)
     assert prefetch_result["rev"] == pypi2nix_list_remote.branch("master")
     assert prefetch_result["sha256"] == "TEST_ACTUALHASH"
+
+
+def test_that_prefetch_github_understands_fetch_submodules(pypi2nix_list_remote):
+    sequence = [
+        (
+            nix_prefetch_github.GetListRemote(owner="seppeljordan", repo="pypi2nix"),
+            lambda i: pypi2nix_list_remote,
+        ),
+        (
+            nix_prefetch_github.CalculateSha256Sum(
+                owner="seppeljordan",
+                repo="pypi2nix",
+                revision=pypi2nix_list_remote.branch("master"),
+                fetch_submodules=True,
+            ),
+            lambda i: "TEST_ACTUALHASH",
+        ),
+    ]
+    effect = nix_prefetch_github.prefetch_github(
+        owner="seppeljordan", repo="pypi2nix", prefetch=False, fetch_submodules=True
+    )
+    perform_sequence(sequence, effect)

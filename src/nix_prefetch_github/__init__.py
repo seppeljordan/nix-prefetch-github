@@ -3,7 +3,6 @@ import os
 import re
 from tempfile import TemporaryDirectory
 
-import attr
 import click
 import jinja2
 from attr import attrib, attrs
@@ -38,10 +37,11 @@ with open(os.path.join(HERE, "VERSION")) as f:
 
 @attrs
 class TryPrefetch(object):
-    owner = attr.ib()
-    repo = attr.ib()
-    sha256 = attr.ib()
-    rev = attr.ib()
+    owner = attrib()
+    repo = attrib()
+    sha256 = attrib()
+    rev = attrib()
+    fetch_submodules = attrib(default=False)
 
 
 def to_nix_expression(output_dictionary):
@@ -50,6 +50,7 @@ def to_nix_expression(output_dictionary):
         repo=output_dictionary["repo"],
         rev=output_dictionary["rev"],
         sha256=output_dictionary["sha256"],
+        fetch_submodules="true" if output_dictionary["fetchSubmodules"] else "false",
     )
 
 
@@ -64,6 +65,7 @@ def try_prefetch_performer(dispatcher, try_prefetch):
         repo=try_prefetch.repo,
         rev=try_prefetch.rev,
         sha256=try_prefetch.sha256,
+        fetch_submodules="true" if try_prefetch.fetch_submodules else "false",
     )
     with TemporaryDirectory() as temp_dir_name:
         nix_filename = temp_dir_name + "/prefetch-github.nix"
@@ -78,6 +80,7 @@ class CalculateSha256Sum:
     owner = attrib()
     repo = attrib()
     revision = attrib()
+    fetch_submodules = attrib(default=False)
 
 
 @do
@@ -88,6 +91,7 @@ def calculate_sha256_sum(intent):
             repo=intent.repo,
             sha256=trash_sha256,
             rev=intent.revision,
+            fetch_submodules=intent.fetch_submodules,
         )
     )
     return detect_actual_hash_from_nix_output(nix_output.splitlines())
@@ -139,7 +143,7 @@ def detect_actual_hash_from_nix_output(lines):
 
 
 @do
-def prefetch_github(owner, repo, prefetch=True, rev=None):
+def prefetch_github(owner, repo, prefetch=True, rev=None, fetch_submodules=False):
     if isinstance(rev, str) and is_sha1_hash(rev):
         actual_rev = rev
     else:
@@ -164,7 +168,12 @@ def prefetch_github(owner, repo, prefetch=True, rev=None):
                 return
 
     calculated_hash = yield Effect(
-        CalculateSha256Sum(owner=owner, repo=repo, revision=actual_rev)
+        CalculateSha256Sum(
+            owner=owner,
+            repo=repo,
+            revision=actual_rev,
+            fetch_submodules=fetch_submodules,
+        )
     )
     if not calculated_hash:
         raise click.ClickException(
@@ -180,15 +189,18 @@ def prefetch_github(owner, repo, prefetch=True, rev=None):
     return Effect(Constant({"rev": actual_rev, "sha256": calculated_hash}))
 
 
-def nix_prefetch_github(owner, repo, prefetch=True, rev=None):
+def nix_prefetch_github(owner, repo, prefetch=True, rev=None, fetch_submodules=False):
     @do
     def main_intent():
-        prefetch_results = yield prefetch_github(owner, repo, prefetch, rev=rev)
+        prefetch_results = yield prefetch_github(
+            owner, repo, prefetch, rev=rev, fetch_submodules=fetch_submodules
+        )
         output_dictionary = {
             "owner": owner,
             "repo": repo,
             "rev": prefetch_results["rev"],
             "sha256": prefetch_results["sha256"],
+            "fetchSubmodules": fetch_submodules,
         }
 
         return output_dictionary
@@ -205,10 +217,17 @@ def nix_prefetch_github(owner, repo, prefetch=True, rev=None):
     help="Prefetch given repository into nix store",
 )
 @click.option("--nix", is_flag=True, help="Format output as Nix expression")
+@click.option(
+    "--fetch-submodules",
+    is_flag=True,
+    help="Whether to fetch submodules contained in the target repository",
+)
 @click.option("--rev", default=None, type=str)
 @click.version_option(version=VERSION_STRING, prog_name="nix-prefetch-github")
-def _main(owner, repo, prefetch, nix, rev):
-    output_dictionary = nix_prefetch_github(owner, repo, prefetch, rev)
+def _main(owner, repo, prefetch, nix, rev, fetch_submodules):
+    output_dictionary = nix_prefetch_github(
+        owner, repo, prefetch, rev, fetch_submodules=fetch_submodules
+    )
 
     if nix:
         output_to_user = to_nix_expression(output_dictionary)
