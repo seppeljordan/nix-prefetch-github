@@ -16,4 +16,8 @@ self: super:
       export PYTHONPATH=$PWD/src:$PYTHONPATH
     '';
   });
+
+  "pytest-black" = super."pytest-black".overrideDerivation (old: {
+    buildInputs = old.buildInputs ++ [self."setuptools-scm"];
+  });
 }

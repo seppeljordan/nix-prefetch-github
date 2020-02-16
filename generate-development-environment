@@ -5,4 +5,5 @@ set -e
 pypi2nix \
     -r requirements.txt \
     -s setuptools-scm \
-    -s pytest-runner
+    -s pytest-runner \
+    -E "openssl libffi"
