@@ -128,13 +128,14 @@ def dispatcher():
 
 def detect_actual_hash_from_nix_output(lines):
     def select_hash_from_match(match):
-        return match.group(1) or match.group(2) or match.group(3)
+        return match.group(1) or match.group(2) or match.group(3) or match.group(4)
 
     nix_1_x_regexp = r"output path .* has .* hash '([a-z0-9]{52})' when .*"
     nix_2_0_regexp = r"fixed\-output derivation produced path .* with sha256 hash '([a-z0-9]{52})' instead of the expected hash .*"  # flake8: noqa: E501
     nix_2_2_regexp = r"  got: +sha256:([a-z0-9]{52})"
+    nix_2_4_regexp = r"  got:    (.*)"
     regular_expression = re.compile(
-        "|".join([nix_1_x_regexp, nix_2_0_regexp, nix_2_2_regexp])
+        "|".join([nix_1_x_regexp, nix_2_0_regexp, nix_2_2_regexp, nix_2_4_regexp])
     )
     for line in lines:
         re_match = regular_expression.match(line)
