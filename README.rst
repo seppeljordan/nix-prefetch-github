@@ -33,6 +33,12 @@ python example
 changes
 -------
 
+v2.4
+^^^^
+
+- added ``--fetch-submodules`` flag
+- Fixed incompability with nix 2.4
+
 v2.3.2
 ^^^^^^
 
