@@ -5,7 +5,9 @@ set -x
 
 ./clean
 
-nix-shell --command 'exec ./.test-prefetch'
-nix build
-result/bin/nix-prefetch-github seppeljordan nix-prefetch-github --nix > test.nix
-nix build -f test.nix
+flake8 src tests
+mypy src tests
+pytest
+nix build -f default.nix --no-link
+nix build 
+nix flake check

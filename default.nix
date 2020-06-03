@@ -1,6 +1,5 @@
-let
-  nixpkgs = import <nixpkgs> { };
-  pkgs = (import ./requirements.nix { pkgs = nixpkgs; });
+{ nixpkgs ? import <nixpkgs> { } }:
+let pkgs = (import ./requirements.nix { pkgs = nixpkgs; });
 
 in pkgs.mkDerivation {
   pname = "nix-prefetch-github";
