@@ -8,6 +8,5 @@ VERSION=$(cat src/nix_prefetch_github/VERSION)
 ./test-prefetch
 ./clean
 git tag "v${VERSION}"
-nix-shell --command 'exec python setup.py sdist'
-nix-shell -p python3Packages.twine \
-          --command "twine upload dist/nix-prefetch-github-${VERSION}.tar.gz"
+python setup.py sdist
+twine upload "dist/nix-prefetch-github-${VERSION}.tar.gz"
