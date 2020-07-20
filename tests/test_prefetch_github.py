@@ -11,7 +11,7 @@ from nix_prefetch_github.error import (
 from nix_prefetch_github.io import cmd
 from nix_prefetch_github.list_remote import ListRemote
 
-from .markers import requires_nix_build
+from .markers import network, requires_nix_build
 
 
 @pytest.fixture
@@ -147,6 +147,7 @@ def test_prefetch_aborts_when_rev_is_not_found(pypi2nix_list_remote):
 
 
 @requires_nix_build
+@network
 def test_life_mode():
     results = nix_prefetch_github.nix_prefetch_github(
         owner="seppeljordan", repo="pypi2nix", prefetch=True, rev=None
@@ -166,7 +167,8 @@ def test_is_sha1_hash_returns_false_for_string_to_short():
 
 
 @requires_nix_build
-def test_is_to_nix_expression_outputs_valid_nix_expr():
+@network
+def test_to_nix_expression_outputs_valid_nix_expr():
     for prefetch in [False, True]:
         output_dictionary = nix_prefetch_github.nix_prefetch_github(
             owner="seppeljordan",

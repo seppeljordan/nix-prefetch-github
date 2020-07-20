@@ -4,7 +4,7 @@ from nix_prefetch_github.list_remote import ListRemote, RefKind
 
 
 @pytest.fixture
-def test_output():
+def output():
     return """From git@github.com:seppeljordan/nix-prefetch-github.git
 ref: refs/heads/master	HEAD
 9ce3bcc3610ffeb36f53bc690682f48c8d311764	HEAD
@@ -23,8 +23,8 @@ cffdbcb3351f500b5ca8867a65261443b576b215	refs/tags/v2.0
 
 
 @pytest.fixture
-def remote_list(test_output):
-    return ListRemote.from_git_ls_remote_output(test_output)
+def remote_list(output: str) -> ListRemote:
+    return ListRemote.from_git_ls_remote_output(output)
 
 
 def test_contains_master_branch(remote_list):
@@ -55,10 +55,6 @@ def test_branch_with_slash_is_recognized(remote_list):
     assert (
         remote_list.branch("test/branch") == "1234567789473873487438239389538913598723"
     )
-
-
-def test_kind_from_ref_can_detect_tags():
-    assert ListRemote.kind_from_ref("refs/tags/my_tag") == RefKind.Tag
 
 
 def test_full_ref_name_resolves_refs_heads_master(remote_list):

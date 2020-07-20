@@ -6,7 +6,7 @@ from effect import Effect, sync_perform
 
 from nix_prefetch_github import CalculateSha256Sum, dispatcher
 
-from .markers import requires_nix_build
+from .markers import network, requires_nix_build
 
 
 def performer_test(f):
@@ -25,6 +25,7 @@ def performer_test(f):
 
 
 @requires_nix_build
+@network
 @performer_test
 def test_fetch_submodules_gives_different_hash_than_without_fetching_submodules():
     hash_without_submodules = yield CalculateSha256Sum(
