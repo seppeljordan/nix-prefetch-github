@@ -1,10 +1,4 @@
-let
-  nixpkgs = import <nixpkgs> { };
-  pythonPackages = import ./requirements.nix { pkgs = nixpkgs; };
+{ nixpkgs ? import <nixpkgs> { } }:
+let f = import ./default.nix;
 
-in nixpkgs.mkShell {
-  buildInputs = [ pythonPackages.interpreter ];
-  shellHook = ''
-    export PYTHONPATH=${./src}:$PYTHONPATH
-  '';
-}
+in nixpkgs.python3Packages.callPackage f { }

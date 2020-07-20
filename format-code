@@ -1,5 +1,5 @@
 #!/usr/bin/env sh
 
 nixfmt *.nix
-black .
-isort -rc .
+black nix_prefetch_github tests
+isort -rc nix_prefetch_github tests

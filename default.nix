@@ -1,26 +1,20 @@
-{ nixpkgs ? import <nixpkgs> { } }:
-let pkgs = (import ./requirements.nix { pkgs = nixpkgs; });
-
-in pkgs.mkDerivation {
+{ buildPythonPackage, attrs, effect, click, pytest, pytest-black, pytestcov
+, pytest-isort, twine, black, mypy, nixfmt, jinja2, flake8 }:
+buildPythonPackage {
   pname = "nix-prefetch-github";
   version = "dev";
   src = ./.;
-  propagatedBuildInputs = with pkgs.packages; [ attrs click effect jinja2 ];
-  buildInputs = [ ];
-  checkInputs = with pkgs.packages; [
+  propagatedBuildInputs = [ attrs click effect jinja2 ];
+  buildInputs = [ nixfmt ];
+  checkInputs = [
     flake8
     jinja2
     pytest
     pytest-black
-    pytest-cov
+    pytestcov
     pytest-isort
     twine
-    readme-renderer
     black
     mypy
-    nixpkgs.nixfmt
   ];
-  shellHook = ''
-    export PYTHONPATH=$PWD/src:$PYTHONPATH
-  '';
 }

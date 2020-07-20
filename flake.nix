@@ -8,7 +8,7 @@
       systems = [ "x86_64-linux" "i686-linux" "x86_64-darwin" "aarch64-linux" ];
       lib = nixpkgs.lib;
       forAllSystems = f: lib.genAttrs systems (system: f system);
-      version = builtins.readFile src/nix_prefetch_github/VERSION;
+      version = builtins.readFile nix_prefetch_github/VERSION;
       f = { buildPythonApplication, attrs, click, effect, jinja2 }:
         buildPythonApplication {
           pname = "nix-prefetch-github";
@@ -20,7 +20,7 @@
     in {
       defaultPackage = forAllSystems (system:
         nixpkgs.outputs.legacyPackages."${system}".python3.pkgs.callPackage f
-          { });
+        { });
       function = f;
     };
 }
