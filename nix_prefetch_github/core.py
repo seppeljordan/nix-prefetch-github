@@ -1,3 +1,4 @@
+import json
 import re
 
 from attr import attrib, attrs
@@ -5,6 +6,7 @@ from effect import Constant, Effect
 from effect.do import do
 
 from .error import AbortWithErrorMessage, revision_not_found_errormessage
+from .templates import output_template
 
 
 def is_sha1_hash(text):
@@ -32,6 +34,63 @@ class CalculateSha256Sum:
     repo = attrib()
     revision = attrib()
     fetch_submodules = attrib(default=False)
+
+
+@attrs
+class PrefetchedRepository:
+    owner = attrib()
+    repo = attrib()
+    rev = attrib()
+    sha256 = attrib()
+    fetch_submodules = attrib()
+
+    def to_nix_expression(self):
+        return output_template.render(
+            owner=self.owner,
+            repo=self.repo,
+            rev=self.rev,
+            sha256=self.sha256,
+            fetch_submodules="true" if self.fetch_submodules else "false",
+        )
+
+    def to_json_string(self):
+        return json.dumps(
+            {
+                "owner": self.owner,
+                "repo": self.repo,
+                "rev": self.rev,
+                "sha256": self.sha256,
+                "fetchSubmodules": self.fetch_submodules,
+            },
+            indent=4,
+        )
+
+
+@attrs
+class DetectGithubRepository:
+    directory = attrib()
+    remote = attrib()
+
+
+class GetCurrentDirectory:
+    pass
+
+
+@attrs
+class DetectRevision:
+    directory = attrib()
+
+
+@attrs
+class ExecuteCommand:
+    command = attrib()
+    cwd = attrib(default=None)
+
+
+@attrs
+class GithubRepository:
+    name = attrib()
+    owner = attrib()
 
 
 @do
@@ -80,4 +139,14 @@ def prefetch_github(owner, repo, prefetch=True, rev=None, fetch_submodules=False
         yield Effect(
             TryPrefetch(owner=owner, repo=repo, sha256=calculated_hash, rev=actual_rev)
         )
-    return Effect(Constant({"rev": actual_rev, "sha256": calculated_hash}))
+    return Effect(
+        Constant(
+            PrefetchedRepository(
+                owner=owner,
+                repo=repo,
+                sha256=calculated_hash,
+                rev=actual_rev,
+                fetch_submodules=prefetch,
+            )
+        )
+    )

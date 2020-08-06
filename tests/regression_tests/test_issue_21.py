@@ -43,5 +43,5 @@ def test_prefetch_sensu_go_5_11(sensu_go_ls_remote_output):
         owner="sensu", repo="sensu-go", prefetch=False, rev="5.11.0"
     )
     prefetch_result = perform_sequence(sequence, effect)
-    assert prefetch_result["rev"] == "dd8f160a9033ecb5ad0384baf6a9965fa7bd3c17"
-    assert prefetch_result["sha256"] == "TEST_HASH_SUM"
+    assert prefetch_result.rev == "dd8f160a9033ecb5ad0384baf6a9965fa7bd3c17"
+    assert prefetch_result.sha256 == "TEST_HASH_SUM"

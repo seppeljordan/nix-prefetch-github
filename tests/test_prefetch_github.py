@@ -56,8 +56,8 @@ def test_prefetch_github_actual_prefetch(pypi2nix_list_remote):
         owner="seppeljordan", repo="pypi2nix", prefetch=True
     )
     prefetch_result = perform_sequence(seq, eff)
-    assert prefetch_result["rev"] == pypi2nix_list_remote.branch("master")
-    assert prefetch_result["sha256"] == "TEST_ACTUALHASH"
+    assert prefetch_result.rev == pypi2nix_list_remote.branch("master")
+    assert prefetch_result.sha256 == "TEST_ACTUALHASH"
 
 
 def test_can_prefetch_from_tag_given_as_rev(pypi2nix_list_remote):
@@ -79,8 +79,8 @@ def test_can_prefetch_from_tag_given_as_rev(pypi2nix_list_remote):
         owner="seppeljordan", repo="pypi2nix", prefetch=False, rev="v1.0"
     )
     prefetch_result = perform_sequence(seq, eff)
-    assert prefetch_result["rev"] == pypi2nix_list_remote.tag("v1.0")
-    assert prefetch_result["sha256"] == "TEST_ACTUALHASH"
+    assert prefetch_result.rev == pypi2nix_list_remote.tag("v1.0")
+    assert prefetch_result.sha256 == "TEST_ACTUALHASH"
 
 
 def test_prefetch_github_no_actual_prefetch(pypi2nix_list_remote):
@@ -102,8 +102,8 @@ def test_prefetch_github_no_actual_prefetch(pypi2nix_list_remote):
         owner="seppeljordan", repo="pypi2nix", prefetch=False
     )
     prefetch_result = perform_sequence(seq, eff)
-    assert prefetch_result["rev"] == pypi2nix_list_remote.branch("master")
-    assert prefetch_result["sha256"] == "TEST_ACTUALHASH"
+    assert prefetch_result.rev == pypi2nix_list_remote.branch("master")
+    assert prefetch_result.sha256 == "TEST_ACTUALHASH"
 
 
 def test_prefetch_github_rev_given():
@@ -120,8 +120,8 @@ def test_prefetch_github_rev_given():
         owner="seppeljordan", repo="pypi2nix", prefetch=False, rev=commit_hash
     )
     prefetch_result = perform_sequence(seq, eff)
-    assert prefetch_result["rev"] == commit_hash
-    assert prefetch_result["sha256"] == "TEST_ACTUALHASH"
+    assert prefetch_result.rev == commit_hash
+    assert prefetch_result.sha256 == "TEST_ACTUALHASH"
 
 
 def test_prefetch_aborts_when_rev_is_not_found(pypi2nix_list_remote):
@@ -152,7 +152,7 @@ def test_life_mode():
     results = nix_prefetch_github.nix_prefetch_github(
         owner="seppeljordan", repo="pypi2nix", prefetch=True, rev=None
     )
-    assert "sha256" in results.keys()
+    assert results.sha256
 
 
 def test_is_sha1_hash_detects_actual_hash():
@@ -170,14 +170,14 @@ def test_is_sha1_hash_returns_false_for_string_to_short():
 @network
 def test_to_nix_expression_outputs_valid_nix_expr():
     for prefetch in [False, True]:
-        output_dictionary = nix_prefetch_github.nix_prefetch_github(
+        prefetched_repository = nix_prefetch_github.nix_prefetch_github(
             owner="seppeljordan",
             repo="pypi2nix",
             prefetch=prefetch,
             rev="master",
             fetch_submodules=False,
         )
-        nix_expr_output = nix_prefetch_github.to_nix_expression(output_dictionary)
+        nix_expr_output = prefetched_repository.to_nix_expression()
 
         with TemporaryDirectory() as temp_dir_name:
             nix_filename = temp_dir_name + "/output.nix"
@@ -235,8 +235,8 @@ def test_that_prefetch_github_understands_full_ref_names(pypi2nix_list_remote):
         owner="seppeljordan", repo="pypi2nix", prefetch=False, rev="refs/heads/master"
     )
     prefetch_result = perform_sequence(sequence, effect)
-    assert prefetch_result["rev"] == pypi2nix_list_remote.branch("master")
-    assert prefetch_result["sha256"] == "TEST_ACTUALHASH"
+    assert prefetch_result.rev == pypi2nix_list_remote.branch("master")
+    assert prefetch_result.sha256 == "TEST_ACTUALHASH"
 
 
 def test_that_prefetch_github_understands_fetch_submodules(pypi2nix_list_remote):

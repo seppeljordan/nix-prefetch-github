@@ -46,5 +46,5 @@ def test_prefetch_sensu_go_5_11(nixos_secure_factory_ls_remote_output):
         owner="jraygauthier", repo="nixos-secure-factory", prefetch=False, rev="jrg/mvp"
     )
     prefetch_result = perform_sequence(sequence, effect)
-    assert prefetch_result["rev"] == "ad1a1d1d25870cc70cd7e708a73c874322064d96"
-    assert prefetch_result["sha256"] == "TEST_HASH_SUM"
+    assert prefetch_result.rev == "ad1a1d1d25870cc70cd7e708a73c874322064d96"
+    assert prefetch_result.sha256 == "TEST_HASH_SUM"

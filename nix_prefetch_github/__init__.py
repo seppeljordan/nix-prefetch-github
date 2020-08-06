@@ -1,4 +1,4 @@
-from .__main__ import nix_prefetch_github, to_nix_expression
+from .__main__ import nix_prefetch_github
 from .core import (
     CalculateSha256Sum,
     GetListRemote,

@@ -5,8 +5,8 @@ set -x
 
 ./clean
 
-flake8 src tests
-mypy src tests
+flake8
+mypy nix_prefetch_github tests
 pytest
 nix build -f default.nix --no-link
 nix build 
