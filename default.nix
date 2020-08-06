@@ -17,4 +17,7 @@ buildPythonPackage {
     black
     mypy
   ];
+  checkPhase = ''
+    pytest -m 'not network'
+  '';
 }

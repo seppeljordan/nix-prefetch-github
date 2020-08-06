@@ -66,14 +66,16 @@ class _Builder:
             return
         if line.startswith("ref: "):
             ref = prefix[5:]
-            if branch_name := name_from_ref(ref):
+            branch_name = name_from_ref(ref)
+            if branch_name:
                 self.symrefs[suffix] = branch_name
         else:
             try:
                 kind = kind_from_ref(suffix)
             except ValueError:
                 return
-            if name := name_from_ref(suffix):
+            name = name_from_ref(suffix)
+            if name:
                 if kind == RefKind.Head:
                     self.heads[name] = prefix
                 elif kind == RefKind.Tag:
