@@ -14,3 +14,4 @@ from .prefetch import (
     prefetch_github,
     revision_not_found_errormessage,
 )
+from .prefetch_directory import prefetch_directory

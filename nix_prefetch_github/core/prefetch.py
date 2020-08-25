@@ -67,6 +67,12 @@ def prefetch_github(owner, repo, prefetch=True, rev=None, fetch_submodules=False
         actual_rev = rev
     else:
         list_remote = yield Effect(GetListRemote(owner=owner, repo=repo))
+        if not list_remote:
+            yield Effect(
+                AbortWithErrorMessage(
+                    f"Could not find a public repository named '{repo}' for user '{owner}' at github.com"
+                )
+            )
         if rev is None:
             actual_rev = list_remote.branch(list_remote.symref("HEAD"))
         else:

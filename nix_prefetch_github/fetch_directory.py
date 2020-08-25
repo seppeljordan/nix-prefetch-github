@@ -1,13 +1,7 @@
 import click
-from effect.do import do
 
-from .core import (
-    DetectGithubRepository,
-    DetectRevision,
-    GetCurrentDirectory,
-    prefetch_github,
-)
-from .effect import Effect, perform_effects
+from .core import prefetch_directory
+from .effect import perform_effects
 
 
 @click.command("nix-prefetch-github-directory")
@@ -25,28 +19,15 @@ from .effect import Effect, perform_effects
     help="Whether to fetch submodules contained in the target repository",
 )
 def main(directory, nix, prefetch, fetch_submodules, remote):
-    @do
-    def _main_intent():
-        nonlocal directory
-        if not directory:
-            directory = yield Effect(GetCurrentDirectory())
-        github_repository = yield Effect(
-            DetectGithubRepository(directory=directory, remote=remote)
-        )
-        current_revision = yield Effect(DetectRevision(directory))
-        prefetched_repository = yield prefetch_github(
-            owner=github_repository.owner,
-            repo=github_repository.name,
+    perform_effects(
+        prefetch_directory(
+            directory=directory,
+            remote=remote,
             prefetch=prefetch,
             fetch_submodules=fetch_submodules,
-            rev=current_revision,
+            nix=nix,
         )
-        if nix:
-            print(prefetched_repository.to_nix_expression())
-        else:
-            print(prefetched_repository.to_json_string())
-
-    perform_effects(_main_intent())
+    )
 
 
 if __name__ == "__main__":

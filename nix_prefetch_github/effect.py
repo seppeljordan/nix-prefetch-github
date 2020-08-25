@@ -127,8 +127,14 @@ def get_list_remote_performer(_, intent):
     repository_url = "https://github.com/{owner}/{repo}.git".format(
         owner=intent.owner, repo=intent.repo
     )
-    _, stdout = cmd(["git", "ls-remote", "--symref", repository_url])
-    return ListRemote.from_git_ls_remote_output(stdout)
+    returncode, stdout = cmd(
+        ["git", "ls-remote", "--symref", repository_url],
+        environment_variables={"GIT_ASKPASS": "", "GIT_TERMINAL_PROMPT": "0"},
+    )
+    if not returncode:
+        return ListRemote.from_git_ls_remote_output(stdout)
+    else:
+        return None
 
 
 @do
