@@ -25,6 +25,10 @@ def revision_not_found_errormessage(owner, repo, revision):
     )
 
 
+def github_repository_url(owner, repo):
+    return f"https://github.com/{owner}/{repo}.git"
+
+
 @attrs
 class PrefetchedRepository:
     owner = attrib()

@@ -10,6 +10,7 @@ from .effects import (
 )
 from .prefetch import (
     GithubRepository,
+    github_repository_url,
     is_sha1_hash,
     prefetch_github,
     revision_not_found_errormessage,

@@ -12,7 +12,7 @@ class GetListRemote:
 
 
 @attrs
-class TryPrefetch(object):
+class TryPrefetch:
     owner = attrib()
     repo = attrib()
     sha256 = attrib()

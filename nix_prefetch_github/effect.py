@@ -23,6 +23,7 @@ from .core import (
     GetListRemote,
     GithubRepository,
     TryPrefetch,
+    github_repository_url,
 )
 from .io import cmd
 from .list_remote import ListRemote
@@ -118,15 +119,12 @@ def try_prefetch_performer(dispatcher, try_prefetch):
         nix_filename = temp_dir_name + "/prefetch-github.nix"
         with open(nix_filename, "w") as f:
             f.write(nix_code_calculate_hash)
-        returncode, output = cmd(["nix-build", nix_filename, "--no-out-link"])
-        return returncode, output
+        return cmd(["nix-build", nix_filename, "--no-out-link"])
 
 
 @sync_performer
 def get_list_remote_performer(_, intent):
-    repository_url = "https://github.com/{owner}/{repo}.git".format(
-        owner=intent.owner, repo=intent.repo
-    )
+    repository_url = github_repository_url(intent.owner, intent.repo)
     returncode, stdout = cmd(
         ["git", "ls-remote", "--symref", repository_url],
         environment_variables={"GIT_ASKPASS": "", "GIT_TERMINAL_PROMPT": "0"},
@@ -156,7 +154,7 @@ def detect_actual_hash_from_nix_output(lines):
         return match.group(1) or match.group(2) or match.group(3) or match.group(4)
 
     nix_1_x_regexp = r"output path .* has .* hash '([a-z0-9]{52})' when .*"
-    nix_2_0_regexp = r"fixed\-output derivation produced path .* with sha256 hash '([a-z0-9]{52})' instead of the expected hash .*"  # flake8: noqa: E501
+    nix_2_0_regexp = r"fixed\-output derivation produced path .* with sha256 hash '([a-z0-9]{52})' instead of the expected hash .*"
     nix_2_2_regexp = r"  got: +sha256:([a-z0-9]{52})"
     nix_2_4_regexp = r"  got:    (.*)"
     regular_expression = re.compile(
