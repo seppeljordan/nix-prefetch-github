@@ -10,7 +10,7 @@ from .core import (
 from .effect import Effect, perform_effects
 
 
-@click.command("nix-prefetch-github-local")
+@click.command("nix-prefetch-github-directory")
 @click.option("--directory", default=None)
 @click.option("--nix", is_flag=True, help="Format output as Nix expression")
 @click.option(
