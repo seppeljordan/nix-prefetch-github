@@ -4,7 +4,7 @@ import pytest
 from effect.testing import perform_sequence
 
 import nix_prefetch_github
-from nix_prefetch_github.error import (
+from nix_prefetch_github.core import (
     AbortWithErrorMessage,
     revision_not_found_errormessage,
 )

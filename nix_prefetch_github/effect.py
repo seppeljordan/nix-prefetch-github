@@ -1,5 +1,6 @@
 import os
 import re
+import sys
 from tempfile import TemporaryDirectory
 
 import effect.io
@@ -23,7 +24,6 @@ from .core import (
     GithubRepository,
     TryPrefetch,
 )
-from .error import abort_with_error_message_performer
 from .io import cmd
 from .list_remote import ListRemote
 from .templates import output_template
@@ -169,3 +169,9 @@ def execute_command_performer(_, intent):
 
 def perform_effects(effects):
     return sync_perform(dispatcher(), effects)
+
+
+@sync_performer
+def abort_with_error_message_performer(_, intent):
+    print(intent.message, file=sys.stderr)
+    exit(1)

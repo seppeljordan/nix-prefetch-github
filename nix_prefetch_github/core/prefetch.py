@@ -5,35 +5,24 @@ from attr import attrib, attrs
 from effect import Constant, Effect
 from effect.do import do
 
-from .error import AbortWithErrorMessage, revision_not_found_errormessage
-from .templates import output_template
+from nix_prefetch_github.templates import output_template
+
+from .effects import (
+    AbortWithErrorMessage,
+    CalculateSha256Sum,
+    GetListRemote,
+    TryPrefetch,
+)
 
 
 def is_sha1_hash(text):
     return re.match(r"^[0-9a-f]{40}$", text)
 
 
-@attrs
-class GetListRemote:
-    owner = attrib()
-    repo = attrib()
-
-
-@attrs
-class TryPrefetch(object):
-    owner = attrib()
-    repo = attrib()
-    sha256 = attrib()
-    rev = attrib()
-    fetch_submodules = attrib(default=False)
-
-
-@attrs
-class CalculateSha256Sum:
-    owner = attrib()
-    repo = attrib()
-    revision = attrib()
-    fetch_submodules = attrib(default=False)
+def revision_not_found_errormessage(owner, repo, revision):
+    return "Revision {revision} not found for repository {owner}/{repo}".format(
+        revision=revision, owner=owner, repo=repo
+    )
 
 
 @attrs
@@ -64,27 +53,6 @@ class PrefetchedRepository:
             },
             indent=4,
         )
-
-
-@attrs
-class DetectGithubRepository:
-    directory = attrib()
-    remote = attrib()
-
-
-class GetCurrentDirectory:
-    pass
-
-
-@attrs
-class DetectRevision:
-    directory = attrib()
-
-
-@attrs
-class ExecuteCommand:
-    command = attrib()
-    cwd = attrib(default=None)
 
 
 @attrs
