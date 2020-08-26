@@ -7,11 +7,14 @@
   };
 
   outputs = { self, nixpkgs, flake-utils }:
-    flake-utils.lib.eachDefaultSystem (system:
-      let
-        f = import ./default.nix;
-        pkgs = nixpkgs.outputs.legacyPackages."${system}";
-      in {
-        defaultPackage = pkgs.python3.pkgs.callPackage f { };
-      });
+    let
+      f = import ./default.nix;
+      systemDependent = flake-utils.lib.eachDefaultSystem (system:
+        let pkgs = nixpkgs.outputs.legacyPackages."${system}";
+        in { defaultPackage = pkgs.python3.pkgs.callPackage f { }; });
+      overlay = final: prev: {
+        nix-prefetch-github = final.python3.pkgs.callPackage f { };
+      };
+      systemIndependent = { inherit overlay; };
+    in systemDependent // systemIndependent;
 }
