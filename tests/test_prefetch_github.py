@@ -1,3 +1,4 @@
+import subprocess
 from tempfile import TemporaryDirectory
 
 import pytest
@@ -8,7 +9,6 @@ from nix_prefetch_github.core import (
     AbortWithErrorMessage,
     revision_not_found_errormessage,
 )
-from nix_prefetch_github.effect import cmd
 from nix_prefetch_github.list_remote import ListRemote
 
 from .markers import network, requires_nix_build
@@ -183,8 +183,10 @@ def test_to_nix_expression_outputs_valid_nix_expr():
             nix_filename = temp_dir_name + "/output.nix"
             with open(nix_filename, "w") as f:
                 f.write(nix_expr_output)
-            returncode, output = cmd(["nix-build", nix_filename, "--no-out-link"])
-            assert returncode == 0
+            completed_process = subprocess.run(
+                ["nix-build", nix_filename, "--no-out-link"]
+            )
+            assert completed_process.returncode == 0
 
 
 @pytest.mark.parametrize(

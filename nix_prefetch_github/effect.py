@@ -4,6 +4,7 @@ import subprocess
 import sys
 from copy import copy
 from tempfile import TemporaryDirectory
+from typing import Dict, Optional
 
 import effect.io
 from attr import attrib, attrs
@@ -56,8 +57,6 @@ def make_effect_dispatcher(mapping):
 def dispatcher():
     prefetch_dispatcher = TypeDispatcher(
         {
-            TryPrefetch: try_prefetch_performer,
-            GetListRemote: get_list_remote_performer,
             AbortWithErrorMessage: abort_with_error_message_performer,
             ExecuteCommand: execute_command_performer,
             GetCurrentDirectory: get_current_directory_performer,
@@ -66,6 +65,8 @@ def dispatcher():
     composed_performers = make_effect_dispatcher(
         {
             CalculateSha256Sum: calculate_sha256_sum,
+            GetListRemote: get_list_remote_performer,
+            TryPrefetch: try_prefetch_performer,
             DetectGithubRepository: detect_github_repository,
             DetectRevision: detect_revision,
         }
@@ -107,8 +108,8 @@ def get_current_directory_performer(_, _intent):
     return os.getcwd()
 
 
-@sync_performer
-def try_prefetch_performer(dispatcher, try_prefetch):
+@do
+def try_prefetch_performer(try_prefetch):
     nix_code_calculate_hash = output_template.render(
         owner=try_prefetch.owner,
         repo=try_prefetch.repo,
@@ -120,15 +121,20 @@ def try_prefetch_performer(dispatcher, try_prefetch):
         nix_filename = temp_dir_name + "/prefetch-github.nix"
         with open(nix_filename, "w") as f:
             f.write(nix_code_calculate_hash)
-        return cmd(["nix-build", nix_filename, "--no-out-link"])
+        result = yield Effect(
+            ExecuteCommand(command=(["nix-build", nix_filename, "--no-out-link"]))
+        )
+        return result
 
 
-@sync_performer
-def get_list_remote_performer(_, intent):
+@do
+def get_list_remote_performer(intent):
     repository_url = github_repository_url(intent.owner, intent.repo)
-    returncode, stdout = cmd(
-        ["git", "ls-remote", "--symref", repository_url],
-        environment_variables={"GIT_ASKPASS": "", "GIT_TERMINAL_PROMPT": "0"},
+    returncode, stdout = yield Effect(
+        ExecuteCommand(
+            command=["git", "ls-remote", "--symref", repository_url],
+            environment_variables={"GIT_ASKPASS": "", "GIT_TERMINAL_PROMPT": "0"},
+        )
     )
     if not returncode:
         return ListRemote.from_git_ls_remote_output(stdout)
@@ -169,7 +175,18 @@ def detect_actual_hash_from_nix_output(lines):
 
 @sync_performer
 def execute_command_performer(_, intent):
-    return cmd(intent.command, cwd=intent.cwd)
+    current_environment = copy(os.environ)
+    target_environment = dict(current_environment, **intent.environment_variables)
+    stderr = subprocess.STDOUT if intent.merge_stderr else subprocess.PIPE
+    process_return = subprocess.run(
+        intent.command,
+        stdout=subprocess.PIPE,
+        stderr=stderr,
+        universal_newlines=True,
+        cwd=intent.cwd,
+        env=target_environment,
+    )
+    return process_return.returncode, process_return.stdout
 
 
 def perform_effects(effects):
@@ -186,18 +203,5 @@ def abort_with_error_message_performer(_, intent):
 class ExecuteCommand:
     command = attrib()
     cwd = attrib(default=None)
-
-
-def cmd(command, merge_stderr=True, cwd=None, environment_variables={}):
-    current_environment = copy(os.environ)
-    target_environment = dict(current_environment, **environment_variables)
-    stderr = subprocess.STDOUT if merge_stderr else subprocess.PIPE
-    process_return = subprocess.run(
-        command,
-        stdout=subprocess.PIPE,
-        stderr=stderr,
-        universal_newlines=True,
-        cwd=cwd,
-        env=target_environment,
-    )
-    return process_return.returncode, process_return.stdout
+    merge_stderr = attrib(default=True)
+    environment_variables: Dict[str, Optional[str]] = attrib(default={})
