@@ -8,7 +8,7 @@ from nix_prefetch_github.core import (
     AbortWithErrorMessage,
     revision_not_found_errormessage,
 )
-from nix_prefetch_github.io import cmd
+from nix_prefetch_github.effect import cmd
 from nix_prefetch_github.list_remote import ListRemote
 
 from .markers import network, requires_nix_build

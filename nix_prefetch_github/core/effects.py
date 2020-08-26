@@ -44,11 +44,5 @@ class DetectRevision:
 
 
 @attrs
-class ExecuteCommand:
-    command = attrib()
-    cwd = attrib(default=None)
-
-
-@attrs
 class AbortWithErrorMessage:
     message = attrib()

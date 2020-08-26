@@ -3,7 +3,6 @@ from .effects import (
     CalculateSha256Sum,
     DetectGithubRepository,
     DetectRevision,
-    ExecuteCommand,
     GetCurrentDirectory,
     GetListRemote,
     TryPrefetch,

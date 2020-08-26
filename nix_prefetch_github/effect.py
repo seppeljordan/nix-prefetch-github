@@ -1,9 +1,12 @@
 import os
 import re
+import subprocess
 import sys
+from copy import copy
 from tempfile import TemporaryDirectory
 
 import effect.io
+from attr import attrib, attrs
 from effect import (
     ComposedDispatcher,
     Effect,
@@ -18,14 +21,12 @@ from .core import (
     CalculateSha256Sum,
     DetectGithubRepository,
     DetectRevision,
-    ExecuteCommand,
     GetCurrentDirectory,
     GetListRemote,
     GithubRepository,
     TryPrefetch,
     github_repository_url,
 )
-from .io import cmd
 from .list_remote import ListRemote
 from .templates import output_template
 
@@ -179,3 +180,24 @@ def perform_effects(effects):
 def abort_with_error_message_performer(_, intent):
     print(intent.message, file=sys.stderr)
     exit(1)
+
+
+@attrs
+class ExecuteCommand:
+    command = attrib()
+    cwd = attrib(default=None)
+
+
+def cmd(command, merge_stderr=True, cwd=None, environment_variables={}):
+    current_environment = copy(os.environ)
+    target_environment = dict(current_environment, **environment_variables)
+    stderr = subprocess.STDOUT if merge_stderr else subprocess.PIPE
+    process_return = subprocess.run(
+        command,
+        stdout=subprocess.PIPE,
+        stderr=stderr,
+        universal_newlines=True,
+        cwd=cwd,
+        env=target_environment,
+    )
+    return process_return.returncode, process_return.stdout
