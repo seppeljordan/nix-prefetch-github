@@ -1,6 +1,6 @@
-{ buildPythonPackage, attrs, effect, click, pytest, pytest-black, pytestcov
+{ buildPythonApplication, attrs, effect, click, pytest, pytest-black, pytestcov
 , pytest-isort, twine, black, mypy, nixfmt, jinja2, flake8 }:
-buildPythonPackage {
+buildPythonApplication {
   pname = "nix-prefetch-github";
   version = "dev";
   src = ./.;
