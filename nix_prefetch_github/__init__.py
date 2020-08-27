@@ -6,5 +6,5 @@ from .core import (
     is_sha1_hash,
     prefetch_github,
 )
+from .core.list_remote import ListRemote
 from .effect import detect_actual_hash_from_nix_output, dispatcher
-from .list_remote import ListRemote

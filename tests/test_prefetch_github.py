@@ -5,11 +5,11 @@ import pytest
 from effect.testing import perform_sequence
 
 import nix_prefetch_github
+from nix_prefetch_github import ListRemote
 from nix_prefetch_github.core import (
     AbortWithErrorMessage,
     revision_not_found_errormessage,
 )
-from nix_prefetch_github.list_remote import ListRemote
 
 from .markers import network, requires_nix_build
 

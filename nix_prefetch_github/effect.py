@@ -28,7 +28,7 @@ from .core import (
     TryPrefetch,
     github_repository_url,
 )
-from .list_remote import ListRemote
+from .core.list_remote import ListRemote
 from .templates import output_template
 
 trash_sha256 = "1y4ly7lgqm03wap4mh01yzcmvryp29w739fy07zzvz15h2z9x3dv"

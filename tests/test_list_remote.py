@@ -1,6 +1,6 @@
 import pytest
 
-from nix_prefetch_github.list_remote import ListRemote
+from nix_prefetch_github import ListRemote
 
 
 @pytest.fixture
