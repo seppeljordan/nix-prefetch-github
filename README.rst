@@ -30,8 +30,50 @@ python example
     {'owner': 'seppeljordan', 'repo': 'nix-prefetch-github', 'rev': '603f42203db128a7aaa091cf34d406bf7a80e9f0', 'sha256': '1wrvvy85x7yqj4rkgpj93cdnhalyhzpr8pmyca38v59lm5ndh2w4'}
 
 
+available commands
+------------------
+
+nix-prefetch-github
+^^^^^^^^^^^^^^^^^^^
+
+This command downloads the code from a github repository and puts it
+into the local nix store.  It also prints the command line arguments
+for downloading to the standard output.
+::
+
+   $ nix-prefetch-github --help
+   Usage: nix-prefetch-github [OPTIONS] OWNER REPO
+
+   Options:
+     --prefetch / --no-prefetch  Prefetch given repository into nix store
+     --nix                       Format output as Nix expression
+     --fetch-submodules          Whether to fetch submodules contained in the
+				 target repository
+
+     --rev TEXT
+     --version                   Show the version and exit.
+     --help                      Show this message and exit.
+
+
+nix-prefetch-github-directory
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+This command examins the current working directory and tries to figure
+out if it is part of a git repository linked to github.  If this was
+successful the program prefetches the currently checked out commit
+from the ``origin`` remote repository similar to the command
+``nix-prefetch-github``.
+
+
 changes
 -------
+
+v3.0
+^^^^
+
+- major changes to the internal module structure
+- introduction of the ``nix-prefetch-github-directory`` command
+- code repository now functions as a nix flake
 
 v2.4
 ^^^^

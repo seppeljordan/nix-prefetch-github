@@ -2,7 +2,7 @@
 
 set -e
 
-VERSION=$(cat src/nix_prefetch_github/VERSION)
+VERSION=$(cat nix_prefetch_github/VERSION)
 
 ./clean
 ./test-prefetch
@@ -10,3 +10,4 @@ VERSION=$(cat src/nix_prefetch_github/VERSION)
 git tag "v${VERSION}"
 python setup.py sdist
 twine upload "dist/nix-prefetch-github-${VERSION}.tar.gz"
+git push "v${VERSION}"
