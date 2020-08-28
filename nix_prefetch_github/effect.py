@@ -20,11 +20,13 @@ from effect.do import do
 from .core import (
     AbortWithErrorMessage,
     CalculateSha256Sum,
+    CheckGitRepoIsDirty,
     DetectGithubRepository,
     DetectRevision,
     GetCurrentDirectory,
     GetListRemote,
     GithubRepository,
+    ShowWarning,
     TryPrefetch,
     github_repository_url,
 )
@@ -60,6 +62,7 @@ def dispatcher():
             AbortWithErrorMessage: abort_with_error_message_performer,
             ExecuteCommand: execute_command_performer,
             GetCurrentDirectory: get_current_directory_performer,
+            ShowWarning: show_warning_performer,
         }
     )
     composed_performers = make_effect_dispatcher(
@@ -69,6 +72,7 @@ def dispatcher():
             TryPrefetch: try_prefetch_performer,
             DetectGithubRepository: detect_github_repository,
             DetectRevision: detect_revision,
+            CheckGitRepoIsDirty: check_git_repo_is_dirty_performer,
         }
     )
     return ComposedDispatcher(
@@ -197,6 +201,25 @@ def perform_effects(effects):
 def abort_with_error_message_performer(_, intent):
     print(intent.message, file=sys.stderr)
     exit(1)
+
+
+@sync_performer
+def show_warning_performer(_, intent):
+    print(f"WARNING: {intent.message}", file=sys.stderr)
+
+
+@do
+def check_git_repo_is_dirty_performer(intent):
+    returncode, _ = yield Effect(
+        ExecuteCommand(
+            command=["git", "diff", "HEAD", "--quiet"], cwd=intent.directory,
+        )
+    )
+    if returncode == 128:
+        raise Exception(
+            f"Repository at {intent.directory} does not contain any commits"
+        )
+    return returncode != 0
 
 
 @attrs

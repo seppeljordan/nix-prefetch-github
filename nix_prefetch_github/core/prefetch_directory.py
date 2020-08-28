@@ -1,7 +1,13 @@
 from effect import Effect
 from effect.do import do
 
-from .effects import DetectGithubRepository, DetectRevision, GetCurrentDirectory
+from .effects import (
+    CheckGitRepoIsDirty,
+    DetectGithubRepository,
+    DetectRevision,
+    GetCurrentDirectory,
+    ShowWarning,
+)
 from .prefetch import prefetch_github
 
 
@@ -11,6 +17,9 @@ def prefetch_directory(
 ):
     if not directory:
         directory = yield Effect(GetCurrentDirectory())
+    is_repo_dirty = yield Effect(CheckGitRepoIsDirty(directory=directory))
+    if is_repo_dirty:
+        yield Effect(ShowWarning(message=f"Repository at {directory} dirty"))
     github_repository = yield Effect(
         DetectGithubRepository(directory=directory, remote=remote)
     )

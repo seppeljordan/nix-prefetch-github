@@ -1,6 +1,14 @@
-from effect import Effect
+import subprocess
 
-from nix_prefetch_github.core import GetListRemote, TryPrefetch
+from effect import Effect
+from pytest import fixture, raises
+
+from nix_prefetch_github.core import (
+    CheckGitRepoIsDirty,
+    GetListRemote,
+    ShowWarning,
+    TryPrefetch,
+)
 from nix_prefetch_github.effect import perform_effects
 
 from .markers import network, requires_nix_build
@@ -40,7 +48,7 @@ def test_try_prefetch_returns_errorcode_when_fetching_with_invalid_sha256():
 
 @network
 @requires_nix_build
-def test_try_prefetch():
+def test_try_prefetch_actually_fetches_proper_commits_with_correct_hash():
     returncode, _ = perform_effects(
         Effect(
             TryPrefetch(
@@ -52,3 +60,42 @@ def test_try_prefetch():
         )
     )
     assert not returncode
+
+
+def test_show_warning(capsys):
+    perform_effects(Effect(ShowWarning(message="test message")))
+    captured = capsys.readouterr()
+    assert "WARNING" in captured.err
+    assert "test message" in captured.err
+
+
+def test_check_git_repo_is_dirty_raises_on_empty_repositories(empty_git_repo):
+    with raises(Exception):
+        perform_effects(Effect(CheckGitRepoIsDirty(directory=empty_git_repo)))
+
+
+def test_check_git_repo_is_dirty_works_on_clean_repos(empty_git_repo):
+    subprocess.run(["touch", "test.txt"], cwd=empty_git_repo)
+    subprocess.run(["git", "add", "test.txt"], cwd=empty_git_repo)
+    subprocess.run(["git", "commit", "-a", "-m" "test commit"], cwd=empty_git_repo)
+    is_dirty = perform_effects(Effect(CheckGitRepoIsDirty(directory=empty_git_repo)))
+    assert not is_dirty
+
+
+def test_check_git_repo_is_dirty_works_on_dirty_repos(empty_git_repo):
+    subprocess.run(["touch", "test.txt"], cwd=empty_git_repo)
+    subprocess.run(["git", "add", "test.txt"], cwd=empty_git_repo)
+    subprocess.run(["git", "commit", "-a", "-m" "test commit"], cwd=empty_git_repo)
+    subprocess.run(["touch", "test2.txt"], cwd=empty_git_repo)
+    subprocess.run(["git", "add", "test2.txt"], cwd=empty_git_repo)
+    is_dirty = perform_effects(Effect(CheckGitRepoIsDirty(directory=empty_git_repo)))
+    assert is_dirty
+
+
+@fixture
+def empty_git_repo(tmpdir):
+    subprocess.run(["git", "init"], cwd=tmpdir)
+    subprocess.run(["git", "config", "user.name", "test user"], cwd=tmpdir)
+    subprocess.run(["git", "config", "user.email", "test@email.test"], cwd=tmpdir)
+
+    return tmpdir

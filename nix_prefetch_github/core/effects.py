@@ -12,6 +12,16 @@ class GetListRemote:
 
 
 @attrs
+class CheckGitRepoIsDirty:
+    directory = attrib()
+
+
+@attrs
+class ShowWarning:
+    message = attrib()
+
+
+@attrs
 class TryPrefetch:
     owner = attrib()
     repo = attrib()

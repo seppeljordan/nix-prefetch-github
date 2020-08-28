@@ -1,10 +1,12 @@
 from .effects import (
     AbortWithErrorMessage,
     CalculateSha256Sum,
+    CheckGitRepoIsDirty,
     DetectGithubRepository,
     DetectRevision,
     GetCurrentDirectory,
     GetListRemote,
+    ShowWarning,
     TryPrefetch,
 )
 from .prefetch import (
