@@ -4,6 +4,10 @@ nix-prefetch-github
 This module implements a python function and a command line tool to
 help you fetch sources from github when using ``fetchFromGitHub``.
 
+This program can be distributed under the conditions of the GNU Public
+License Version 3.  Check out ``LICENSE.txt`` to read the license
+text.
+
 command line example
 --------------------
 
