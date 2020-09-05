@@ -1,5 +1,4 @@
 import json
-import re
 
 from attr import attrib, attrs
 from effect import Constant, Effect
@@ -13,34 +12,24 @@ from .effects import (
     GetListRemote,
     TryPrefetch,
 )
+from .hash import is_sha1_hash
 
 
-def is_sha1_hash(text):
-    return re.match(r"^[0-9a-f]{40}$", text)
-
-
-def revision_not_found_errormessage(owner, repo, revision):
-    return "Revision {revision} not found for repository {owner}/{repo}".format(
-        revision=revision, owner=owner, repo=repo
-    )
-
-
-def github_repository_url(owner, repo):
-    return f"https://github.com/{owner}/{repo}.git"
+def revision_not_found_errormessage(repository, revision):
+    return f"Revision {revision} not found for repository {repository.owner}/{repository.name}"
 
 
 @attrs
 class PrefetchedRepository:
-    owner = attrib()
-    repo = attrib()
+    repository = attrib()
     rev = attrib()
     sha256 = attrib()
     fetch_submodules = attrib()
 
     def to_nix_expression(self):
         return output_template.render(
-            owner=self.owner,
-            repo=self.repo,
+            owner=self.repository.owner,
+            repo=self.repository.name,
             rev=self.rev,
             sha256=self.sha256,
             fetch_submodules="true" if self.fetch_submodules else "false",
@@ -49,8 +38,8 @@ class PrefetchedRepository:
     def to_json_string(self):
         return json.dumps(
             {
-                "owner": self.owner,
-                "repo": self.repo,
+                "owner": self.repository.owner,
+                "repo": self.repository.name,
                 "rev": self.rev,
                 "sha256": self.sha256,
                 "fetchSubmodules": self.fetch_submodules,
@@ -59,22 +48,16 @@ class PrefetchedRepository:
         )
 
 
-@attrs
-class GithubRepository:
-    name = attrib()
-    owner = attrib()
-
-
 @do
-def prefetch_github(owner, repo, prefetch=True, rev=None, fetch_submodules=True):
+def prefetch_github(repository, prefetch=True, rev=None, fetch_submodules=True):
     if isinstance(rev, str) and is_sha1_hash(rev):
         actual_rev = rev
     else:
-        list_remote = yield Effect(GetListRemote(owner=owner, repo=repo))
+        list_remote = yield Effect(GetListRemote(repository=repository))
         if not list_remote:
             yield Effect(
                 AbortWithErrorMessage(
-                    f"Could not find a public repository named '{repo}' for user '{owner}' at github.com"
+                    f"Could not find a public repository named '{repository.name}' for user '{repository.owner}' at github.com"
                 )
             )
         if rev is None:
@@ -90,7 +73,7 @@ def prefetch_github(owner, repo, prefetch=True, rev=None, fetch_submodules=True)
                 yield Effect(
                     AbortWithErrorMessage(
                         message=revision_not_found_errormessage(
-                            owner=owner, repo=repo, revision=rev
+                            repository=repository, revision=rev
                         )
                     )
                 )
@@ -98,8 +81,7 @@ def prefetch_github(owner, repo, prefetch=True, rev=None, fetch_submodules=True)
 
     calculated_hash = yield Effect(
         CalculateSha256Sum(
-            owner=owner,
-            repo=repo,
+            repository=repository,
             revision=actual_rev,
             fetch_submodules=fetch_submodules,
         )
@@ -109,15 +91,14 @@ def prefetch_github(owner, repo, prefetch=True, rev=None, fetch_submodules=True)
             AbortWithErrorMessage(
                 message=(
                     "Internal Error: Calculate hash value for sources "
-                    "in github repo {owner}/{repo}."
-                ).format(owner=owner, repo=repo)
+                    f"in github repo {repository.owner}/{repository.name}."
+                )
             )
         )
     if prefetch:
         yield Effect(
             TryPrefetch(
-                owner=owner,
-                repo=repo,
+                repository=repository,
                 sha256=calculated_hash,
                 rev=actual_rev,
                 fetch_submodules=fetch_submodules,
@@ -126,8 +107,7 @@ def prefetch_github(owner, repo, prefetch=True, rev=None, fetch_submodules=True)
     return Effect(
         Constant(
             PrefetchedRepository(
-                owner=owner,
-                repo=repo,
+                repository=repository,
                 sha256=calculated_hash,
                 rev=actual_rev,
                 fetch_submodules=prefetch,

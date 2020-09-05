@@ -1,12 +1,17 @@
 import pytest
 
-from nix_prefetch_github.core import revision_not_found_errormessage
+from nix_prefetch_github.core import GithubRepository, revision_not_found_errormessage
 
 
 @pytest.fixture
-def revision_not_found_message():
+def repository():
+    return GithubRepository(owner="test_owner", name="test_repo")
+
+
+@pytest.fixture
+def revision_not_found_message(repository):
     return revision_not_found_errormessage(
-        owner="test_owner", repo="test_repo", revision="test_revision"
+        repository=repository, revision="test_revision"
     )
 
 

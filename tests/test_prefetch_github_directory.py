@@ -19,8 +19,7 @@ def test_prefetch_directory_with_clean_working_directory():
     current_revision = "0e416e798d49a075a9747ad868c2832e03b3b2e5"
     sha256_sum = "123"
     expected = PrefetchedRepository(
-        owner=github_repo.owner,
-        repo=github_repo.name,
+        repository=github_repo,
         rev=current_revision,
         sha256=sha256_sum,
         fetch_submodules=True,
@@ -34,8 +33,7 @@ def test_prefetch_directory_with_clean_working_directory():
         (DetectRevision(directory=repo_directory), lambda _: current_revision),
         (
             CalculateSha256Sum(
-                owner=github_repo.owner,
-                repo=github_repo.name,
+                repository=github_repo,
                 revision=current_revision,
                 fetch_submodules=True,
             ),
@@ -43,8 +41,7 @@ def test_prefetch_directory_with_clean_working_directory():
         ),
         (
             TryPrefetch(
-                owner=github_repo.owner,
-                repo=github_repo.name,
+                repository=github_repo,
                 rev=current_revision,
                 fetch_submodules=True,
                 sha256=sha256_sum,

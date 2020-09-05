@@ -25,7 +25,6 @@ def main(directory, nix, prefetch, fetch_submodules, remote):
             remote=remote,
             prefetch=prefetch,
             fetch_submodules=fetch_submodules,
-            nix=nix,
         )
     )
     if nix:

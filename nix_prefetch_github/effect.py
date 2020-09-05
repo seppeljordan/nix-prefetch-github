@@ -28,7 +28,6 @@ from .core import (
     GithubRepository,
     ShowWarning,
     TryPrefetch,
-    github_repository_url,
 )
 from .core.list_remote import ListRemote
 from .templates import output_template
@@ -115,8 +114,8 @@ def get_current_directory_performer(_, _intent):
 @do
 def try_prefetch_performer(try_prefetch):
     nix_code_calculate_hash = output_template.render(
-        owner=try_prefetch.owner,
-        repo=try_prefetch.repo,
+        owner=try_prefetch.repository.owner,
+        repo=try_prefetch.repository.name,
         rev=try_prefetch.rev,
         sha256=try_prefetch.sha256,
         fetch_submodules="true" if try_prefetch.fetch_submodules else "false",
@@ -133,7 +132,7 @@ def try_prefetch_performer(try_prefetch):
 
 @do
 def get_list_remote_performer(intent):
-    repository_url = github_repository_url(intent.owner, intent.repo)
+    repository_url = intent.repository.url()
     returncode, stdout = yield Effect(
         ExecuteCommand(
             command=["git", "ls-remote", "--symref", repository_url],
@@ -150,8 +149,7 @@ def get_list_remote_performer(intent):
 def calculate_sha256_sum(intent):
     return_code, nix_output = yield Effect(
         TryPrefetch(
-            owner=intent.owner,
-            repo=intent.repo,
+            repository=intent.repository,
             sha256=trash_sha256,
             rev=intent.revision,
             fetch_submodules=intent.fetch_submodules,

@@ -8,6 +8,7 @@ import nix_prefetch_github
 from nix_prefetch_github import ListRemote
 from nix_prefetch_github.core import (
     AbortWithErrorMessage,
+    GithubRepository,
     revision_not_found_errormessage,
 )
 
@@ -29,15 +30,15 @@ def pypi2nix_list_remote():
 
 
 def test_prefetch_github_actual_prefetch(pypi2nix_list_remote):
+    repository = GithubRepository(owner="seppeljordan", name="pypi2nix",)
     seq = [
         (
-            nix_prefetch_github.GetListRemote(owner="seppeljordan", repo="pypi2nix"),
+            nix_prefetch_github.GetListRemote(repository=repository),
             lambda i: pypi2nix_list_remote,
         ),
         (
             nix_prefetch_github.CalculateSha256Sum(
-                owner="seppeljordan",
-                repo="pypi2nix",
+                repository=repository,
                 revision=pypi2nix_list_remote.branch("master"),
                 fetch_submodules=True,
             ),
@@ -45,8 +46,7 @@ def test_prefetch_github_actual_prefetch(pypi2nix_list_remote):
         ),
         (
             nix_prefetch_github.TryPrefetch(
-                owner="seppeljordan",
-                repo="pypi2nix",
+                repository=repository,
                 rev=pypi2nix_list_remote.branch("master"),
                 sha256="TEST_ACTUALHASH",
                 fetch_submodules=True,
@@ -54,24 +54,22 @@ def test_prefetch_github_actual_prefetch(pypi2nix_list_remote):
             lambda i: None,
         ),
     ]
-    eff = nix_prefetch_github.prefetch_github(
-        owner="seppeljordan", repo="pypi2nix", prefetch=True
-    )
+    eff = nix_prefetch_github.prefetch_github(repository=repository, prefetch=True)
     prefetch_result = perform_sequence(seq, eff)
     assert prefetch_result.rev == pypi2nix_list_remote.branch("master")
     assert prefetch_result.sha256 == "TEST_ACTUALHASH"
 
 
 def test_can_prefetch_from_tag_given_as_rev(pypi2nix_list_remote):
+    repository = GithubRepository(owner="seppeljordan", name="pypi2nix")
     seq = [
         (
-            nix_prefetch_github.GetListRemote(owner="seppeljordan", repo="pypi2nix"),
+            nix_prefetch_github.GetListRemote(repository=repository),
             lambda i: pypi2nix_list_remote,
         ),
         (
             nix_prefetch_github.CalculateSha256Sum(
-                owner="seppeljordan",
-                repo="pypi2nix",
+                repository=repository,
                 revision=pypi2nix_list_remote.tag("v1.0"),
                 fetch_submodules=True,
             ),
@@ -79,7 +77,7 @@ def test_can_prefetch_from_tag_given_as_rev(pypi2nix_list_remote):
         ),
     ]
     eff = nix_prefetch_github.prefetch_github(
-        owner="seppeljordan", repo="pypi2nix", prefetch=False, rev="v1.0"
+        repository=repository, prefetch=False, rev="v1.0"
     )
     prefetch_result = perform_sequence(seq, eff)
     assert prefetch_result.rev == pypi2nix_list_remote.tag("v1.0")
@@ -87,44 +85,40 @@ def test_can_prefetch_from_tag_given_as_rev(pypi2nix_list_remote):
 
 
 def test_prefetch_github_no_actual_prefetch(pypi2nix_list_remote):
+    repository = GithubRepository(owner="seppeljordan", name="pypi2nix")
     seq = [
         (
-            nix_prefetch_github.GetListRemote(owner="seppeljordan", repo="pypi2nix"),
+            nix_prefetch_github.GetListRemote(repository=repository),
             lambda i: pypi2nix_list_remote,
         ),
         (
             nix_prefetch_github.CalculateSha256Sum(
-                owner="seppeljordan",
-                repo="pypi2nix",
+                repository=repository,
                 revision=pypi2nix_list_remote.branch("master"),
                 fetch_submodules=True,
             ),
             lambda i: "TEST_ACTUALHASH",
         ),
     ]
-    eff = nix_prefetch_github.prefetch_github(
-        owner="seppeljordan", repo="pypi2nix", prefetch=False
-    )
+    eff = nix_prefetch_github.prefetch_github(repository=repository, prefetch=False)
     prefetch_result = perform_sequence(seq, eff)
     assert prefetch_result.rev == pypi2nix_list_remote.branch("master")
     assert prefetch_result.sha256 == "TEST_ACTUALHASH"
 
 
 def test_prefetch_github_rev_given():
+    repository = GithubRepository(owner="seppeljordan", name="pypi2nix")
     commit_hash = "50553a665d2700c353ac41ab28c23b1027b7c1f0"
     seq = [
         (
             nix_prefetch_github.CalculateSha256Sum(
-                owner="seppeljordan",
-                repo="pypi2nix",
-                revision=commit_hash,
-                fetch_submodules=True,
+                repository=repository, revision=commit_hash, fetch_submodules=True,
             ),
             lambda i: "TEST_ACTUALHASH",
         )
     ]
     eff = nix_prefetch_github.prefetch_github(
-        owner="seppeljordan", repo="pypi2nix", prefetch=False, rev=commit_hash
+        repository=repository, prefetch=False, rev=commit_hash
     )
     prefetch_result = perform_sequence(seq, eff)
     assert prefetch_result.rev == commit_hash
@@ -132,22 +126,23 @@ def test_prefetch_github_rev_given():
 
 
 def test_prefetch_aborts_when_rev_is_not_found(pypi2nix_list_remote):
+    repository = GithubRepository(owner="seppeljordan", name="pypi2nix")
     sequence = [
         (
-            nix_prefetch_github.GetListRemote(owner="seppeljordan", repo="pypi2nix"),
+            nix_prefetch_github.GetListRemote(repository=repository),
             lambda _: pypi2nix_list_remote,
         ),
         (
             AbortWithErrorMessage(
                 revision_not_found_errormessage(
-                    owner="seppeljordan", repo="pypi2nix", revision="does-not-exist"
+                    repository=repository, revision="does-not-exist"
                 )
             ),
             lambda _: None,
         ),
     ]
     effect = nix_prefetch_github.prefetch_github(
-        owner="seppeljordan", repo="pypi2nix", rev="does-not-exist"
+        repository=repository, rev="does-not-exist"
     )
     prefetch_result = perform_sequence(sequence, effect)
     assert prefetch_result is None
@@ -226,15 +221,15 @@ def test_that_detect_actual_hash_from_nix_output_works_for_multiple_version_of_n
 
 
 def test_that_prefetch_github_understands_full_ref_names(pypi2nix_list_remote):
+    repository = GithubRepository(owner="seppeljordan", name="pypi2nix")
     sequence = [
         (
-            nix_prefetch_github.GetListRemote(owner="seppeljordan", repo="pypi2nix"),
+            nix_prefetch_github.GetListRemote(repository=repository),
             lambda i: pypi2nix_list_remote,
         ),
         (
             nix_prefetch_github.CalculateSha256Sum(
-                owner="seppeljordan",
-                repo="pypi2nix",
+                repository=repository,
                 revision=pypi2nix_list_remote.branch("master"),
                 fetch_submodules=True,
             ),
@@ -242,7 +237,7 @@ def test_that_prefetch_github_understands_full_ref_names(pypi2nix_list_remote):
         ),
     ]
     effect = nix_prefetch_github.prefetch_github(
-        owner="seppeljordan", repo="pypi2nix", prefetch=False, rev="refs/heads/master"
+        repository=repository, prefetch=False, rev="refs/heads/master"
     )
     prefetch_result = perform_sequence(sequence, effect)
     assert prefetch_result.rev == pypi2nix_list_remote.branch("master")
@@ -250,15 +245,15 @@ def test_that_prefetch_github_understands_full_ref_names(pypi2nix_list_remote):
 
 
 def test_that_prefetch_github_understands_fetch_submodules(pypi2nix_list_remote):
+    repository = GithubRepository(owner="seppeljordan", name="pypi2nix")
     sequence = [
         (
-            nix_prefetch_github.GetListRemote(owner="seppeljordan", repo="pypi2nix"),
+            nix_prefetch_github.GetListRemote(repository=repository),
             lambda i: pypi2nix_list_remote,
         ),
         (
             nix_prefetch_github.CalculateSha256Sum(
-                owner="seppeljordan",
-                repo="pypi2nix",
+                repository=repository,
                 revision=pypi2nix_list_remote.branch("master"),
                 fetch_submodules=True,
             ),
@@ -266,6 +261,6 @@ def test_that_prefetch_github_understands_fetch_submodules(pypi2nix_list_remote)
         ),
     ]
     effect = nix_prefetch_github.prefetch_github(
-        owner="seppeljordan", repo="pypi2nix", prefetch=False, fetch_submodules=True
+        repository=repository, prefetch=False, fetch_submodules=True
     )
     perform_sequence(sequence, effect)

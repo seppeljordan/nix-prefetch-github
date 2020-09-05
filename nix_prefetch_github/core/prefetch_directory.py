@@ -18,13 +18,12 @@ def prefetch_directory(directory, remote, prefetch=True, fetch_submodules=True):
     is_repo_dirty = yield Effect(CheckGitRepoIsDirty(directory=directory))
     if is_repo_dirty:
         yield Effect(ShowWarning(message=f"Repository at {directory} dirty"))
-    github_repository = yield Effect(
+    repository = yield Effect(
         DetectGithubRepository(directory=directory, remote=remote)
     )
     current_revision = yield Effect(DetectRevision(directory))
     prefetched_repository = yield prefetch_github(
-        owner=github_repository.owner,
-        repo=github_repository.name,
+        repository=repository,
         prefetch=prefetch,
         fetch_submodules=fetch_submodules,
         rev=current_revision,

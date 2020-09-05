@@ -11,6 +11,7 @@ from effect.testing import perform_sequence
 from nix_prefetch_github import (
     CalculateSha256Sum,
     GetListRemote,
+    GithubRepository,
     ListRemote,
     prefetch_github,
 )
@@ -25,24 +26,19 @@ def sensu_go_ls_remote_output():
 
 
 def test_prefetch_sensu_go_5_11(sensu_go_ls_remote_output):
+    repository = GithubRepository(owner="sensu", name="sensu-go",)
     sequence = [
-        (
-            GetListRemote(owner="sensu", repo="sensu-go"),
-            lambda _: sensu_go_ls_remote_output,
-        ),
+        (GetListRemote(repository=repository), lambda _: sensu_go_ls_remote_output,),
         (
             CalculateSha256Sum(
-                owner="sensu",
-                repo="sensu-go",
+                repository=repository,
                 revision="dd8f160a9033ecb5ad0384baf6a9965fa7bd3c17",
                 fetch_submodules=True,
             ),
             lambda _: "TEST_HASH_SUM",
         ),
     ]
-    effect = prefetch_github(
-        owner="sensu", repo="sensu-go", prefetch=False, rev="5.11.0"
-    )
+    effect = prefetch_github(repository=repository, prefetch=False, rev="5.11.0")
     prefetch_result = perform_sequence(sequence, effect)
     assert prefetch_result.rev == "dd8f160a9033ecb5ad0384baf6a9965fa7bd3c17"
     assert prefetch_result.sha256 == "TEST_HASH_SUM"

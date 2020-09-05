@@ -4,7 +4,7 @@ from functools import wraps
 
 from effect import Effect, sync_perform
 
-from nix_prefetch_github import CalculateSha256Sum, dispatcher
+from nix_prefetch_github import CalculateSha256Sum, GithubRepository, dispatcher
 
 from .markers import network, requires_nix_build
 
@@ -28,15 +28,14 @@ def performer_test(f):
 @network
 @performer_test
 def test_fetch_submodules_gives_different_hash_than_without_fetching_submodules():
+    repository = GithubRepository(owner="hasktorch", name="hasktorch",)
     hash_without_submodules = yield CalculateSha256Sum(
-        owner="hasktorch",
-        repo="hasktorch",
+        repository=repository,
         revision="db5962b75d4b8790759692a3e080facb4084ba01",
         fetch_submodules=False,
     )
     hash_with_submodules = yield CalculateSha256Sum(
-        owner="hasktorch",
-        repo="hasktorch",
+        repository=repository,
         revision="db5962b75d4b8790759692a3e080facb4084ba01",
         fetch_submodules=True,
     )

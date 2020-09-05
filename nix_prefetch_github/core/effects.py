@@ -7,8 +7,7 @@ from attr import attrib, attrs
 
 @attrs
 class GetListRemote:
-    owner = attrib()
-    repo = attrib()
+    repository = attrib()
 
 
 @attrs
@@ -23,8 +22,7 @@ class ShowWarning:
 
 @attrs
 class TryPrefetch:
-    owner = attrib()
-    repo = attrib()
+    repository = attrib()
     sha256 = attrib()
     rev = attrib()
     fetch_submodules = attrib()
@@ -32,8 +30,7 @@ class TryPrefetch:
 
 @attrs
 class CalculateSha256Sum:
-    owner = attrib()
-    repo = attrib()
+    repository = attrib()
     revision = attrib()
     fetch_submodules = attrib()
 

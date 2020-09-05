@@ -2,6 +2,7 @@ from .__main__ import nix_prefetch_github
 from .core import (
     CalculateSha256Sum,
     GetListRemote,
+    GithubRepository,
     TryPrefetch,
     is_sha1_hash,
     prefetch_github,

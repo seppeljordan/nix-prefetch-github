@@ -6,6 +6,7 @@ from pytest import fixture, raises
 from nix_prefetch_github.core import (
     CheckGitRepoIsDirty,
     GetListRemote,
+    GithubRepository,
     ShowWarning,
     TryPrefetch,
 )
@@ -16,28 +17,26 @@ from .markers import network, requires_nix_build
 
 @network
 def test_get_list_remote_retrieves_correct_tags():
-    remote = perform_effects(
-        Effect(GetListRemote(owner="seppeljordan", repo="nix-prefetch-github"))
-    )
+    repository = GithubRepository(owner="seppeljordan", name="nix-prefetch-github")
+    remote = perform_effects(Effect(GetListRemote(repository=repository)))
     assert remote.tag("v2.3") == "e632ce77435a4ab269c227c3ebcbaeaf746f8627"
 
 
 @network
 def test_get_list_remote_returns_none_for_none_existing_repos():
-    remote = perform_effects(
-        Effect(GetListRemote(owner="seppeljordan", repo="non-existing-repo-123"))
-    )
+    repository = GithubRepository(owner="seppeljordan", name="non-existing-repo-123")
+    remote = perform_effects(Effect(GetListRemote(repository=repository)))
     assert not remote
 
 
 @network
 @requires_nix_build
 def test_try_prefetch_returns_errorcode_when_fetching_with_invalid_sha256():
+    repository = GithubRepository(owner="seppeljordan", name="nix-prefetch-github")
     returncode, _ = perform_effects(
         Effect(
             TryPrefetch(
-                owner="seppeljordan",
-                repo="nix-prefetch-github",
+                repository=repository,
                 sha256="abc",
                 rev="e632ce77435a4ab269c227c3ebcbaeaf746f8627",
                 fetch_submodules=True,
@@ -50,11 +49,11 @@ def test_try_prefetch_returns_errorcode_when_fetching_with_invalid_sha256():
 @network
 @requires_nix_build
 def test_try_prefetch_actually_fetches_proper_commits_with_correct_hash():
+    repository = GithubRepository(owner="seppeljordan", name="nix-prefetch-github")
     returncode, _ = perform_effects(
         Effect(
             TryPrefetch(
-                owner="seppeljordan",
-                repo="nix-prefetch-github",
+                repository=repository,
                 sha256="sha256-sAXKffNUTfepcMfgOZahs7hofkMpsxI9NRhT2L17UCw=",
                 rev="e632ce77435a4ab269c227c3ebcbaeaf746f8627",
                 fetch_submodules=True,
