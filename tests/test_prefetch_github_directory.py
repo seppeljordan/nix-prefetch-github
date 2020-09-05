@@ -1,4 +1,3 @@
-import pytest
 from effect.testing import perform_sequence
 
 from nix_prefetch_github.core import (

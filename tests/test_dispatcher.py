@@ -40,6 +40,7 @@ def test_try_prefetch_returns_errorcode_when_fetching_with_invalid_sha256():
                 repo="nix-prefetch-github",
                 sha256="abc",
                 rev="e632ce77435a4ab269c227c3ebcbaeaf746f8627",
+                fetch_submodules=True,
             )
         )
     )
@@ -56,6 +57,7 @@ def test_try_prefetch_actually_fetches_proper_commits_with_correct_hash():
                 repo="nix-prefetch-github",
                 sha256="sha256-sAXKffNUTfepcMfgOZahs7hofkMpsxI9NRhT2L17UCw=",
                 rev="e632ce77435a4ab269c227c3ebcbaeaf746f8627",
+                fetch_submodules=True,
             )
         )
     )
