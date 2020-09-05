@@ -39,6 +39,7 @@ def test_prefetch_github_actual_prefetch(pypi2nix_list_remote):
                 owner="seppeljordan",
                 repo="pypi2nix",
                 revision=pypi2nix_list_remote.branch("master"),
+                fetch_submodules=True,
             ),
             lambda i: "TEST_ACTUALHASH",
         ),
@@ -48,6 +49,7 @@ def test_prefetch_github_actual_prefetch(pypi2nix_list_remote):
                 repo="pypi2nix",
                 rev=pypi2nix_list_remote.branch("master"),
                 sha256="TEST_ACTUALHASH",
+                fetch_submodules=True,
             ),
             lambda i: None,
         ),
@@ -71,6 +73,7 @@ def test_can_prefetch_from_tag_given_as_rev(pypi2nix_list_remote):
                 owner="seppeljordan",
                 repo="pypi2nix",
                 revision=pypi2nix_list_remote.tag("v1.0"),
+                fetch_submodules=True,
             ),
             lambda i: "TEST_ACTUALHASH",
         ),
@@ -94,6 +97,7 @@ def test_prefetch_github_no_actual_prefetch(pypi2nix_list_remote):
                 owner="seppeljordan",
                 repo="pypi2nix",
                 revision=pypi2nix_list_remote.branch("master"),
+                fetch_submodules=True,
             ),
             lambda i: "TEST_ACTUALHASH",
         ),
@@ -111,7 +115,10 @@ def test_prefetch_github_rev_given():
     seq = [
         (
             nix_prefetch_github.CalculateSha256Sum(
-                owner="seppeljordan", repo="pypi2nix", revision=commit_hash
+                owner="seppeljordan",
+                repo="pypi2nix",
+                revision=commit_hash,
+                fetch_submodules=True,
             ),
             lambda i: "TEST_ACTUALHASH",
         )
@@ -175,7 +182,7 @@ def test_to_nix_expression_outputs_valid_nix_expr():
             repo="pypi2nix",
             prefetch=prefetch,
             rev="master",
-            fetch_submodules=False,
+            fetch_submodules=True,
         )
         nix_expr_output = prefetched_repository.to_nix_expression()
 
@@ -229,6 +236,7 @@ def test_that_prefetch_github_understands_full_ref_names(pypi2nix_list_remote):
                 owner="seppeljordan",
                 repo="pypi2nix",
                 revision=pypi2nix_list_remote.branch("master"),
+                fetch_submodules=True,
             ),
             lambda i: "TEST_ACTUALHASH",
         ),

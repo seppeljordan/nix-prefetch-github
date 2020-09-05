@@ -27,7 +27,7 @@ class TryPrefetch:
     repo = attrib()
     sha256 = attrib()
     rev = attrib()
-    fetch_submodules = attrib(default=False)
+    fetch_submodules = attrib()
 
 
 @attrs
@@ -35,7 +35,7 @@ class CalculateSha256Sum:
     owner = attrib()
     repo = attrib()
     revision = attrib()
-    fetch_submodules = attrib(default=False)
+    fetch_submodules = attrib()
 
 
 @attrs

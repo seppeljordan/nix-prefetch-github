@@ -66,7 +66,7 @@ class GithubRepository:
 
 
 @do
-def prefetch_github(owner, repo, prefetch=True, rev=None, fetch_submodules=False):
+def prefetch_github(owner, repo, prefetch=True, rev=None, fetch_submodules=True):
     if isinstance(rev, str) and is_sha1_hash(rev):
         actual_rev = rev
     else:
@@ -115,7 +115,13 @@ def prefetch_github(owner, repo, prefetch=True, rev=None, fetch_submodules=False
         )
     if prefetch:
         yield Effect(
-            TryPrefetch(owner=owner, repo=repo, sha256=calculated_hash, rev=actual_rev)
+            TryPrefetch(
+                owner=owner,
+                repo=repo,
+                sha256=calculated_hash,
+                rev=actual_rev,
+                fetch_submodules=fetch_submodules,
+            )
         )
     return Effect(
         Constant(

@@ -72,6 +72,14 @@ from the ``origin`` remote repository similar to the command
 changes
 -------
 
+v4.0
+^^^^
+
+- Make fetching submodules the default in calls to python routines.
+  The CLI should be uneffected by this change.
+- Remove default values for ``fetch_submodules`` in all internal
+  classes.
+
 v3.0
 ^^^^
 

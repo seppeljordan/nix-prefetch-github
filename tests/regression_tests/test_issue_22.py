@@ -38,6 +38,7 @@ def test_prefetch_sensu_go_5_11(nixos_secure_factory_ls_remote_output):
                 owner="jraygauthier",
                 repo="nixos-secure-factory",
                 revision="ad1a1d1d25870cc70cd7e708a73c874322064d96",
+                fetch_submodules=True,
             ),
             lambda _: "TEST_HASH_SUM",
         ),

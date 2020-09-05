@@ -35,6 +35,7 @@ def test_prefetch_sensu_go_5_11(sensu_go_ls_remote_output):
                 owner="sensu",
                 repo="sensu-go",
                 revision="dd8f160a9033ecb5ad0384baf6a9965fa7bd3c17",
+                fetch_submodules=True,
             ),
             lambda _: "TEST_HASH_SUM",
         ),

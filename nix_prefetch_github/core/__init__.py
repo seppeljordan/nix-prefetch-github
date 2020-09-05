@@ -11,6 +11,7 @@ from .effects import (
 )
 from .prefetch import (
     GithubRepository,
+    PrefetchedRepository,
     github_repository_url,
     is_sha1_hash,
     prefetch_github,
