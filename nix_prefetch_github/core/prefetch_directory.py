@@ -12,9 +12,7 @@ from .prefetch import prefetch_github
 
 
 @do
-def prefetch_directory(
-    directory, remote, prefetch=True, fetch_submodules=True, nix=False
-):
+def prefetch_directory(directory, remote, prefetch=True, fetch_submodules=True):
     if not directory:
         directory = yield Effect(GetCurrentDirectory())
     is_repo_dirty = yield Effect(CheckGitRepoIsDirty(directory=directory))
@@ -31,7 +29,4 @@ def prefetch_directory(
         fetch_submodules=fetch_submodules,
         rev=current_revision,
     )
-    if nix:
-        print(prefetched_repository.to_nix_expression())
-    else:
-        print(prefetched_repository.to_json_string())
+    return prefetched_repository

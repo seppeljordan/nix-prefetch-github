@@ -19,7 +19,7 @@ from .effect import perform_effects
     help="Whether to fetch submodules contained in the target repository",
 )
 def main(directory, nix, prefetch, fetch_submodules, remote):
-    perform_effects(
+    prefetched_repository = perform_effects(
         prefetch_directory(
             directory=directory,
             remote=remote,
@@ -28,6 +28,10 @@ def main(directory, nix, prefetch, fetch_submodules, remote):
             nix=nix,
         )
     )
+    if nix:
+        print(prefetched_repository.to_nix_expression())
+    else:
+        print(prefetched_repository.to_json_string())
 
 
 if __name__ == "__main__":
