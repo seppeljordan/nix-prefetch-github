@@ -9,6 +9,7 @@ from .effects import (
     ShowWarning,
     TryPrefetch,
 )
+from .error import AbortWithError
 from .prefetch import (
     PrefetchedRepository,
     is_sha1_hash,

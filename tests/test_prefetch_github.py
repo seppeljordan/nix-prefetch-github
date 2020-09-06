@@ -7,6 +7,7 @@ from effect.testing import perform_sequence
 import nix_prefetch_github
 from nix_prefetch_github import ListRemote
 from nix_prefetch_github.core import (
+    AbortWithError,
     AbortWithErrorMessage,
     GithubRepository,
     revision_not_found_errormessage,
@@ -144,8 +145,8 @@ def test_prefetch_aborts_when_rev_is_not_found(pypi2nix_list_remote):
     effect = nix_prefetch_github.prefetch_github(
         repository=repository, rev="does-not-exist"
     )
-    prefetch_result = perform_sequence(sequence, effect)
-    assert prefetch_result is None
+    with pytest.raises(AbortWithError):
+        perform_sequence(sequence, effect)
 
 
 @requires_nix_build

@@ -1,4 +1,5 @@
 import json
+from functools import wraps
 
 from attr import attrib, attrs
 from effect import Constant, Effect
@@ -12,11 +13,100 @@ from .effects import (
     GetListRemote,
     TryPrefetch,
 )
+from .error import AbortWithError
 from .hash import is_sha1_hash
 
 
 def revision_not_found_errormessage(repository, revision):
     return f"Revision {revision} not found for repository {repository.owner}/{repository.name}"
+
+
+class _Prefetcher:
+    def __init__(self, repository, prefetch=True, rev=None, fetch_submodules=True):
+        self._repository = repository
+        self._prefetch = prefetch
+        self._revision = rev
+        self._fetch_submodules = fetch_submodules
+
+    @do
+    def prefetch_github(self):
+        yield self._detect_revision()
+        calculated_hash = yield self._calculate_sha256_sum()
+        yield self._prefetch_repository(calculated_hash)
+        return Effect(
+            Constant(
+                PrefetchedRepository(
+                    repository=self._repository,
+                    sha256=calculated_hash,
+                    rev=self._revision,
+                    fetch_submodules=self._prefetch,
+                )
+            )
+        )
+
+    @do
+    def _detect_revision(self):
+        if isinstance(self._revision, str) and is_sha1_hash(self._revision):
+            actual_rev = self._revision
+        else:
+            list_remote = yield Effect(GetListRemote(repository=self._repository))
+            if not list_remote:
+                yield Effect(
+                    AbortWithErrorMessage(
+                        f"Could not find a public repository named '{self._repository.name}' for user '{self._repository.owner}' at github.com"
+                    )
+                )
+            if self._revision is None:
+                actual_rev = list_remote.branch(list_remote.symref("HEAD"))
+            else:
+                actual_rev = (
+                    list_remote.full_ref_name(self._revision)
+                    or list_remote.branch(self._revision)
+                    or list_remote.tag(f"{self._revision}^{{}}")
+                    or list_remote.tag(self._revision)
+                )
+                if actual_rev is None:
+                    yield Effect(
+                        AbortWithErrorMessage(
+                            message=revision_not_found_errormessage(
+                                repository=self._repository, revision=self._revision
+                            )
+                        )
+                    )
+                    raise AbortWithError()
+        self._revision = actual_rev
+
+    @do
+    def _calculate_sha256_sum(self):
+        calculated_hash = yield Effect(
+            CalculateSha256Sum(
+                repository=self._repository,
+                revision=self._revision,
+                fetch_submodules=self._fetch_submodules,
+            )
+        )
+        if not calculated_hash:
+            yield Effect(
+                AbortWithErrorMessage(
+                    message=(
+                        "Internal Error: Calculate hash value for sources "
+                        f"in github repo {self._repository.owner}/{self._repository.name}."
+                    )
+                )
+            )
+        return calculated_hash
+
+    @do
+    def _prefetch_repository(self, calculated_hash):
+        if self._prefetch:
+            yield Effect(
+                TryPrefetch(
+                    repository=self._repository,
+                    sha256=calculated_hash,
+                    rev=self._revision,
+                    fetch_submodules=self._fetch_submodules,
+                )
+            )
 
 
 @attrs
@@ -48,69 +138,7 @@ class PrefetchedRepository:
         )
 
 
-@do
-def prefetch_github(repository, prefetch=True, rev=None, fetch_submodules=True):
-    if isinstance(rev, str) and is_sha1_hash(rev):
-        actual_rev = rev
-    else:
-        list_remote = yield Effect(GetListRemote(repository=repository))
-        if not list_remote:
-            yield Effect(
-                AbortWithErrorMessage(
-                    f"Could not find a public repository named '{repository.name}' for user '{repository.owner}' at github.com"
-                )
-            )
-        if rev is None:
-            actual_rev = list_remote.branch(list_remote.symref("HEAD"))
-        else:
-            actual_rev = (
-                list_remote.full_ref_name(rev)
-                or list_remote.branch(rev)
-                or list_remote.tag(f"{rev}^{{}}")
-                or list_remote.tag(rev)
-            )
-            if actual_rev is None:
-                yield Effect(
-                    AbortWithErrorMessage(
-                        message=revision_not_found_errormessage(
-                            repository=repository, revision=rev
-                        )
-                    )
-                )
-                return
-
-    calculated_hash = yield Effect(
-        CalculateSha256Sum(
-            repository=repository,
-            revision=actual_rev,
-            fetch_submodules=fetch_submodules,
-        )
-    )
-    if not calculated_hash:
-        yield Effect(
-            AbortWithErrorMessage(
-                message=(
-                    "Internal Error: Calculate hash value for sources "
-                    f"in github repo {repository.owner}/{repository.name}."
-                )
-            )
-        )
-    if prefetch:
-        yield Effect(
-            TryPrefetch(
-                repository=repository,
-                sha256=calculated_hash,
-                rev=actual_rev,
-                fetch_submodules=fetch_submodules,
-            )
-        )
-    return Effect(
-        Constant(
-            PrefetchedRepository(
-                repository=repository,
-                sha256=calculated_hash,
-                rev=actual_rev,
-                fetch_submodules=prefetch,
-            )
-        )
-    )
+@wraps(_Prefetcher)
+def prefetch_github(*args, **kwargs):
+    prefetcher = _Prefetcher(*args, **kwargs)
+    return prefetcher.prefetch_github()
