@@ -11,9 +11,19 @@
       f = import ./default.nix;
       systemDependent = flake-utils.lib.eachDefaultSystem (system:
         let pkgs = nixpkgs.outputs.legacyPackages."${system}";
-        in { defaultPackage = pkgs.python3.pkgs.callPackage f { }; });
-      overlay = final: prev: {
-        nix-prefetch-github = final.python3.pkgs.callPackage f { };
+        in {
+          defaultPackage = with pkgs.python3.pkgs;
+            toPythonApplication (callPackage f { });
+        });
+      overlay = final: prev: rec {
+        python3 = final.python3.override {
+          self = python3;
+          packageOverrides = self: super: {
+            nix-prefetch-github = super.callPackage f { };
+          };
+        };
+        nix-prefetch-github = with final.python3.pkgs;
+          toPythonApplication nix-prefetch-github;
       };
       systemIndependent = { inherit overlay; };
     in systemDependent // systemIndependent;
