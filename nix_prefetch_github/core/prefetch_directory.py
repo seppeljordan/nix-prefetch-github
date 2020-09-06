@@ -5,7 +5,6 @@ from .effects import (
     CheckGitRepoIsDirty,
     DetectGithubRepository,
     DetectRevision,
-    GetCurrentDirectory,
     ShowWarning,
 )
 from .prefetch import prefetch_github
@@ -13,9 +12,7 @@ from .prefetch import prefetch_github
 
 @do
 def prefetch_directory(directory, remote, prefetch=True, fetch_submodules=True):
-    if not directory:
-        directory = yield Effect(GetCurrentDirectory())
-    is_repo_dirty = yield Effect(CheckGitRepoIsDirty(directory=directory))
+    is_repo_dirty = yield check_repository_is_dirty(directory)
     if is_repo_dirty:
         yield Effect(ShowWarning(message=f"Repository at {directory} dirty"))
     repository = yield Effect(
@@ -29,3 +26,7 @@ def prefetch_directory(directory, remote, prefetch=True, fetch_submodules=True):
         rev=current_revision,
     )
     return prefetched_repository
+
+
+def check_repository_is_dirty(directory):
+    return Effect(CheckGitRepoIsDirty(directory=directory))

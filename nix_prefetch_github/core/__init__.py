@@ -15,5 +15,5 @@ from .prefetch import (
     prefetch_github,
     revision_not_found_errormessage,
 )
-from .prefetch_directory import prefetch_directory
+from .prefetch_directory import check_repository_is_dirty, prefetch_directory
 from .repository import GithubRepository

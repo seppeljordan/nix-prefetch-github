@@ -1,6 +1,8 @@
 import click
+from effect import Effect
+from effect.do import do
 
-from .core import prefetch_directory
+from .core import GetCurrentDirectory, prefetch_directory
 from .effect import perform_effects
 
 
@@ -19,14 +21,19 @@ from .effect import perform_effects
     help="Whether to fetch submodules contained in the target repository",
 )
 def main(directory, nix, prefetch, fetch_submodules, remote):
-    prefetched_repository = perform_effects(
-        prefetch_directory(
+    @do
+    def detect_directory_and_prefetch():
+        nonlocal directory
+        if not directory:
+            directory = yield Effect(GetCurrentDirectory())
+        return prefetch_directory(
             directory=directory,
             remote=remote,
             prefetch=prefetch,
             fetch_submodules=fetch_submodules,
         )
-    )
+
+    prefetched_repository = perform_effects(detect_directory_and_prefetch())
     if nix:
         print(prefetched_repository.to_nix_expression())
     else:

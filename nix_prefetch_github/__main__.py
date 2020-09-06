@@ -1,20 +1,7 @@
 import click
 
-from .core import GithubRepository, prefetch_github
-from .effect import perform_effects
+from .public import nix_prefetch_github
 from .version import VERSION_STRING
-
-
-def nix_prefetch_github(owner, repo, prefetch=True, rev=None, fetch_submodules=False):
-    return perform_effects(
-        prefetch_github(
-            repository=GithubRepository(owner=owner, name=repo),
-            rev=rev,
-            prefetch=prefetch,
-            fetch_submodules=fetch_submodules,
-        )
-    )
-
 
 PREFETCH_DEFAULT = True
 NIX_DEFAULT = False

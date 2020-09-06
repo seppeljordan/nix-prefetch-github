@@ -1,4 +1,3 @@
-from .__main__ import nix_prefetch_github
 from .core import (
     CalculateSha256Sum,
     GetListRemote,
@@ -9,3 +8,4 @@ from .core import (
 )
 from .core.list_remote import ListRemote
 from .effect import detect_actual_hash_from_nix_output, dispatcher
+from .public import check_repository_is_dirty, nix_prefetch_github
