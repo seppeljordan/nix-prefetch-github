@@ -16,7 +16,7 @@
             toPythonApplication (callPackage f { });
         });
       overlay = final: prev: rec {
-        python3 = final.python3.override {
+        python3 = prev.python3.override {
           self = python3;
           packageOverrides = self: super: {
             nix-prefetch-github = super.callPackage f { };
