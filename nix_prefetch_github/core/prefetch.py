@@ -1,5 +1,4 @@
 import json
-from functools import wraps
 
 from attr import attrib, attrs
 from effect import Constant, Effect
@@ -15,6 +14,7 @@ from .effects import (
 )
 from .error import AbortWithError
 from .hash import is_sha1_hash
+from .wrapper import wraps_with_namechange
 
 
 def revision_not_found_errormessage(repository, revision):
@@ -138,7 +138,7 @@ class PrefetchedRepository:
         )
 
 
-@wraps(_Prefetcher)
+@wraps_with_namechange(_Prefetcher)
 def prefetch_github(*args, **kwargs):
     prefetcher = _Prefetcher(*args, **kwargs)
     return prefetcher.prefetch_github()
