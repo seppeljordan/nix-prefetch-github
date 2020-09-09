@@ -1,19 +1,15 @@
 import json
 
 from attr import attrib, attrs
-from effect import Constant, Effect
+from effect import Effect
 from effect.do import do
 
 from nix_prefetch_github.templates import output_template
 
-from .effects import (
-    AbortWithErrorMessage,
-    CalculateSha256Sum,
-    GetListRemote,
-    TryPrefetch,
-)
+from .effects import AbortWithErrorMessage, CalculateSha256Sum, TryPrefetch
 from .error import AbortWithError
 from .hash import is_sha1_hash
+from .revision import RevisionIndex
 from .wrapper import wraps_with_namechange
 
 
@@ -27,53 +23,33 @@ class _Prefetcher:
         self._prefetch = prefetch
         self._revision = rev
         self._fetch_submodules = fetch_submodules
+        self._revision_index = RevisionIndex(repository)
+        self._prefetched_repository = None
 
     @do
     def prefetch_github(self):
         yield self._detect_revision()
         calculated_hash = yield self._calculate_sha256_sum()
         yield self._prefetch_repository(calculated_hash)
-        return Effect(
-            Constant(
-                PrefetchedRepository(
-                    repository=self._repository,
-                    sha256=calculated_hash,
-                    rev=self._revision,
-                    fetch_submodules=self._prefetch,
-                )
-            )
-        )
+        return self._prefetched_repository
 
     @do
     def _detect_revision(self):
         if isinstance(self._revision, str) and is_sha1_hash(self._revision):
             actual_rev = self._revision
         else:
-            list_remote = yield Effect(GetListRemote(repository=self._repository))
-            if not list_remote:
-                yield Effect(
-                    AbortWithErrorMessage(
-                        f"Could not find a public repository named '{self._repository.name}' for user '{self._repository.owner}' at github.com"
+            actual_rev = yield self._revision_index.get_revision_from_name(
+                self._revision
+            )
+        if actual_rev is None:
+            yield Effect(
+                AbortWithErrorMessage(
+                    message=revision_not_found_errormessage(
+                        repository=self._repository, revision=self._revision
                     )
                 )
-            if self._revision is None:
-                actual_rev = list_remote.branch(list_remote.symref("HEAD"))
-            else:
-                actual_rev = (
-                    list_remote.full_ref_name(self._revision)
-                    or list_remote.branch(self._revision)
-                    or list_remote.tag(f"{self._revision}^{{}}")
-                    or list_remote.tag(self._revision)
-                )
-                if actual_rev is None:
-                    yield Effect(
-                        AbortWithErrorMessage(
-                            message=revision_not_found_errormessage(
-                                repository=self._repository, revision=self._revision
-                            )
-                        )
-                    )
-                    raise AbortWithError()
+            )
+            raise AbortWithError()
         self._revision = actual_rev
 
     @do
@@ -107,6 +83,12 @@ class _Prefetcher:
                     fetch_submodules=self._fetch_submodules,
                 )
             )
+        self._prefetched_repository = PrefetchedRepository(
+            repository=self._repository,
+            sha256=calculated_hash,
+            rev=self._revision,
+            fetch_submodules=self._prefetch,
+        )
 
 
 @attrs
