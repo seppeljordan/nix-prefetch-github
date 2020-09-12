@@ -114,6 +114,7 @@ v4.0
   The CLI should be uneffected by this change.
 - Remove default values for ``fetch_submodules`` in all internal
   classes.
+- Implement ``nix-prefetch-github-latest-release`` command
 
 v3.0
 ^^^^
