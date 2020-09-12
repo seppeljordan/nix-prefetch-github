@@ -41,9 +41,8 @@ nix-prefetch-github
 ^^^^^^^^^^^^^^^^^^^
 
 This command downloads the code from a github repository and puts it
-into the local nix store.  It also prints the command line arguments
-for downloading to the standard output.
-::
+into the local nix store.  It also prints the function arguments to
+``fetchFromGitHub`` to the standard output.  ::
 
    $ nix-prefetch-github --help
    Usage: nix-prefetch-github [OPTIONS] OWNER REPO
