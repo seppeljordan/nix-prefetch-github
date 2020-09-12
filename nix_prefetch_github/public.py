@@ -28,3 +28,4 @@ def nix_prefetch_github(owner, repo, prefetch=True, rev=None, fetch_submodules=F
 
 
 check_repository_is_dirty = make_standalone(core.check_repository_is_dirty)
+prefetch_latest_release = make_standalone(core.prefetch_latest_release)

@@ -53,3 +53,8 @@ class DetectRevision:
 @attrs
 class AbortWithErrorMessage:
     message = attrib()
+
+
+@attrs
+class GetRevisionForLatestRelease:
+    repository = attrib()

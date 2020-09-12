@@ -1,7 +1,7 @@
 from effect import Effect
 from effect.do import do
 
-from .effects import AbortWithErrorMessage, GetListRemote
+from .effects import AbortWithErrorMessage, GetListRemote, GetRevisionForLatestRelease
 
 
 class RevisionIndex:
@@ -25,3 +25,6 @@ class RevisionIndex:
             or list_remote.tag(f"{revision_name}^{{}}")
             or list_remote.tag(revision_name)
         )
+
+    def get_revision_for_latest_release(self):
+        return Effect(GetRevisionForLatestRelease(repository=self._repository))

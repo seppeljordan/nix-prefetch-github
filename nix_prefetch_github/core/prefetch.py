@@ -10,27 +10,50 @@ from .effects import AbortWithErrorMessage, CalculateSha256Sum, TryPrefetch
 from .error import AbortWithError
 from .hash import is_sha1_hash
 from .revision import RevisionIndex
-from .wrapper import wraps_with_namechange
 
 
 def revision_not_found_errormessage(repository, revision):
     return f"Revision {revision} not found for repository {repository.owner}/{repository.name}"
 
 
+def repository_not_found_error_message(repository):
+    return f"Could not find release for {repository.owner}/{repository.name}"
+
+
 class _Prefetcher:
-    def __init__(self, repository, prefetch=True, rev=None, fetch_submodules=True):
+    def __init__(self, repository):
         self._repository = repository
+        self._revision_index = RevisionIndex(repository)
+        self._prefetched_repository = None
+        self._calculated_hash = None
+        self._prefetch = None
+        self._revision = None
+        self._fetch_submodules = None
+
+    @do
+    def prefetch_github(self, prefetch, rev, fetch_submodules):
         self._prefetch = prefetch
         self._revision = rev
         self._fetch_submodules = fetch_submodules
-        self._revision_index = RevisionIndex(repository)
-        self._prefetched_repository = None
+        yield self._detect_revision()
+        yield self._calculate_sha256_sum()
+        yield self._prefetch_repository()
+        return self._prefetched_repository
 
     @do
-    def prefetch_github(self):
-        yield self._detect_revision()
-        calculated_hash = yield self._calculate_sha256_sum()
-        yield self._prefetch_repository(calculated_hash)
+    def prefetch_latest_release(self, prefetch, fetch_submodules):
+        self._prefetch = prefetch
+        self._fetch_submodules = fetch_submodules
+        self._revision = yield self._revision_index.get_revision_for_latest_release()
+        if not self._revision:
+            yield Effect(
+                AbortWithErrorMessage(
+                    repository_not_found_error_message(self._repository)
+                )
+            )
+            raise AbortWithError()
+        yield self._calculate_sha256_sum()
+        yield self._prefetch_repository()
         return self._prefetched_repository
 
     @do
@@ -54,14 +77,14 @@ class _Prefetcher:
 
     @do
     def _calculate_sha256_sum(self):
-        calculated_hash = yield Effect(
+        self._calculated_hash = yield Effect(
             CalculateSha256Sum(
                 repository=self._repository,
                 revision=self._revision,
                 fetch_submodules=self._fetch_submodules,
             )
         )
-        if not calculated_hash:
+        if not self._calculated_hash:
             yield Effect(
                 AbortWithErrorMessage(
                     message=(
@@ -70,22 +93,21 @@ class _Prefetcher:
                     )
                 )
             )
-        return calculated_hash
 
     @do
-    def _prefetch_repository(self, calculated_hash):
+    def _prefetch_repository(self):
         if self._prefetch:
             yield Effect(
                 TryPrefetch(
                     repository=self._repository,
-                    sha256=calculated_hash,
+                    sha256=self._calculated_hash,
                     rev=self._revision,
                     fetch_submodules=self._fetch_submodules,
                 )
             )
         self._prefetched_repository = PrefetchedRepository(
             repository=self._repository,
-            sha256=calculated_hash,
+            sha256=self._calculated_hash,
             rev=self._revision,
             fetch_submodules=self._prefetch,
         )
@@ -120,7 +142,15 @@ class PrefetchedRepository:
         )
 
 
-@wraps_with_namechange(_Prefetcher)
-def prefetch_github(*args, **kwargs):
-    prefetcher = _Prefetcher(*args, **kwargs)
-    return prefetcher.prefetch_github()
+def prefetch_github(repository, prefetch=True, rev=None, fetch_submodules=True):
+    prefetcher = _Prefetcher(repository)
+    return prefetcher.prefetch_github(
+        prefetch=prefetch, rev=rev, fetch_submodules=fetch_submodules
+    )
+
+
+def prefetch_latest_release(repository, prefetch, fetch_submodules):
+    prefetcher = _Prefetcher(repository=repository)
+    return prefetcher.prefetch_latest_release(
+        prefetch=prefetch, fetch_submodules=fetch_submodules
+    )

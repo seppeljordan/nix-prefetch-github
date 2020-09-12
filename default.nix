@@ -20,5 +20,8 @@ buildPythonApplication {
   ];
   checkPhase = ''
     pytest -m 'not network'
+    $out/bin/nix-prefetch-github --help
+    $out/bin/nix-prefetch-github-directory --help
+    $out/bin/nix-prefetch-github-latest-release --help
   '';
 }

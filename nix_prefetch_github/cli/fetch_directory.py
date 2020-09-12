@@ -2,8 +2,8 @@ import click
 from effect import Effect
 from effect.do import do
 
-from .core import GetCurrentDirectory, prefetch_directory
-from .effect import perform_effects
+from nix_prefetch_github.core import GetCurrentDirectory, prefetch_directory
+from nix_prefetch_github.effect import perform_effects
 
 
 @click.command("nix-prefetch-github-directory")

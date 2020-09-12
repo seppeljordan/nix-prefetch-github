@@ -1,3 +1,4 @@
+import json
 import os
 import re
 import subprocess
@@ -5,6 +6,8 @@ import sys
 from copy import copy
 from tempfile import TemporaryDirectory
 from typing import Dict, Optional
+from urllib.error import HTTPError
+from urllib.request import urlopen
 
 import effect.io
 from attr import attrib, attrs
@@ -25,6 +28,7 @@ from .core import (
     DetectRevision,
     GetCurrentDirectory,
     GetListRemote,
+    GetRevisionForLatestRelease,
     GithubRepository,
     ShowWarning,
     TryPrefetch,
@@ -66,6 +70,7 @@ def dispatcher():
     )
     composed_performers = make_effect_dispatcher(
         {
+            GetRevisionForLatestRelease: get_revision_for_latest_release_performer,
             CalculateSha256Sum: calculate_sha256_sum,
             GetListRemote: get_list_remote_performer,
             TryPrefetch: try_prefetch_performer,
@@ -218,6 +223,21 @@ def check_git_repo_is_dirty_performer(intent):
             f"Repository at {intent.directory} does not contain any commits"
         )
     return returncode != 0
+
+
+@do
+def get_revision_for_latest_release_performer(intent):
+    url = f"https://api.github.com/repos/{intent.repository.owner}/{intent.repository.name}/releases/latest"
+    try:
+        with urlopen(url) as response:
+            encoding = response.info().get_content_charset("utf-8")
+            content_data = response.read()
+    except HTTPError:
+        return None
+    content_json = json.loads(content_data.decode(encoding))
+    tag = content_json["tag_name"]
+    remote_list = yield Effect(GetListRemote(intent.repository))
+    return remote_list.tag(tag)
 
 
 @attrs

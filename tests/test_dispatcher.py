@@ -6,9 +6,11 @@ from pytest import fixture, raises
 from nix_prefetch_github.core import (
     CheckGitRepoIsDirty,
     GetListRemote,
+    GetRevisionForLatestRelease,
     GithubRepository,
     ShowWarning,
     TryPrefetch,
+    is_sha1_hash,
 )
 from nix_prefetch_github.effect import perform_effects
 
@@ -61,6 +63,24 @@ def test_try_prefetch_actually_fetches_proper_commits_with_correct_hash():
         )
     )
     assert not returncode
+
+
+@network
+def test_get_latest_revision():
+    repository = GithubRepository(owner="seppeljordan", name="nix-prefetch-github")
+    revision_hash = perform_effects(
+        Effect(GetRevisionForLatestRelease(repository=repository))
+    )
+    assert is_sha1_hash(revision_hash)
+
+
+@network
+def test_get_revision_for_latest_release_raises_HTTPError_when_repo_not_found():
+    repository = GithubRepository(
+        owner="seppeljordan", name="repository-does-not-exist"
+    )
+    commit = perform_effects(Effect(GetRevisionForLatestRelease(repository=repository)))
+    assert not commit
 
 
 def test_show_warning(capsys):
