@@ -67,7 +67,42 @@ out if it is part of a git repository linked to github.  If this was
 successful the program prefetches the currently checked out commit
 from the ``origin`` remote repository similar to the command
 ``nix-prefetch-github``.
+::
 
+    $ nix-prefetch-github-directory --help
+    Usage: nix-prefetch-github-directory [OPTIONS]
+
+    Options:
+      --directory TEXT
+      --nix                       Format output as Nix expression
+      --prefetch / --no-prefetch  Prefetch given repository into nix store
+      --remote TEXT
+      --fetch-submodules          Whether to fetch submodules contained in the
+				  target repository
+
+      --help                      Show this message and exit.
+
+
+
+nix-prefetch-github-latest-release
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+This command fetches the code for the latest release of the specified
+repository.
+::
+
+    $ nix-prefetch-github-latest-release --help
+    Usage: nix-prefetch-github-latest-release [OPTIONS] OWNER REPO
+
+    Options:
+      --nix                       Format output as Nix expression
+      --prefetch / --no-prefetch  Prefetch given repository into nix store
+      --fetch-submodules          Whether to fetch submodules contained in the
+				  target repository
+
+      --help                      Show this message and exit.
+
+   
 
 changes
 -------
