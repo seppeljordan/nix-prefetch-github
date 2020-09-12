@@ -1,4 +1,6 @@
 { nixpkgs ? import <nixpkgs> { } }:
-let f = import ./default.nix;
-
-in nixpkgs.python3Packages.callPackage f { }
+let
+  python = nixpkgs.python3.override {
+    packageOverrides = import nix/package-overrides.nix;
+  };
+in python.pkgs.nix-prefetch-github

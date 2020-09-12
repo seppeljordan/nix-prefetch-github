@@ -1,22 +1,23 @@
 { buildPythonApplication, attrs, effect, click, pytest, pytest-black, pytestcov
-, pytest-isort, twine, black, mypy, nixfmt, jinja2, flake8, git }:
+, pytest-isort, twine, black, mypy, nixfmt, jinja2, flake8, git, pydeps }:
 buildPythonApplication {
   pname = "nix-prefetch-github";
   version = "dev";
-  src = ./.;
+  src = ./..;
   propagatedBuildInputs = [ attrs click effect jinja2 ];
-  buildInputs = [ nixfmt ];
+  buildInputs = [ nixfmt pydeps ];
   checkInputs = [
+    black
     flake8
+    git
     jinja2
+    mypy
+    pydeps
     pytest
     pytest-black
-    pytestcov
     pytest-isort
+    pytestcov
     twine
-    black
-    mypy
-    git
   ];
   checkPhase = ''
     pytest -m 'not network'

@@ -1,3 +1,4 @@
+from .directory import check_repository_is_dirty, prefetch_directory
 from .effects import (
     AbortWithErrorMessage,
     CalculateSha256Sum,
@@ -19,5 +20,4 @@ from .prefetch import (
     repository_not_found_error_message,
     revision_not_found_errormessage,
 )
-from .prefetch_directory import check_repository_is_dirty, prefetch_directory
 from .repository import GithubRepository
