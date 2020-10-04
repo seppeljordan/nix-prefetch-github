@@ -101,8 +101,6 @@ repository.
 
       --help                      Show this message and exit.
 
-   
-
 changes
 -------
 
