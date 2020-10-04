@@ -8,5 +8,4 @@ set -x
 flake8
 mypy nix_prefetch_github tests
 pytest
-nix build 
 nix flake check

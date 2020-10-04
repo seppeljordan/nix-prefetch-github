@@ -18,9 +18,10 @@
         let
           pkgs = nixpkgs.outputs.legacyPackages."${system}";
           python = pkgs.python3.override { inherit packageOverrides; };
-        in {
+        in rec {
           defaultPackage = with python.pkgs;
             toPythonApplication nix-prefetch-github;
+          checks = { inherit defaultPackage; };
         });
       systemIndependent = { inherit overlay; };
     in systemDependent // systemIndependent;
