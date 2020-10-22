@@ -4,9 +4,13 @@
   inputs = {
     nixpkgs.url = "github:NixOS/nixpkgs/nixos-unstable";
     flake-utils.url = "github:numtide/flake-utils";
+    flake-compat = {
+      url = "github:edolstra/flake-compat";
+      flake = false;
+    };
   };
 
-  outputs = { self, nixpkgs, flake-utils }:
+  outputs = { self, nixpkgs, flake-utils, ... }:
     let
       packageOverrides = import nix/package-overrides.nix;
       overlay = final: prev: {
@@ -21,6 +25,9 @@
         in rec {
           defaultPackage = with python.pkgs;
             toPythonApplication nix-prefetch-github;
+          packages = {
+            inherit python;
+          };
           checks = { inherit defaultPackage; };
         });
       systemIndependent = { inherit overlay; };

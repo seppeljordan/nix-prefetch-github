@@ -1,43 +1,126 @@
-#!/usr/bin/env bash
+#!/usr/bin/env python3
+from __future__ import annotations
 
-INSTALL_ONLY="false"
+import os
+import shutil
+import subprocess
+from argparse import ArgumentParser
+from contextlib import contextmanager
+from dataclasses import dataclass
+from pathlib import Path
+from tempfile import TemporaryDirectory
+from typing import Generator
 
-while getopts "i" options; do
-    case "${options}" in
-        i)
-            INSTALL_ONLY="true"
-            ;;
-    esac
-done
 
-set -e
+class Main:
+    def __init__(self, twine: Twine) -> None:
+        self.twine = twine
+        self.version = "4.0"
+        self.current_distribution = f"nix-prefetch-github-{self.version}.tar.gz"
+        self.setup_path = "setup.py"
+        self.distribution_directory = Path("dist")
+        self.source_distribution_path = (
+            self.distribution_directory / self.current_distribution
+        ).resolve()
+        self._egg_info_path = Path("nix_prefetch_github.egg-info").resolve()
 
-VERSION=$(cat src/nix_prefetch_github/VERSION)
+    def run_installation_test(self) -> None:
+        with self._virtualenv() as virtualenv:
+            self.install_source_distribution(virtualenv)
+            self.run_binaries(virtualenv)
 
-function upload_check() {
+    def run_upload_test(self) -> None:
+        with self._virtualenv() as virtualenv:
+            self.upload_source_distribution()
+            self.install_from_index(virtualenv)
+            self.run_binaries(virtualenv)
 
-    nix-shell --command 'python setup.py sdist'
-    nix-shell --command \
-              "python -m twine upload -r test-pypi dist/nix-prefetch-github-${VERSION}.tar.gz"
-}
+    def install_source_distribution(self, virtualenv: Virtualenv) -> None:
+        self.build_source_distribution()
+        virtualenv.install(str(self.source_distribution_path))
 
-function install_check() {
-    rm -rf testenv
-    mkdir -p "testenv"
-    nix-shell \
-        -p python3Packages.virtualenv \
-        --command "virtualenv testenv"
-    testenv/bin/pip install -r requirements.txt
-    testenv/bin/pip install \
-                    --no-cache-dir \
-                    --index-url https://test.pypi.org/simple/ \
-                    nix-prefetch-github==${VERSION}
-    testenv/bin/nix-prefetch-github \
-        seppeljordan \
-        pypi2nix
-}
+    def run_binaries(self, virtualenv: Virtualenv) -> None:
+        virtualenv.run("nix-prefetch-github --help")
+        virtualenv.run("nix-prefetch-github-latest-release --help")
+        virtualenv.run("nix-prefetch-github-directory --help")
 
-if [ ${INSTALL_ONLY} = "false" ]; then
-    upload_check
-fi
-install_check
+    def upload_source_distribution(self) -> None:
+        self.build_source_distribution()
+        self.twine.upload(self.source_distribution_path)
+
+    def install_from_index(self, virtualenv: Virtualenv) -> None:
+        virtualenv.install(str(self.source_distribution_path))
+        virtualenv.install_without_deps(self.current_distribution)
+
+    def build_source_distribution(self) -> None:
+        shutil.rmtree(self._egg_info_path)
+        subprocess.run(
+            f"python {self.setup_path} sdist --dist-dir {self.distribution_directory}",
+            shell=True,
+            check=True,
+        )
+
+    @contextmanager
+    def _virtualenv(self) -> Generator[Virtualenv, None, None]:
+        with TemporaryDirectory() as directory:
+            yield Virtualenv(Path(directory) / "virtualenv")
+
+
+class Virtualenv:
+    def __init__(self, target_path: Path) -> None:
+        self._target_path = target_path
+        subprocess.run(["virtualenv", str(self._target_path)])
+
+    def run(self, command: str) -> None:
+        env = dict(os.environ)
+        del env["PYTHONPATH"]
+        subprocess.run(
+            str(self._target_path / "bin") + "/" + command,
+            check=True,
+            shell=True,
+            env=env,
+            cwd=self._target_path,
+        )
+
+    def install(self, target: str) -> None:
+        self.run(f"pip install {target}")
+
+    def install_without_deps(self, target) -> None:
+        self.run(f"pip install --no-deps {target}")
+
+
+class Twine:
+    def upload(self, source_distribution: Path) -> None:
+        subprocess.run(
+            f"python -m twine upload -r test-pypi {source_distribution}",
+            shell=True,
+            check=True,
+        )
+
+
+class Configuration:
+    def get(self):
+        arguments = self._parse_args()
+        return ApplicationConfiguration(do_upload_test=arguments.upload_test)
+
+    def _parse_args(self):
+        parser = ArgumentParser()
+        parser.add_argument("--upload-test", action="store_true", dest="upload_test")
+        parser.add_argument(
+            "--no-upload-test", action="store_false", dest="upload_test"
+        )
+        return parser.parse_args()
+
+
+@dataclass
+class ApplicationConfiguration:
+    do_upload_test: bool
+
+
+if __name__ == "__main__":
+    configuration = Configuration().get()
+    twine = Twine()
+    tester = Main(twine)
+    tester.run_installation_test()
+    if configuration.do_upload_test:
+        tester.run_upload_test()
