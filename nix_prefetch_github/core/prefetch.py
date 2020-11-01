@@ -109,7 +109,7 @@ class _Prefetcher:
             repository=self._repository,
             sha256=self._calculated_hash,
             rev=self._revision,
-            fetch_submodules=self._prefetch,
+            fetch_submodules=self._fetch_submodules,
         )
 
 

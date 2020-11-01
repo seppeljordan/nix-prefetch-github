@@ -25,9 +25,7 @@
         in rec {
           defaultPackage = with python.pkgs;
             toPythonApplication nix-prefetch-github;
-          packages = {
-            inherit python;
-          };
+          packages = { inherit python; };
           checks = { inherit defaultPackage; };
         });
       systemIndependent = { inherit overlay; };

@@ -24,8 +24,9 @@ REV_DEFAULT = None
     default=NIX_DEFAULT,
 )
 @click.option(
-    "--fetch-submodules",
-    is_flag=FETCH_SUBMODULES_DEFAULT,
+    "--fetch-submodules/--no-fetch-submodules",
+    is_flag=True,
+    default=FETCH_SUBMODULES_DEFAULT,
     help="Whether to fetch submodules contained in the target repository",
 )
 @click.option("--rev", default=REV_DEFAULT, type=str)

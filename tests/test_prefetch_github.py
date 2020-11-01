@@ -264,4 +264,30 @@ def test_that_prefetch_github_understands_fetch_submodules(pypi2nix_list_remote)
     effect = nix_prefetch_github.prefetch_github(
         repository=repository, prefetch=False, fetch_submodules=True
     )
-    perform_sequence(sequence, effect)
+    prefetch_info = perform_sequence(sequence, effect)
+    assert prefetch_info.fetch_submodules
+
+
+def test_that_prefetch_github_without_submodules_is_understood_and_respected(
+    pypi2nix_list_remote,
+):
+    repository = GithubRepository(owner="seppeljordan", name="pypi2nix")
+    sequence = [
+        (
+            nix_prefetch_github.GetListRemote(repository=repository),
+            lambda i: pypi2nix_list_remote,
+        ),
+        (
+            nix_prefetch_github.CalculateSha256Sum(
+                repository=repository,
+                revision=pypi2nix_list_remote.branch("master"),
+                fetch_submodules=False,
+            ),
+            lambda i: "TEST_ACTUALHASH",
+        ),
+    ]
+    effect = nix_prefetch_github.prefetch_github(
+        repository=repository, prefetch=False, fetch_submodules=False
+    )
+    prefetch_info = perform_sequence(sequence, effect)
+    assert not prefetch_info.fetch_submodules

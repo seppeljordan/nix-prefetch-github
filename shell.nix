@@ -7,7 +7,9 @@ let
     sha256 = lock.nodes.flake-compat.locked.narHash;
   };
   flake-compat = import flake-compat-source;
-  nix-prefetch-github = (flake-compat { src = ./.; }).shellNix.packages."${system}".python.pkgs.nix-prefetch-github;
+  nix-prefetch-github = (flake-compat {
+    src = ./.;
+  }).shellNix.packages."${system}".python.pkgs.nix-prefetch-github;
   maybeAttrs = attributeSet: name: default:
     if builtins.hasAttr name attributeSet then
       attributeSet."${name}"
