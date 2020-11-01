@@ -10,4 +10,4 @@ VERSION=$(cat nix_prefetch_github/VERSION)
 git tag "v${VERSION}"
 python setup.py sdist
 twine upload "dist/nix-prefetch-github-${VERSION}.tar.gz"
-git push "v${VERSION}"
+git push origin "v${VERSION}"
