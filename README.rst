@@ -104,6 +104,11 @@ repository.
 changes
 -------
 
+v4.1
+^^^^
+
+- Fix issue #38
+
 v4.0
 ^^^^
 
