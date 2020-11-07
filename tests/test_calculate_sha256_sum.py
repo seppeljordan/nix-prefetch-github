@@ -34,9 +34,11 @@ def test_fetch_submodules_gives_different_hash_than_without_fetching_submodules(
         revision="db5962b75d4b8790759692a3e080facb4084ba01",
         fetch_submodules=False,
     )
+    assert hash_without_submodules
     hash_with_submodules = yield CalculateSha256Sum(
         repository=repository,
         revision="db5962b75d4b8790759692a3e080facb4084ba01",
         fetch_submodules=True,
     )
+    assert hash_with_submodules
     assert hash_with_submodules != hash_without_submodules

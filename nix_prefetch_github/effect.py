@@ -164,20 +164,25 @@ def calculate_sha256_sum(intent):
 
 
 def detect_actual_hash_from_nix_output(lines):
-    def select_hash_from_match(match):
-        return match.group(1) or match.group(2) or match.group(3) or match.group(4)
+    nix_1_x_regexp = r"output path .* has .* hash '(?P<hash>[a-z0-9]{52})' when .*"
+    nix_2_0_regexp = r"fixed\-output derivation produced path .* with sha256 hash '(?P<hash>[a-z0-9]{52})' instead of the expected hash .*"
+    nix_2_2_regexp = r"  got: +sha256:(?P<hash>[a-z0-9]{52})"
+    nix_2_4_regexp = r" +got: +(?P<hash>.+)"
 
-    nix_1_x_regexp = r"output path .* has .* hash '([a-z0-9]{52})' when .*"
-    nix_2_0_regexp = r"fixed\-output derivation produced path .* with sha256 hash '([a-z0-9]{52})' instead of the expected hash .*"
-    nix_2_2_regexp = r"  got: +sha256:([a-z0-9]{52})"
-    nix_2_4_regexp = r"  got:    (.*)"
-    regular_expression = re.compile(
-        "|".join([nix_1_x_regexp, nix_2_0_regexp, nix_2_2_regexp, nix_2_4_regexp])
-    )
+    def try_extract_hash(line: str) -> Optional[str]:
+        possible_patterns = map(
+            re.compile, (nix_1_x_regexp, nix_2_0_regexp, nix_2_2_regexp, nix_2_4_regexp)
+        )
+        for pattern in possible_patterns:
+            result: Optional[re.Match] = re.match(pattern, line)
+            if result:
+                return result.group("hash")
+        return None
+
     for line in lines:
-        re_match = regular_expression.match(line)
-        if re_match:
-            return select_hash_from_match(re_match)
+        possible_result = try_extract_hash(line)
+        if possible_result:
+            return possible_result
 
 
 @sync_performer
