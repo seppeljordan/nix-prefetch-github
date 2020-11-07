@@ -13,10 +13,11 @@ from typing import Generator
 
 
 class Main:
-    def __init__(self, twine: Twine) -> None:
+    def __init__(self, twine: Twine, version_getter: VersionGetter) -> None:
         self.twine = twine
-        self.version = "4.0"
-        self.current_distribution = f"nix-prefetch-github-{self.version}.tar.gz"
+        self.version = version_getter.get_version()
+        self.package_name = "nix-prefetch-github"
+        self.current_distribution = f"{self.package_name}-{self.version}.tar.gz"
         self.setup_path = "setup.py"
         self.distribution_directory = Path("dist")
         self.source_distribution_path = (
@@ -31,7 +32,7 @@ class Main:
 
     def run_upload_test(self) -> None:
         with self._virtualenv() as virtualenv:
-            self.upload_source_distribution()
+            # self.upload_source_distribution()
             self.install_from_index(virtualenv)
             self.run_binaries(virtualenv)
 
@@ -50,7 +51,9 @@ class Main:
 
     def install_from_index(self, virtualenv: Virtualenv) -> None:
         virtualenv.install(str(self.source_distribution_path))
-        virtualenv.install_without_deps(self.current_distribution)
+        virtualenv.install_without_deps(
+            f"{self.package_name}=={self.version}", index="test-pypi"
+        )
 
     def build_source_distribution(self) -> None:
         shutil.rmtree(self._egg_info_path)
@@ -64,6 +67,12 @@ class Main:
     def _virtualenv(self) -> Generator[Virtualenv, None, None]:
         with TemporaryDirectory() as directory:
             yield Virtualenv(Path(directory) / "virtualenv")
+
+
+class VersionGetter:
+    def get_version(self) -> str:
+        with open("nix_prefetch_github/VERSION") as version_file:
+            return version_file.read()
 
 
 class Virtualenv:
@@ -85,8 +94,8 @@ class Virtualenv:
     def install(self, target: str) -> None:
         self.run(f"pip install {target}")
 
-    def install_without_deps(self, target) -> None:
-        self.run(f"pip install --no-deps {target}")
+    def install_without_deps(self, target, index=None) -> None:
+        self.run(f"pip install --no-deps {target} {'-i '+index if index else ''}")
 
 
 class Twine:
@@ -120,7 +129,7 @@ class ApplicationConfiguration:
 if __name__ == "__main__":
     configuration = Configuration().get()
     twine = Twine()
-    tester = Main(twine)
+    tester = Main(twine, VersionGetter())
     tester.run_installation_test()
     if configuration.do_upload_test:
         tester.run_upload_test()
