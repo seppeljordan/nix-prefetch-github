@@ -56,7 +56,10 @@ class Main:
         )
 
     def build_source_distribution(self) -> None:
-        shutil.rmtree(self._egg_info_path)
+        try:
+            shutil.rmtree(self._egg_info_path)
+        except FileNotFoundError:
+            pass
         subprocess.run(
             f"python {self.setup_path} sdist --dist-dir {self.distribution_directory}",
             shell=True,
