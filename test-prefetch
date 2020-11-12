@@ -7,5 +7,6 @@ set -x
 
 flake8
 mypy nix_prefetch_github tests
+black --check .
 pytest
 nix flake check

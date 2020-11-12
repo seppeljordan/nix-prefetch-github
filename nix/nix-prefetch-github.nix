@@ -1,5 +1,20 @@
-{ buildPythonPackage, attrs, effect, click, pytest, pytest-black, pytestcov
-, pytest-isort, twine, black, mypy, nixfmt, jinja2, flake8, git, pydeps, virtualenv }:
+{ buildPythonPackage
+, attrs
+, effect
+, click
+, pytest
+, pytestcov
+, pytest-isort
+, twine
+, black
+, mypy
+, nixfmt
+, jinja2
+, flake8
+, git
+, pydeps
+, virtualenv
+}:
 buildPythonPackage {
   pname = "nix-prefetch-github";
   version = "dev";
@@ -14,7 +29,6 @@ buildPythonPackage {
     mypy
     pydeps
     pytest
-    pytest-black
     pytest-isort
     pytestcov
     twine
