@@ -15,9 +15,7 @@ let
       attributeSet."${name}"
     else
       default;
-  debug = with builtins;
-    trace "${concatStringsSep " " (attrNames nix-prefetch-github)}";
-in debug (nix-prefetch-github.overridePythonAttrs (old: {
+in nix-prefetch-github.overridePythonAttrs (old: {
   nativeBuildInputs = maybeAttrs old "nativeBuildInputs" [ ]
     ++ maybeAttrs old "checkInputs" [ ];
-}))
+})
