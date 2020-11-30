@@ -222,7 +222,7 @@ def test_to_nix_expression_outputs_valid_nix_expr():
                 "  specified: sha256-u42evoAl/P3/Ad6lcXgS1+dd2fcBwEqu4gNU/OjxlPg=",
                 "     got:    sha256-66Ynq+4sh59apqAEVeVLIAxkFgy96QSdpQjsLlsGoNo=",
             ],
-            "sha256-66Ynq+4sh59apqAEVeVLIAxkFgy96QSdpQjsLlsGoNo=",
+            "66Ynq+4sh59apqAEVeVLIAxkFgy96QSdpQjsLlsGoNo=",
         ),
     ),
 )

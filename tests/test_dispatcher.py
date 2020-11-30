@@ -56,7 +56,7 @@ def test_try_prefetch_actually_fetches_proper_commits_with_correct_hash():
         Effect(
             TryPrefetch(
                 repository=repository,
-                sha256="sha256-sAXKffNUTfepcMfgOZahs7hofkMpsxI9NRhT2L17UCw=",
+                sha256="sAXKffNUTfepcMfgOZahs7hofkMpsxI9NRhT2L17UCw=",
                 rev="e632ce77435a4ab269c227c3ebcbaeaf746f8627",
                 fetch_submodules=True,
             )

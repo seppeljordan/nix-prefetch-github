@@ -167,7 +167,7 @@ def detect_actual_hash_from_nix_output(lines):
     nix_1_x_regexp = r"output path .* has .* hash '(?P<hash>[a-z0-9]{52})' when .*"
     nix_2_0_regexp = r"fixed\-output derivation produced path .* with sha256 hash '(?P<hash>[a-z0-9]{52})' instead of the expected hash .*"
     nix_2_2_regexp = r"  got: +sha256:(?P<hash>[a-z0-9]{52})"
-    nix_2_4_regexp = r" +got: +(?P<hash>.+)"
+    nix_2_4_regexp = r" +got: +(sha256-)?(?P<hash>.+)"
 
     def try_extract_hash(line: str) -> Optional[str]:
         possible_patterns = map(
