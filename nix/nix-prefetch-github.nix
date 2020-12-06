@@ -24,18 +24,8 @@ in buildPythonPackage {
   };
   propagatedBuildInputs = [ attrs click effect jinja2 ];
   buildInputs = [ nixfmt pydeps ];
-  checkInputs = [
-    black
-    flake8
-    git
-    jinja2
-    mypy
-    pydeps
-    pytest
-    pytestcov
-    twine
-    virtualenv
-  ];
+  checkInputs =
+    [ black flake8 git jinja2 mypy pydeps pytest pytestcov twine virtualenv ];
   checkPhase = ''
     pytest -m 'not network'
     $out/bin/nix-prefetch-github --help
