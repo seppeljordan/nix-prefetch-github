@@ -1,5 +1,5 @@
 #!/usr/bin/env sh
 
 nixfmt $(find . -type f -name '*.nix')
-black nix_prefetch_github tests
-isort -rc nix_prefetch_github tests
+black .
+isort -rc .

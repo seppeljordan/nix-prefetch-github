@@ -1,5 +1,5 @@
 [tool.black]
 include = '''
-      (\.pyi?$)
+      (\.pyi?)
     | (^/test\-pypi\-install)
 '''

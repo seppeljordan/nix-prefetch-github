@@ -98,9 +98,10 @@ def detect_github_repository(intent):
                 message=f"Remote '{intent.remote}' is not a link to a github repository"
             )
         )
-    owner = match.group(2)
-    name = match.group(3)
-    return GithubRepository(name=name, owner=owner,)
+    else:
+        owner = match.group(2)
+        name = match.group(3)
+        return GithubRepository(name=name, owner=owner,)
 
 
 @do
@@ -170,9 +171,15 @@ def detect_actual_hash_from_nix_output(lines):
     nix_2_4_regexp = r" +got: +(sha256-)?(?P<hash>.+)"
 
     def try_extract_hash(line: str) -> Optional[str]:
-        possible_patterns = map(
-            re.compile, (nix_1_x_regexp, nix_2_0_regexp, nix_2_2_regexp, nix_2_4_regexp)
-        )
+        possible_patterns = [
+            re.compile(pattern)
+            for pattern in (
+                nix_1_x_regexp,
+                nix_2_0_regexp,
+                nix_2_2_regexp,
+                nix_2_4_regexp,
+            )
+        ]
         for pattern in possible_patterns:
             result: Optional[re.Match] = re.match(pattern, line)
             if result:

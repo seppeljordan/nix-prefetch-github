@@ -3,9 +3,5 @@
 set -e
 set -x
 
-flake8
-mypy nix_prefetch_github tests
-black --check .
-isort --check-only -rc .
-pytest
 nix flake check
+pytest
