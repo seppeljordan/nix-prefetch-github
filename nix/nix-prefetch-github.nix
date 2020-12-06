@@ -32,14 +32,11 @@ in buildPythonPackage {
     mypy
     pydeps
     pytest
-    pytest-isort
     pytestcov
     twine
     virtualenv
   ];
   checkPhase = ''
-    flake8
-    mypy
     pytest -m 'not network'
     $out/bin/nix-prefetch-github --help
     $out/bin/nix-prefetch-github-directory --help
