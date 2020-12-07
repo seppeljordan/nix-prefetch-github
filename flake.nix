@@ -25,7 +25,10 @@
         in rec {
           defaultPackage = with python.pkgs;
             toPythonApplication nix-prefetch-github;
-          packages = { inherit python; };
+          packages = {
+            inherit python;
+            nix-prefetch-github = self.defaultPackage."${system}";
+          };
           checks = {
             inherit defaultPackage;
             nixfmt-check = pkgs.runCommand "nixfmt-nix-prefetch-github" { } ''
