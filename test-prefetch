@@ -3,5 +3,5 @@
 set -e
 set -x
 
-nix flake check
+nix flake check --print-build-logs
 pytest

@@ -12,7 +12,7 @@ from nix_prefetch_github.core import (
     TryPrefetch,
     is_sha1_hash,
 )
-from nix_prefetch_github.effect import perform_effects
+from nix_prefetch_github.effects import perform_effects
 
 from .markers import network, requires_nix_build
 

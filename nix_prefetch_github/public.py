@@ -5,7 +5,7 @@ from functools import wraps
 from nix_prefetch_github import core
 
 from .core import GithubRepository
-from .effect import perform_effects
+from .effects import perform_effects
 
 
 def make_standalone(f):
