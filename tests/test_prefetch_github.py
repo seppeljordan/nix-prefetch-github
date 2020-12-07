@@ -31,7 +31,10 @@ def pypi2nix_list_remote():
 
 
 def test_prefetch_github_actual_prefetch(pypi2nix_list_remote):
-    repository = GithubRepository(owner="seppeljordan", name="pypi2nix",)
+    repository = GithubRepository(
+        owner="seppeljordan",
+        name="pypi2nix",
+    )
     seq = [
         (
             nix_prefetch_github.GetListRemote(repository=repository),
@@ -113,7 +116,9 @@ def test_prefetch_github_rev_given():
     seq = [
         (
             nix_prefetch_github.CalculateSha256Sum(
-                repository=repository, revision=commit_hash, fetch_submodules=True,
+                repository=repository,
+                revision=commit_hash,
+                fetch_submodules=True,
             ),
             lambda i: "TEST_ACTUALHASH",
         )

@@ -28,7 +28,10 @@ def performer_test(f):
 @network
 @performer_test
 def test_fetch_submodules_gives_different_hash_than_without_fetching_submodules():
-    repository = GithubRepository(owner="git-up", name="test-repo-submodules",)
+    repository = GithubRepository(
+        owner="git-up",
+        name="test-repo-submodules",
+    )
     hash_without_submodules = yield CalculateSha256Sum(
         repository=repository,
         revision="5a1dfa807759c39e3df891b6b46dfb2cf776c6ef",

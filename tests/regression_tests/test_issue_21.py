@@ -26,9 +26,15 @@ def sensu_go_ls_remote_output():
 
 
 def test_prefetch_sensu_go_5_11(sensu_go_ls_remote_output):
-    repository = GithubRepository(owner="sensu", name="sensu-go",)
+    repository = GithubRepository(
+        owner="sensu",
+        name="sensu-go",
+    )
     sequence = [
-        (GetListRemote(repository=repository), lambda _: sensu_go_ls_remote_output,),
+        (
+            GetListRemote(repository=repository),
+            lambda _: sensu_go_ls_remote_output,
+        ),
         (
             CalculateSha256Sum(
                 repository=repository,

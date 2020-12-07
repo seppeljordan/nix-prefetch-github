@@ -49,8 +49,8 @@
                   --settings-path setup.cfg \
                   --check-only \
                   -df \
-                  -rc \
-                  .
+                  . \
+                  test-pypi-install
               mkdir $out
             '';
             flake8-check = pkgs.runCommand "flake8-nix-prefetch-github" { } ''

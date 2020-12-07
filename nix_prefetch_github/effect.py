@@ -101,7 +101,10 @@ def detect_github_repository(intent):
     else:
         owner = match.group(2)
         name = match.group(3)
-        return GithubRepository(name=name, owner=owner,)
+        return GithubRepository(
+            name=name,
+            owner=owner,
+        )
 
 
 @do
@@ -227,7 +230,8 @@ def show_warning_performer(_, intent):
 def check_git_repo_is_dirty_performer(intent):
     returncode, _ = yield Effect(
         ExecuteCommand(
-            command=["git", "diff", "HEAD", "--quiet"], cwd=intent.directory,
+            command=["git", "diff", "HEAD", "--quiet"],
+            cwd=intent.directory,
         )
     )
     if returncode == 128:

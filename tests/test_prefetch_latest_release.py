@@ -49,7 +49,10 @@ def test_prefetch_latest_release_fails_gracefully_when_no_repository_was_found(
     repository,
 ):
     sequence = [
-        (GetRevisionForLatestRelease(repository=repository), lambda _: None,),
+        (
+            GetRevisionForLatestRelease(repository=repository),
+            lambda _: None,
+        ),
         (
             AbortWithErrorMessage(
                 repository_not_found_error_message(repository=repository)

@@ -2,4 +2,4 @@
 
 nixfmt $(find . -type f -name '*.nix')
 black .
-isort -rc .
+isort . test-pypi-install
