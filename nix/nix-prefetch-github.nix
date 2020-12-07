@@ -1,5 +1,5 @@
 { buildPythonPackage, attrs, effect, click, pytest, pytestcov, isort, twine
-, black, mypy, nixfmt, jinja2, flake8, git, pydeps, virtualenv, lib }:
+, black, mypy, nixfmt, flake8, git, pydeps, virtualenv, lib }:
 let
   sourceFilter = with lib;
     with builtins;
@@ -22,21 +22,10 @@ in buildPythonPackage {
     path = ./..;
     filter = sourceFilter;
   };
-  propagatedBuildInputs = [ attrs click effect jinja2 ];
+  propagatedBuildInputs = [ attrs click effect ];
   buildInputs = [ nixfmt pydeps ];
-  checkInputs = [
-    black
-    flake8
-    git
-    jinja2
-    mypy
-    pydeps
-    pytest
-    pytestcov
-    twine
-    virtualenv
-    isort
-  ];
+  checkInputs =
+    [ black flake8 git mypy pydeps pytest pytestcov twine virtualenv isort ];
   checkPhase = ''
     pytest -m 'not network'
     $out/bin/nix-prefetch-github --help

@@ -121,12 +121,12 @@ class PrefetchedRepository:
     fetch_submodules = attrib()
 
     def to_nix_expression(self):
-        return output_template.render(
+        return output_template(
             owner=self.repository.owner,
             repo=self.repository.name,
             rev=self.rev,
             sha256=self.sha256,
-            fetch_submodules="true" if self.fetch_submodules else "false",
+            fetch_submodules=self.fetch_submodules,
         )
 
     def to_json_string(self):

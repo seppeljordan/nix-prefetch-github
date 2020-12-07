@@ -122,12 +122,12 @@ def get_current_directory_performer(_, _intent):
 
 @do
 def try_prefetch_performer(try_prefetch):
-    nix_code_calculate_hash = output_template.render(
+    nix_code_calculate_hash = output_template(
         owner=try_prefetch.repository.owner,
         repo=try_prefetch.repository.name,
         rev=try_prefetch.rev,
         sha256=try_prefetch.sha256,
-        fetch_submodules="true" if try_prefetch.fetch_submodules else "false",
+        fetch_submodules=try_prefetch.fetch_submodules,
     )
     with TemporaryDirectory() as temp_dir_name:
         nix_filename = temp_dir_name + "/prefetch-github.nix"
