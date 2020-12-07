@@ -104,8 +104,18 @@ repository.
 changes
 -------
 
-v4.1
-^^^^
+v4.0.3
+^^^^^^
+
+- Generated hashes now don't have a "sha256-" prefix
+- jinja2 is no longer a dependency of nix-prefetch-github
+
+v4.0.2
+^^^^^^
+- packaging release, no bugfixes or features
+
+v4.0.1
+^^^^^^
 
 - Fix issue #38
 
