@@ -1,27 +1,9 @@
 { buildPythonPackage, attrs, effect, click, pytest, pytestcov, isort, twine
 , black, mypy, nixfmt, flake8, git, pydeps, virtualenv, lib }:
-let
-  sourceFilter = with lib;
-    with builtins;
-    path: type:
-    let
-      filename = baseNameOf path;
-      filters = [
-        (type == "directory" && filename == ".git")
-        (type == "regular" && hasSuffix "pyc" filename)
-        (type == "regular" && hasSuffix "~" filename)
-        (type == "directory" && filename == ".mypy_cache")
-        (type == "directory" && filename == ".pytest_cache")
-        (type == "directory" && filename == ".egg-info")
-      ];
-    in foldl (accu: elem: accu && (!elem)) true filters;
-in buildPythonPackage {
+buildPythonPackage {
   pname = "nix-prefetch-github";
   version = "dev";
-  src = builtins.path {
-    path = ./..;
-    filter = sourceFilter;
-  };
+  src = ../.;
   propagatedBuildInputs = [ attrs click effect ];
   buildInputs = [ nixfmt pydeps ];
   checkInputs =
