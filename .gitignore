@@ -10,3 +10,4 @@ __pycache__
 /result
 /test.nix
 /.mypy_cache
+/.envrc
