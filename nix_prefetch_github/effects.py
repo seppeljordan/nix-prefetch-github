@@ -3,7 +3,6 @@ import os
 import re
 import subprocess
 import sys
-from copy import copy
 from tempfile import TemporaryDirectory
 from typing import Dict, Optional
 from urllib.error import HTTPError
@@ -134,7 +133,10 @@ def try_prefetch_performer(try_prefetch):
         with open(nix_filename, "w") as f:
             f.write(nix_code_calculate_hash)
         result = yield Effect(
-            ExecuteCommand(command=(["nix-build", nix_filename, "--no-out-link"]))
+            ExecuteCommand(
+                command=["nix-build", nix_filename, "--no-out-link"],
+                merge_stderr=True,
+            )
         )
         return result
 
@@ -142,16 +144,20 @@ def try_prefetch_performer(try_prefetch):
 @do
 def get_list_remote_performer(intent):
     repository_url = intent.repository.url()
-    returncode, stdout = yield Effect(
-        ExecuteCommand(
-            command=["git", "ls-remote", "--symref", repository_url],
-            environment_variables={"GIT_ASKPASS": "", "GIT_TERMINAL_PROMPT": "0"},
-        )
+    command_effect = ExecuteCommand(
+        command=["git", "ls-remote", "--symref", repository_url],
+        environment_variables={"GIT_ASKPASS": "", "GIT_TERMINAL_PROMPT": "0"},
     )
+
+    returncode, stdout = yield Effect(command_effect)
     if not returncode:
         return ListRemote.from_git_ls_remote_output(stdout)
     else:
-        return None
+        yield Effect(
+            AbortWithErrorMessage(
+                f"{command_effect} failed with returncode {returncode}."
+            )
+        )
 
 
 @do
@@ -197,10 +203,9 @@ def detect_actual_hash_from_nix_output(lines):
 
 @sync_performer
 def execute_command_performer(_, intent):
-    current_environment = copy(os.environ)
-    target_environment = dict(current_environment, **intent.environment_variables)
+    target_environment = dict(os.environ, **intent.environment_variables)
     stderr = subprocess.STDOUT if intent.merge_stderr else subprocess.PIPE
-    process_return = subprocess.run(
+    process = subprocess.Popen(
         intent.command,
         stdout=subprocess.PIPE,
         stderr=stderr,
@@ -208,7 +213,12 @@ def execute_command_performer(_, intent):
         cwd=intent.cwd,
         env=target_environment,
     )
-    return process_return.returncode, process_return.stdout
+    process_stdout, process_stderr = process.communicate()
+    if intent.merge_stderr:
+        print(process_stdout, file=sys.stderr)
+    else:
+        print(process_stderr, file=sys.stderr)
+    return process.returncode, process_stdout
 
 
 def perform_effects(effects):
@@ -260,5 +270,5 @@ def get_revision_for_latest_release_performer(intent):
 class ExecuteCommand:
     command = attrib()
     cwd = attrib(default=None)
-    merge_stderr = attrib(default=True)
+    merge_stderr = attrib(default=False)
     environment_variables: Dict[str, Optional[str]] = attrib(default={})

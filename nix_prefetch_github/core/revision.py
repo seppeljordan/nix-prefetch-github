@@ -1,7 +1,7 @@
 from effect import Effect
 from effect.do import do
 
-from .effects import AbortWithErrorMessage, GetListRemote, GetRevisionForLatestRelease
+from .effects import GetListRemote, GetRevisionForLatestRelease
 
 
 class RevisionIndex:
@@ -11,12 +11,6 @@ class RevisionIndex:
     @do
     def get_revision_from_name(self, revision_name):
         list_remote = yield Effect(GetListRemote(repository=self._repository))
-        if not list_remote:
-            yield Effect(
-                AbortWithErrorMessage(
-                    f"Could not find a public repository named '{self._repository.name}' for user '{self._repository.owner}' at github.com"
-                )
-            )
         if revision_name is None:
             return list_remote.branch(list_remote.symref("HEAD"))
         return (

@@ -27,8 +27,8 @@ def test_get_list_remote_retrieves_correct_tags():
 @network
 def test_get_list_remote_returns_none_for_none_existing_repos():
     repository = GithubRepository(owner="seppeljordan", name="non-existing-repo-123")
-    remote = perform_effects(Effect(GetListRemote(repository=repository)))
-    assert not remote
+    with raises(SystemExit):
+        perform_effects(Effect(GetListRemote(repository=repository)))
 
 
 @network
