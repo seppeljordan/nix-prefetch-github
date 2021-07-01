@@ -9,7 +9,7 @@ buildPythonPackage {
   checkInputs =
     [ black flake8 git mypy pydeps pytest pytestcov twine virtualenv isort ];
   checkPhase = ''
-    pytest -m 'not network'
+    pytest -m 'not network and not requires_nix_build'
     $out/bin/nix-prefetch-github --help
     $out/bin/nix-prefetch-github-directory --help
     $out/bin/nix-prefetch-github-latest-release --help

@@ -1,27 +1,9 @@
 """This module provides tests for the implementation of the
 CalculateSha256Sum intent"""
-from functools import wraps
-
-from effect import Effect, sync_perform
-
-from nix_prefetch_github import CalculateSha256Sum, GithubRepository, dispatcher
+from nix_prefetch_github import CalculateSha256Sum, GithubRepository
 
 from .markers import network, requires_nix_build
-
-
-def performer_test(f):
-    @wraps(f)
-    def _wrapped(*args, **kwargs):
-        generator = f(*args, **kwargs)
-        intent = generator.send(None)
-        while True:
-            intent_result = sync_perform(dispatcher(), Effect(intent))
-            try:
-                intent = generator.send(intent_result)
-            except StopIteration:
-                return
-
-    return _wrapped
+from .performer_test import performer_test
 
 
 @requires_nix_build
