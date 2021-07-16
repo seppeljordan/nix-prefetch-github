@@ -104,6 +104,11 @@ repository.
 changes
 -------
 
+v4.0.4
+^^^^^^
+
+- Print standard error output of subprocesses for better debugging
+
 v4.0.3
 ^^^^^^
 
