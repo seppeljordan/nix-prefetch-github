@@ -1,13 +1,7 @@
 {
   description = "nix-prefetch-github";
 
-  inputs = {
-    flake-utils.url = "github:numtide/flake-utils";
-    flake-compat = {
-      url = "github:edolstra/flake-compat";
-      flake = false;
-    };
-  };
+  inputs = { flake-utils.url = "github:numtide/flake-utils"; };
 
   outputs = { self, nixpkgs, flake-utils, ... }:
     let
@@ -17,16 +11,30 @@
         nix-prefetch-github = with final.python3.pkgs;
           toPythonApplication nix-prefetch-github;
       };
+      makeNixpkgs = system:
+        import nixpkgs {
+          inherit system;
+          overlays = [ self.overlay ];
+        };
       systemDependent = flake-utils.lib.eachDefaultSystem (system:
         let
-          pkgs = nixpkgs.outputs.legacyPackages."${system}";
-          python = pkgs.python3.override { inherit packageOverrides; };
+          pkgs = makeNixpkgs system;
+          python = pkgs.python3;
         in rec {
           defaultPackage = with python.pkgs;
             toPythonApplication nix-prefetch-github;
           packages = {
             inherit python;
             nix-prefetch-github = self.defaultPackage."${system}";
+          };
+          pythonEnvironment = python.withPackages (pythonPackages:
+            with pythonPackages.nix-prefetch-github;
+            with pythonPackages;
+            buildInputs ++ propagatedBuildInputs ++ nativeBuildInputs
+            ++ [ black flake8 mypy pytestcov twine virtualenv isort pytest ]);
+          devShell = pkgs.mkShell {
+            name = "dev-shell";
+            buildInputs = with pkgs; [ git pythonEnvironment nixfmt ];
           };
           checks = {
             inherit defaultPackage;

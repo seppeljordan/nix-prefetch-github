@@ -4,4 +4,6 @@ set -e
 set -x
 
 nix flake check --print-build-logs
-pytest
+pytest --cov=nix_prefetch_github \
+       --cov-report html:coverage/html \
+       --cov-report term
