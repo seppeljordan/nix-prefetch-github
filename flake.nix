@@ -20,6 +20,11 @@
         let
           pkgs = makeNixpkgs system;
           python = pkgs.python3;
+          pythonEnvironment = python.withPackages (pythonPackages:
+            with pythonPackages.nix-prefetch-github;
+            with pythonPackages;
+            buildInputs ++ propagatedBuildInputs ++ nativeBuildInputs
+            ++ [ black flake8 mypy pytestcov twine virtualenv isort pytest ]);
         in rec {
           defaultPackage = with python.pkgs;
             toPythonApplication nix-prefetch-github;
@@ -27,11 +32,6 @@
             inherit python;
             nix-prefetch-github = self.defaultPackage."${system}";
           };
-          pythonEnvironment = python.withPackages (pythonPackages:
-            with pythonPackages.nix-prefetch-github;
-            with pythonPackages;
-            buildInputs ++ propagatedBuildInputs ++ nativeBuildInputs
-            ++ [ black flake8 mypy pytestcov twine virtualenv isort pytest ]);
           devShell = pkgs.mkShell {
             name = "dev-shell";
             buildInputs = with pkgs; [ git pythonEnvironment nixfmt ];
