@@ -5,27 +5,19 @@
 
   outputs = { self, nixpkgs, flake-utils, ... }:
     let
-      packageOverrides = import nix/package-overrides.nix;
-      overlay = final: prev: {
-        python3 = prev.python3.override { inherit packageOverrides; };
-        nix-prefetch-github = with final.python3.pkgs;
-          toPythonApplication nix-prefetch-github;
-      };
-      makeNixpkgs = system:
-        import nixpkgs {
-          inherit system;
-          overlays = [ self.overlay ];
-        };
       systemDependent = flake-utils.lib.eachDefaultSystem (system:
         let
-          pkgs = makeNixpkgs system;
+          pkgs = import nixpkgs {
+            inherit system;
+            overlays = [ self.overlay ];
+          };
           python = pkgs.python3;
           pythonEnvironment = python.withPackages (pythonPackages:
             with pythonPackages.nix-prefetch-github;
             with pythonPackages;
             buildInputs ++ propagatedBuildInputs ++ nativeBuildInputs
             ++ [ black flake8 mypy pytestcov twine virtualenv isort pytest ]);
-        in rec {
+        in {
           defaultPackage = with python.pkgs;
             toPythonApplication nix-prefetch-github;
           packages = {
@@ -37,7 +29,7 @@
             buildInputs = with pkgs; [ git pythonEnvironment nixfmt ];
           };
           checks = {
-            inherit defaultPackage;
+            defaultPackage = self.defaultPackage.${system};
             nixfmt-check = pkgs.runCommand "nixfmt-nix-prefetch-github" { } ''
               ${pkgs.nixfmt}/bin/nixfmt --check \
                 $(find ${self} -type f -name '*.nix')
@@ -70,6 +62,14 @@
             '';
           };
         });
-      systemIndependent = { inherit overlay; };
+      systemIndependent = {
+        overlay = final: prev: {
+          python3 = prev.python3.override {
+            packageOverrides = import nix/package-overrides.nix;
+          };
+          nix-prefetch-github = with final.python3.pkgs;
+            toPythonApplication nix-prefetch-github;
+        };
+      };
     in systemDependent // systemIndependent;
 }
