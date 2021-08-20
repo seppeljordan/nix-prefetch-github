@@ -14,11 +14,33 @@ command line example
 ::
 
     $ nix-prefetch-github seppeljordan nix-prefetch-github
+
+    this derivation will be built:
+      /nix/store/81pc9rhpfw47khbf5g6s8frf3c9idndr-source.drv
+    building '/nix/store/81pc9rhpfw47khbf5g6s8frf3c9idndr-source.drv'...
+    exporting https://github.com/seppeljordan/nix-prefetch-github.git (rev ac1135c6e442aa738012bf03acad1406e2c33813) into /nix/store/sjmd6h045cp416pmfbxr1idsidcd7bl0-source
+    Initialized empty Git repository in /nix/store/sjmd6h045cp416pmfbxr1idsidcd7bl0-source/.git/
+    remote: Enumerating objects: 77, done.
+    remote: Counting objects: 100% (77/77), done.
+    remote: Compressing objects: 100% (71/71), done.
+    remote: Total 77 (delta 1), reused 42 (delta 0), pack-reused 0
+    Unpacking objects: 100% (77/77), 92.42 KiB | 610.00 KiB/s, done.
+    From https://github.com/seppeljordan/nix-prefetch-github
+     * branch            HEAD       -> FETCH_HEAD
+    Switched to a new branch 'fetchgit'
+    removing `.git'...
+    error: hash mismatch in fixed-output derivation '/nix/store/81pc9rhpfw47khbf5g6s8frf3c9idndr-source.drv':
+	     specified: sha256-u42evoAl/P3/Ad6lcXgS1+dd2fcBwEqu4gNU/OjxlPg=
+		got:    sha256-UaNZNLcjBVx2FVSBNHW8pIle+77QZAze801vjbiJHEI=
+
+    /nix/store/r4s5kri1ppqbvkpfm7gcv38x8dvsf0x3-source
+
     {
-        "owner": "seppeljordan",
-        "repo": "nix-prefetch-github",
-        "rev": "603f42203db128a7aaa091cf34d406bf7a80e9f0",
-        "sha256": "1wrvvy85x7yqj4rkgpj93cdnhalyhzpr8pmyca38v59lm5ndh2w4"
+	"owner": "seppeljordan",
+	"repo": "nix-prefetch-github",
+	"rev": "ac1135c6e442aa738012bf03acad1406e2c33813",
+	"sha256": "UaNZNLcjBVx2FVSBNHW8pIle+77QZAze801vjbiJHEI=",
+	"fetchSubmodules": true
     }
 
 python example
@@ -26,12 +48,30 @@ python example
 
 ::
 
-    Python 3.6.4 (default, Dec 19 2017, 05:36:13)
-    [GCC 7.3.0] on linux
+    $ python
+    Python 3.8.9 (default, Apr  2 2021, 11:20:07)
+    [GCC 10.3.0] on linux
     Type "help", "copyright", "credits" or "license" for more information.
     >>> import nix_prefetch_github
     >>> nix_prefetch_github.nix_prefetch_github(owner="seppeljordan", repo="nix-prefetch-github")
-    {'owner': 'seppeljordan', 'repo': 'nix-prefetch-github', 'rev': '603f42203db128a7aaa091cf34d406bf7a80e9f0', 'sha256': '1wrvvy85x7yqj4rkgpj93cdnhalyhzpr8pmyca38v59lm5ndh2w4'}
+
+    this derivation will be built:
+      /nix/store/rd1aliq59rb580pfyz05h43kj87s09yp-source.drv
+    building '/nix/store/rd1aliq59rb580pfyz05h43kj87s09yp-source.drv'...
+
+    trying https://github.com/seppeljordan/nix-prefetch-github/archive/ac1135c6e442aa738012bf03acad1406e2c33813.tar.gz
+      % Total    % Received % Xferd  Average Speed   Time    Time     Time  Current
+				     Dload  Upload   Total   Spent    Left  Speed
+    100   174  100   174    0     0    646      0 --:--:-- --:--:-- --:--:--   646
+    100 88107    0 88107    0     0   149k      0 --:--:-- --:--:-- --:--:--  149k
+    unpacking source archive /build/ac1135c6e442aa738012bf03acad1406e2c33813.tar.gz
+    error: hash mismatch in fixed-output derivation '/nix/store/rd1aliq59rb580pfyz05h43kj87s09yp-source.drv':
+	     specified: sha256-u42evoAl/P3/Ad6lcXgS1+dd2fcBwEqu4gNU/OjxlPg=
+		got:    sha256-UaNZNLcjBVx2FVSBNHW8pIle+77QZAze801vjbiJHEI=
+
+    /nix/store/r4s5kri1ppqbvkpfm7gcv38x8dvsf0x3-source
+
+    PrefetchedRepository(repository=GithubRepository(owner='seppeljordan', name='nix-prefetch-github'), rev='ac1135c6e442aa738012bf03acad1406e2c33813', sha256='UaNZNLcjBVx2FVSBNHW8pIle+77QZAze801vjbiJHEI=', fetch_submodules=False)
 
 
 available commands
