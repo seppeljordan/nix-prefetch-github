@@ -141,6 +141,12 @@ repository.
 
       --help                      Show this message and exit.
 
+development environment
+-----------------------
+
+Use ``nix develop`` with flake support enabled.  Development without
+nix flake support is not officially supported.
+
 changes
 -------
 
