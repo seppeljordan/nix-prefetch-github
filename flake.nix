@@ -7,6 +7,7 @@
     let
       systemDependent = flake-utils.lib.eachDefaultSystem (system:
         let
+          isDarwinAarch = system == "aarch64-darwin";
           pkgs = import nixpkgs {
             inherit system;
             overlays = [ self.overlay ];
@@ -26,15 +27,14 @@
           };
           devShell = pkgs.mkShell {
             name = "dev-shell";
-            buildInputs = with pkgs; [ git pythonEnvironment nixfmt ];
+            buildInputs = with pkgs;
+              [ git pythonEnvironment ]
+              # nix code formatting on aarch64-darwin is not available
+              # since ghc is broken on that system.
+              ++ (nixpkgs.lib.optional (!isDarwinAarch) nixpkgs);
           };
           checks = {
             defaultPackage = self.defaultPackage.${system};
-            nixfmt-check = pkgs.runCommand "nixfmt-nix-prefetch-github" { } ''
-              ${pkgs.nixfmt}/bin/nixfmt --check \
-                $(find ${self} -type f -name '*.nix')
-              mkdir $out
-            '';
             black-check = pkgs.runCommand "black-nix-prefetch-github" { } ''
               cd ${self}
               ${python.pkgs.black}/bin/black --check .
@@ -58,6 +58,16 @@
             flake8-check = pkgs.runCommand "flake8-nix-prefetch-github" { } ''
               cd ${self}
               ${python.pkgs.flake8}/bin/flake8
+              mkdir $out
+            '';
+          } // nixpkgs.lib.optionalAttrs (!isDarwinAarch) {
+            # Unfortunately ghc is broken on aarch64-darwin.  We
+            # ignore the nix formatting check since it is less
+            # important that formatting is checked on every possible
+            # system then that the program runs.
+            nixfmt-check = pkgs.runCommand "nixfmt-nix-prefetch-github" { } ''
+              ${pkgs.nixfmt}/bin/nixfmt --check \
+                $(find ${self} -type f -name '*.nix')
               mkdir $out
             '';
           };
