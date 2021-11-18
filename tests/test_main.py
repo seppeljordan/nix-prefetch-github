@@ -9,7 +9,7 @@ from .markers import network, requires_nix_build
 @network
 @requires_nix_build
 def test_main_script_outputs_valid_json(capsys):
-    main.callback(owner="seppeljordan", repo="nix-prefetch-github", nix=False)
+    main(["seppeljordan", "nix-prefetch-github"])
     captured = capsys.readouterr()
     json.loads(captured.out)
 
@@ -17,6 +17,6 @@ def test_main_script_outputs_valid_json(capsys):
 @network
 @requires_nix_build
 def test_main_script_outputs_valid_nix(capsys):
-    main.callback(owner="seppeljordan", repo="nix-prefetch-github", nix=True)
+    main(["seppeljordan", "nix-prefetch-github"])
     captured = capsys.readouterr()
     subprocess.run(["nix-instantiate", "--expr", captured.out])

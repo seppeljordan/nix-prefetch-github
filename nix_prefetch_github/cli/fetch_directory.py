@@ -1,4 +1,5 @@
-import click
+import argparse
+
 from effect import Effect
 from effect.do import do
 
@@ -6,38 +7,52 @@ from nix_prefetch_github.core import GetCurrentDirectory, prefetch_directory
 from nix_prefetch_github.effects import perform_effects
 
 
-@click.command("nix-prefetch-github-directory")
-@click.option("--directory", default=None)
-@click.option("--nix", is_flag=True, help="Format output as Nix expression")
-@click.option(
-    "--prefetch/--no-prefetch",
-    default=True,
-    help="Prefetch given repository into nix store",
-)
-@click.option("--remote", default="origin")
-@click.option(
-    "--fetch-submodules",
-    is_flag=True,
-    help="Whether to fetch submodules contained in the target repository",
-)
-def main(directory, nix, prefetch, fetch_submodules, remote):
+def main(args=None):
+    arguments = parser_arguments(args)
+
     @do
     def detect_directory_and_prefetch():
-        nonlocal directory
-        if not directory:
+        if not arguments.directory:
             directory = yield Effect(GetCurrentDirectory())
         return prefetch_directory(
             directory=directory,
-            remote=remote,
-            prefetch=prefetch,
-            fetch_submodules=fetch_submodules,
+            remote=arguments.remote,
+            prefetch=arguments.prefetch,
+            fetch_submodules=arguments.fetch_submodules,
         )
 
     prefetched_repository = perform_effects(detect_directory_and_prefetch())
-    if nix:
+    if arguments.nix:
         print(prefetched_repository.to_nix_expression())
     else:
         print(prefetched_repository.to_json_string())
+
+
+def parser_arguments(arguments=None) -> argparse.Namespace:
+    parser = argparse.ArgumentParser()
+    parser.add_argument("--directory")
+    parser.add_argument(
+        "--nix",
+        action="store_true",
+        default=False,
+        help="Format output as Nix expression",
+    )
+    parser.add_argument("--json", dest="nix", action="store_false")
+    parser.add_argument("--remote", default="origin")
+    parser.add_argument(
+        "--prefetch",
+        default=False,
+        action="store_true",
+        help="Prefetch given repository into nix store",
+    )
+    parser.add_argument("--no-prefetch", dest="prefetch", action="store_false")
+    parser.add_argument(
+        "--fetch-submodules",
+        default=False,
+        action="store_true",
+        help="Whether to fetch submodules contained in the target repository",
+    )
+    return parser.parse_args(arguments)
 
 
 if __name__ == "__main__":

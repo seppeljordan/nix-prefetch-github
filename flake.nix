@@ -28,7 +28,10 @@
           devShell = pkgs.mkShell {
             name = "dev-shell";
             buildInputs = with pkgs;
-              [ git pythonEnvironment ]
+              [
+                git
+                pythonEnvironment
+              ]
               # nix code formatting on aarch64-darwin is not available
               # since ghc is broken on that system.
               ++ (nixpkgs.lib.optional (!isDarwinAarch) nixpkgs);

@@ -1,33 +1,36 @@
-import click
+import argparse
 
 from nix_prefetch_github.core import GithubRepository
 from nix_prefetch_github.public import prefetch_latest_release
 
 
-@click.command("nix-prefetch-github-latest-release")
-@click.argument("owner")
-@click.argument("repo")
-@click.option("--nix", is_flag=True, help="Format output as Nix expression")
-@click.option(
-    "--prefetch/--no-prefetch",
-    default=True,
-    help="Prefetch given repository into nix store",
-)
-@click.option(
-    "--fetch-submodules",
-    is_flag=True,
-    help="Whether to fetch submodules contained in the target repository",
-)
-def main(owner, repo, nix, prefetch, fetch_submodules):
+def main(args=None):
+    arguments = parse_arguments(args)
     prefetched_repository = prefetch_latest_release(
-        GithubRepository(owner=owner, name=repo),
-        prefetch=prefetch,
-        fetch_submodules=fetch_submodules,
+        GithubRepository(owner=arguments.owner, name=arguments.repo),
+        prefetch=arguments.prefetch,
+        fetch_submodules=arguments.fetch_submodules,
     )
-    if nix:
+    if arguments.nix:
         print(prefetched_repository.to_nix_expression())
     else:
         print(prefetched_repository.to_json_string())
+
+
+def parse_arguments(arguments) -> argparse.Namespace:
+    parser = argparse.ArgumentParser("nix-prefetch-github")
+    parser.add_argument("owner")
+    parser.add_argument("repo")
+    parser.add_argument("--fetch-submodules", action="store_true", default=False)
+    parser.add_argument(
+        "--no-fetch-submodules", action="store_false", dest="fetch_submodules"
+    )
+    parser.add_argument("--nix", default=False, action="store_true")
+    parser.add_argument("--json", dest="nix", action="store_false")
+    parser.add_argument("--version", "-V", action="store_true")
+    parser.add_argument("--prefetch", action="store_true")
+    parser.add_argument("--no-prefetch", action="store_false")
+    return parser.parse_args(arguments)
 
 
 if __name__ == "__main__":
