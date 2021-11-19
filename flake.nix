@@ -34,7 +34,7 @@
               ]
               # nix code formatting on aarch64-darwin is not available
               # since ghc is broken on that system.
-              ++ (nixpkgs.lib.optional (!isDarwinAarch) nixpkgs);
+              ++ (nixpkgs.lib.optional (!isDarwinAarch) nixfmt);
           };
           checks = {
             defaultPackage = self.defaultPackage.${system};
