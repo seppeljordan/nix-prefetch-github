@@ -21,7 +21,6 @@ from effect.do import do
 
 from .core import (
     AbortWithErrorMessage,
-    CalculateSha256Sum,
     CheckGitRepoIsDirty,
     DetectGithubRepository,
     DetectRevision,
@@ -36,8 +35,6 @@ from .core.list_remote import ListRemote
 from .templates import output_template
 
 trash_sha256 = "1y4ly7lgqm03wap4mh01yzcmvryp29w739fy07zzvz15h2z9x3dv"
-
-
 base_dispatcher = effect.ComposedDispatcher(
     [effect.base_dispatcher, effect.io.stdio_dispatcher]
 )
@@ -70,7 +67,6 @@ def dispatcher():
     composed_performers = make_effect_dispatcher(
         {
             GetRevisionForLatestRelease: get_revision_for_latest_release_performer,
-            CalculateSha256Sum: calculate_sha256_sum,
             GetListRemote: get_list_remote_performer,
             TryPrefetch: try_prefetch_performer,
             DetectGithubRepository: detect_github_repository,
@@ -158,47 +154,6 @@ def get_list_remote_performer(intent):
                 f"{command_effect} failed with returncode {returncode}."
             )
         )
-
-
-@do
-def calculate_sha256_sum(intent):
-    return_code, nix_output = yield Effect(
-        TryPrefetch(
-            repository=intent.repository,
-            sha256=trash_sha256,
-            rev=intent.revision,
-            fetch_submodules=intent.fetch_submodules,
-        )
-    )
-    return detect_actual_hash_from_nix_output(nix_output.splitlines())
-
-
-def detect_actual_hash_from_nix_output(lines):
-    nix_1_x_regexp = r"output path .* has .* hash '(?P<hash>[a-z0-9]{52})' when .*"
-    nix_2_0_regexp = r"fixed\-output derivation produced path .* with sha256 hash '(?P<hash>[a-z0-9]{52})' instead of the expected hash .*"
-    nix_2_2_regexp = r"  got: +sha256:(?P<hash>[a-z0-9]{52})"
-    nix_2_4_regexp = r" +got: +(sha256-)?(?P<hash>.+)"
-
-    def try_extract_hash(line: str) -> Optional[str]:
-        possible_patterns = [
-            re.compile(pattern)
-            for pattern in (
-                nix_1_x_regexp,
-                nix_2_0_regexp,
-                nix_2_2_regexp,
-                nix_2_4_regexp,
-            )
-        ]
-        for pattern in possible_patterns:
-            result: Optional[re.Match] = re.match(pattern, line)
-            if result:
-                return result.group("hash")
-        return None
-
-    for line in lines:
-        possible_result = try_extract_hash(line)
-        if possible_result:
-            return possible_result
 
 
 @sync_performer

@@ -1,4 +1,5 @@
 import json
+from typing import Optional
 
 from attr import attrib, attrs
 from effect import Effect
@@ -6,10 +7,11 @@ from effect.do import do
 
 from nix_prefetch_github.templates import output_template
 
-from .effects import AbortWithErrorMessage, CalculateSha256Sum, TryPrefetch
+from .effects import AbortWithErrorMessage, TryPrefetch
 from .error import AbortWithError
 from .hash import is_sha1_hash
 from .revision import RevisionIndex
+from .url_hasher import PrefetchOptions, UrlHasher
 
 
 def revision_not_found_errormessage(repository, revision):
@@ -21,14 +23,15 @@ def repository_not_found_error_message(repository):
 
 
 class _Prefetcher:
-    def __init__(self, repository):
+    def __init__(self, repository, url_hasher: UrlHasher):
         self._repository = repository
         self._revision_index = RevisionIndex(repository)
-        self._prefetched_repository = None
-        self._calculated_hash = None
+        self._prefetched_repository: Optional[PrefetchedRepository] = None
+        self._calculated_hash: Optional[str] = None
         self._prefetch = None
-        self._revision = None
-        self._fetch_submodules = None
+        self._revision: Optional[str] = None
+        self._fetch_submodules: Optional[bool] = None
+        self._url_hasher = url_hasher
 
     @do
     def prefetch_github(self, prefetch, rev, fetch_submodules):
@@ -77,12 +80,12 @@ class _Prefetcher:
 
     @do
     def _calculate_sha256_sum(self):
-        self._calculated_hash = yield Effect(
-            CalculateSha256Sum(
-                repository=self._repository,
-                revision=self._revision,
-                fetch_submodules=self._fetch_submodules,
-            )
+        assert self._revision is not None
+        assert self._fetch_submodules is not None
+        self._calculated_hash = self._url_hasher.calculate_sha256_sum(
+            repository=self._repository,
+            revision=self._revision,
+            prefetch_options=PrefetchOptions(fetch_submodules=self._fetch_submodules),
         )
         if not self._calculated_hash:
             yield Effect(
@@ -142,15 +145,19 @@ class PrefetchedRepository:
         )
 
 
-def prefetch_github(repository, prefetch=True, rev=None, fetch_submodules=True):
-    prefetcher = _Prefetcher(repository)
+def prefetch_github(
+    url_hasher: UrlHasher, repository, prefetch=True, rev=None, fetch_submodules=True
+):
+    prefetcher = _Prefetcher(repository, url_hasher)
     return prefetcher.prefetch_github(
         prefetch=prefetch, rev=rev, fetch_submodules=fetch_submodules
     )
 
 
-def prefetch_latest_release(repository, prefetch, fetch_submodules):
-    prefetcher = _Prefetcher(repository=repository)
+def prefetch_latest_release(
+    url_hasher: UrlHasher, repository, prefetch, fetch_submodules
+):
+    prefetcher = _Prefetcher(repository=repository, url_hasher=url_hasher)
     return prefetcher.prefetch_latest_release(
         prefetch=prefetch, fetch_submodules=fetch_submodules
     )

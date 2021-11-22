@@ -29,13 +29,6 @@ class TryPrefetch:
 
 
 @attrs
-class CalculateSha256Sum:
-    repository = attrib()
-    revision = attrib()
-    fetch_submodules = attrib()
-
-
-@attrs
 class DetectGithubRepository:
     directory = attrib()
     remote = attrib()

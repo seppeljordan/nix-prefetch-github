@@ -1,7 +1,6 @@
 from .directory import check_repository_is_dirty, prefetch_directory
 from .effects import (
     AbortWithErrorMessage,
-    CalculateSha256Sum,
     CheckGitRepoIsDirty,
     DetectGithubRepository,
     DetectRevision,
@@ -21,3 +20,27 @@ from .prefetch import (
     revision_not_found_errormessage,
 )
 from .repository import GithubRepository
+from .url_hasher import PrefetchOptions
+
+__all__ = [
+    "AbortWithError",
+    "AbortWithErrorMessage",
+    "CheckGitRepoIsDirty",
+    "DetectGithubRepository",
+    "DetectRevision",
+    "GetCurrentDirectory",
+    "GetListRemote",
+    "GetRevisionForLatestRelease",
+    "GithubRepository",
+    "PrefetchOptions",
+    "PrefetchedRepository",
+    "ShowWarning",
+    "TryPrefetch",
+    "check_repository_is_dirty",
+    "is_sha1_hash",
+    "prefetch_directory",
+    "prefetch_github",
+    "prefetch_latest_release",
+    "repository_not_found_error_message",
+    "revision_not_found_errormessage",
+]

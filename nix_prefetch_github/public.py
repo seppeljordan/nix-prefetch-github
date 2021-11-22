@@ -6,6 +6,7 @@ from nix_prefetch_github import core
 
 from .core import GithubRepository
 from .effects import perform_effects
+from .url_hasher import UrlHasherImpl
 
 
 def make_standalone(f):
@@ -19,6 +20,7 @@ def make_standalone(f):
 def nix_prefetch_github(owner, repo, prefetch=True, rev=None, fetch_submodules=False):
     return perform_effects(
         core.prefetch_github(
+            url_hasher=UrlHasherImpl(),
             repository=GithubRepository(owner=owner, name=repo),
             rev=rev,
             prefetch=prefetch,
