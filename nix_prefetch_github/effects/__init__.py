@@ -19,7 +19,7 @@ from effect import (
 )
 from effect.do import do
 
-from .core import (
+from ..core import (
     AbortWithErrorMessage,
     CheckGitRepoIsDirty,
     DetectGithubRepository,
@@ -28,11 +28,11 @@ from .core import (
     GetListRemote,
     GetRevisionForLatestRelease,
     GithubRepository,
+    ListRemote,
     ShowWarning,
     TryPrefetch,
 )
-from .core.list_remote import ListRemote
-from .templates import output_template
+from ..templates import output_template
 
 trash_sha256 = "1y4ly7lgqm03wap4mh01yzcmvryp29w739fy07zzvz15h2z9x3dv"
 base_dispatcher = effect.ComposedDispatcher(

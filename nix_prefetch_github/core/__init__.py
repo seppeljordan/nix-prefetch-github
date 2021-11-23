@@ -11,6 +11,7 @@ from .effects import (
     TryPrefetch,
 )
 from .error import AbortWithError
+from .list_remote import ListRemote
 from .prefetch import (
     PrefetchedRepository,
     is_sha1_hash,
@@ -32,6 +33,7 @@ __all__ = [
     "GetListRemote",
     "GetRevisionForLatestRelease",
     "GithubRepository",
+    "ListRemote",
     "PrefetchOptions",
     "PrefetchedRepository",
     "ShowWarning",

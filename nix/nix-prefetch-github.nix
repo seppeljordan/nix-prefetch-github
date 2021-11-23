@@ -1,10 +1,12 @@
-{ buildPythonPackage, attrs, effect, pytestCheckHook, git }:
+{ buildPythonPackage, attrs, effect, git }:
 buildPythonPackage {
   pname = "nix-prefetch-github";
   version = "dev";
   src = ../.;
   propagatedBuildInputs = [ attrs effect ];
-  disabledTests = [ "network" "requires_nix_build" ];
   checkInputs = [ git ];
-  buildInputs = [ pytestCheckHook ];
+  checkPhase = ''
+    python -m unittest discover
+  '';
+  DISABLED_TESTS = "network requires_nix_build";
 }

@@ -17,7 +17,7 @@
             with pythonPackages.nix-prefetch-github;
             with pythonPackages;
             buildInputs ++ propagatedBuildInputs ++ nativeBuildInputs
-            ++ [ black flake8 mypy pytestcov twine virtualenv isort pytest ]);
+            ++ [ black flake8 mypy twine virtualenv isort ]);
         in {
           defaultPackage = with python.pkgs;
             toPythonApplication nix-prefetch-github;
