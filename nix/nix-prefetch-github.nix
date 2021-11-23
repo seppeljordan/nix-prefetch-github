@@ -1,7 +1,8 @@
 { buildPythonPackage, attrs, effect, git }:
-buildPythonPackage {
+let version = builtins.readFile ../nix_prefetch_github/VERSION;
+in buildPythonPackage {
   pname = "nix-prefetch-github";
-  version = "dev";
+  version = "${version}-dev";
   src = ../.;
   propagatedBuildInputs = [ attrs effect ];
   checkInputs = [ git ];
