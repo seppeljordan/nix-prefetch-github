@@ -6,11 +6,6 @@ from attr import attrib, attrs
 
 
 @attrs
-class GetListRemote:
-    repository = attrib()
-
-
-@attrs
 class CheckGitRepoIsDirty:
     directory = attrib()
 

@@ -25,13 +25,12 @@ from ..core import (
     DetectGithubRepository,
     DetectRevision,
     GetCurrentDirectory,
-    GetListRemote,
     GetRevisionForLatestRelease,
     GithubRepository,
-    ListRemote,
     ShowWarning,
     TryPrefetch,
 )
+from ..remote_list_factory import RemoteListFactoryImpl
 from ..templates import output_template
 
 trash_sha256 = "1y4ly7lgqm03wap4mh01yzcmvryp29w739fy07zzvz15h2z9x3dv"
@@ -62,12 +61,11 @@ def dispatcher():
             ExecuteCommand: execute_command_performer,
             GetCurrentDirectory: get_current_directory_performer,
             ShowWarning: show_warning_performer,
+            GetRevisionForLatestRelease: get_revision_for_latest_release_performer,
         }
     )
     composed_performers = make_effect_dispatcher(
         {
-            GetRevisionForLatestRelease: get_revision_for_latest_release_performer,
-            GetListRemote: get_list_remote_performer,
             TryPrefetch: try_prefetch_performer,
             DetectGithubRepository: detect_github_repository,
             DetectRevision: detect_revision,
@@ -137,25 +135,6 @@ def try_prefetch_performer(try_prefetch):
         return result
 
 
-@do
-def get_list_remote_performer(intent):
-    repository_url = intent.repository.url()
-    command_effect = ExecuteCommand(
-        command=["git", "ls-remote", "--symref", repository_url],
-        environment_variables={"GIT_ASKPASS": "", "GIT_TERMINAL_PROMPT": "0"},
-    )
-
-    returncode, stdout = yield Effect(command_effect)
-    if not returncode:
-        return ListRemote.from_git_ls_remote_output(stdout)
-    else:
-        yield Effect(
-            AbortWithErrorMessage(
-                f"{command_effect} failed with returncode {returncode}."
-            )
-        )
-
-
 @sync_performer
 def execute_command_performer(_, intent):
     target_environment = dict(os.environ, **intent.environment_variables)
@@ -206,8 +185,8 @@ def check_git_repo_is_dirty_performer(intent):
     return returncode != 0
 
 
-@do
-def get_revision_for_latest_release_performer(intent):
+@sync_performer
+def get_revision_for_latest_release_performer(_, intent):
     url = f"https://api.github.com/repos/{intent.repository.owner}/{intent.repository.name}/releases/latest"
     try:
         with urlopen(url) as response:
@@ -217,7 +196,8 @@ def get_revision_for_latest_release_performer(intent):
         return None
     content_json = json.loads(content_data.decode(encoding))
     tag = content_json["tag_name"]
-    remote_list = yield Effect(GetListRemote(intent.repository))
+    remote_list = RemoteListFactoryImpl().get_remote_list(intent.repository)
+    assert remote_list
     return remote_list.tag(tag)
 
 

@@ -7,7 +7,6 @@ from effect import Effect
 
 from nix_prefetch_github.core import (
     CheckGitRepoIsDirty,
-    GetListRemote,
     GetRevisionForLatestRelease,
     GithubRepository,
     TryPrefetch,
@@ -29,20 +28,6 @@ class DispatcherTests(TestCase):
 
     def tearDown(self):
         shutil.rmtree(self.tmpdir)
-
-    @network
-    def test_get_list_remote_retrieves_correct_tags(self):
-        repository = GithubRepository(owner="seppeljordan", name="nix-prefetch-github")
-        remote = perform_effects(Effect(GetListRemote(repository=repository)))
-        self.assertEqual(remote.tag("v2.3"), "e632ce77435a4ab269c227c3ebcbaeaf746f8627")
-
-    @network
-    def test_get_list_remote_returns_none_for_none_existing_repos(self):
-        repository = GithubRepository(
-            owner="seppeljordan", name="non-existing-repo-123"
-        )
-        with self.assertRaises(SystemExit):
-            perform_effects(Effect(GetListRemote(repository=repository)))
 
     @network
     @requires_nix_build
