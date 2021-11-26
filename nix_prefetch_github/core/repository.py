@@ -1,10 +1,10 @@
-from attr import attrib, attrs
+from dataclasses import dataclass
 
 
-@attrs
+@dataclass(frozen=True)
 class GithubRepository:
-    owner = attrib()
-    name = attrib()
+    owner: str
+    name: str
 
     def url(self):
         return f"https://github.com/{self.owner}/{self.name}.git"

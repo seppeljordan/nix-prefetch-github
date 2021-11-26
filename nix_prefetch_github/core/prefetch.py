@@ -7,10 +7,10 @@ from effect.do import do
 
 from nix_prefetch_github.templates import output_template
 
-from .effects import AbortWithErrorMessage, TryPrefetch
+from .effects import AbortWithErrorMessage, GetRevisionForLatestRelease, TryPrefetch
 from .error import AbortWithError
 from .hash import is_sha1_hash
-from .revision import RevisionIndex
+from .revision_index import RevisionIndex
 from .url_hasher import PrefetchOptions, UrlHasher
 
 
@@ -23,9 +23,11 @@ def repository_not_found_error_message(repository):
 
 
 class _Prefetcher:
-    def __init__(self, repository, url_hasher: UrlHasher):
+    def __init__(
+        self, repository, url_hasher: UrlHasher, revision_index: RevisionIndex
+    ):
         self._repository = repository
-        self._revision_index = RevisionIndex(repository)
+        self._revision_index = revision_index
         self._prefetched_repository: Optional[PrefetchedRepository] = None
         self._calculated_hash: Optional[str] = None
         self._prefetch = None
@@ -47,7 +49,9 @@ class _Prefetcher:
     def prefetch_latest_release(self, prefetch, fetch_submodules):
         self._prefetch = prefetch
         self._fetch_submodules = fetch_submodules
-        self._revision = yield self._revision_index.get_revision_for_latest_release()
+        self._revision = yield Effect(
+            GetRevisionForLatestRelease(repository=self._repository)
+        )
         if not self._revision:
             yield Effect(
                 AbortWithErrorMessage(
@@ -61,11 +65,16 @@ class _Prefetcher:
 
     @do
     def _detect_revision(self):
+        actual_rev: Optional[str]
         if isinstance(self._revision, str) and is_sha1_hash(self._revision):
             actual_rev = self._revision
+        elif self._revision is None:
+            actual_rev = self._revision_index.get_revision_by_name(
+                self._repository, "HEAD"
+            )
         else:
-            actual_rev = yield self._revision_index.get_revision_from_name(
-                self._revision
+            actual_rev = self._revision_index.get_revision_by_name(
+                self._repository, self._revision
             )
         if actual_rev is None:
             yield Effect(
@@ -146,18 +155,27 @@ class PrefetchedRepository:
 
 
 def prefetch_github(
-    url_hasher: UrlHasher, repository, prefetch=True, rev=None, fetch_submodules=True
+    url_hasher: UrlHasher,
+    revision_index: RevisionIndex,
+    repository,
+    prefetch=True,
+    rev=None,
+    fetch_submodules=True,
 ):
-    prefetcher = _Prefetcher(repository, url_hasher)
+    prefetcher = _Prefetcher(repository, url_hasher, revision_index)
     return prefetcher.prefetch_github(
         prefetch=prefetch, rev=rev, fetch_submodules=fetch_submodules
     )
 
 
 def prefetch_latest_release(
-    url_hasher: UrlHasher, repository, prefetch, fetch_submodules
+    url_hasher: UrlHasher,
+    revision_index: RevisionIndex,
+    repository,
+    prefetch,
+    fetch_submodules,
 ):
-    prefetcher = _Prefetcher(repository=repository, url_hasher=url_hasher)
+    prefetcher = _Prefetcher(repository, url_hasher, revision_index)
     return prefetcher.prefetch_latest_release(
         prefetch=prefetch, fetch_submodules=fetch_submodules
     )

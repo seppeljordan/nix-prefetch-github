@@ -2,13 +2,8 @@ from unittest import TestCase
 
 from effect.testing import perform_sequence
 
-from ..tests import FakeUrlHasher
-from .effects import (
-    AbortWithErrorMessage,
-    GetListRemote,
-    GetRevisionForLatestRelease,
-    TryPrefetch,
-)
+from ..tests import FakeListRemoteFactory, FakeUrlHasher
+from .effects import AbortWithErrorMessage, GetRevisionForLatestRelease, TryPrefetch
 from .error import AbortWithError
 from .list_remote import ListRemote
 from .prefetch import (
@@ -19,11 +14,17 @@ from .prefetch import (
     revision_not_found_errormessage,
 )
 from .repository import GithubRepository
+from .revision_index import RevisionIndex
 
 
 class PrefetchGithubTests(TestCase):
     def setUp(self) -> None:
+        self.repository = GithubRepository(
+            owner="seppeljordan",
+            name="pypi2nix",
+        )
         self.url_hasher = FakeUrlHasher()
+        self.list_remote_factory = FakeListRemoteFactory()
         self.pypi2nix_list_remote = ListRemote.from_git_ls_remote_output(
             "\n".join(
                 [
@@ -34,20 +35,14 @@ class PrefetchGithubTests(TestCase):
                 ]
             )
         )
+        self.list_remote_factory[self.repository] = self.pypi2nix_list_remote
+        self.revision_index = RevisionIndex(self.list_remote_factory)
 
     def test_prefetch_github_actual_prefetch(self):
-        repository = GithubRepository(
-            owner="seppeljordan",
-            name="pypi2nix",
-        )
         seq = [
             (
-                GetListRemote(repository=repository),
-                lambda i: self.pypi2nix_list_remote,
-            ),
-            (
                 TryPrefetch(
-                    repository=repository,
+                    repository=self.repository,
                     rev=self.pypi2nix_list_remote.branch("master"),
                     sha256="TEST_ACTUALHASH",
                     fetch_submodules=True,
@@ -56,7 +51,10 @@ class PrefetchGithubTests(TestCase):
             ),
         ]
         eff = prefetch_github(
-            url_hasher=self.url_hasher, repository=repository, prefetch=True
+            self.url_hasher,
+            self.revision_index,
+            repository=self.repository,
+            prefetch=True,
         )
         prefetch_result = perform_sequence(seq, eff)
         self.assertEqual(
@@ -65,46 +63,36 @@ class PrefetchGithubTests(TestCase):
         self.assertEqual(prefetch_result.sha256, "TEST_ACTUALHASH")
 
     def test_can_prefetch_from_tag_given_as_rev(self):
-        repository = GithubRepository(owner="seppeljordan", name="pypi2nix")
-        seq = [
-            (
-                GetListRemote(repository=repository),
-                lambda i: self.pypi2nix_list_remote,
-            ),
-        ]
         eff = prefetch_github(
-            url_hasher=self.url_hasher,
-            repository=repository,
+            self.url_hasher,
+            self.revision_index,
+            repository=self.repository,
             prefetch=False,
             rev="v1.0",
         )
-        prefetch_result = perform_sequence(seq, eff)
+        prefetch_result = perform_sequence([], eff)
         self.assertEqual(prefetch_result.rev, self.pypi2nix_list_remote.tag("v1.0"))
         self.assertEqual(prefetch_result.sha256, "TEST_ACTUALHASH")
 
     def test_prefetch_github_no_actual_prefetch(self):
-        repository = GithubRepository(owner="seppeljordan", name="pypi2nix")
-        seq = [
-            (
-                GetListRemote(repository=repository),
-                lambda i: self.pypi2nix_list_remote,
-            ),
-        ]
         eff = prefetch_github(
-            url_hasher=self.url_hasher, repository=repository, prefetch=False
+            self.url_hasher,
+            self.revision_index,
+            repository=self.repository,
+            prefetch=False,
         )
-        prefetch_result = perform_sequence(seq, eff)
+        prefetch_result = perform_sequence([], eff)
         self.assertEqual(
             prefetch_result.rev, self.pypi2nix_list_remote.branch("master")
         )
         self.assertEqual(prefetch_result.sha256, "TEST_ACTUALHASH")
 
     def test_prefetch_github_rev_given(self):
-        repository = GithubRepository(owner="seppeljordan", name="pypi2nix")
         commit_hash = "50553a665d2700c353ac41ab28c23b1027b7c1f0"
         eff = prefetch_github(
-            url_hasher=self.url_hasher,
-            repository=repository,
+            self.url_hasher,
+            self.revision_index,
+            repository=self.repository,
             prefetch=False,
             rev=commit_hash,
         )
@@ -113,79 +101,59 @@ class PrefetchGithubTests(TestCase):
         self.assertEqual(prefetch_result.sha256, "TEST_ACTUALHASH")
 
     def test_prefetch_aborts_when_rev_is_not_found(self):
-        repository = GithubRepository(owner="seppeljordan", name="pypi2nix")
         sequence = [
-            (
-                GetListRemote(repository=repository),
-                lambda _: self.pypi2nix_list_remote,
-            ),
             (
                 AbortWithErrorMessage(
                     revision_not_found_errormessage(
-                        repository=repository, revision="does-not-exist"
+                        repository=self.repository, revision="does-not-exist"
                     )
                 ),
                 lambda _: None,
             ),
         ]
         effect = prefetch_github(
-            url_hasher=self.url_hasher, repository=repository, rev="does-not-exist"
+            self.url_hasher,
+            self.revision_index,
+            repository=self.repository,
+            rev="does-not-exist",
         )
         with self.assertRaises(AbortWithError):
             perform_sequence(sequence, effect)
 
     def test_that_prefetch_github_understands_full_ref_names(self):
-        repository = GithubRepository(owner="seppeljordan", name="pypi2nix")
-        sequence = [
-            (
-                GetListRemote(repository=repository),
-                lambda i: self.pypi2nix_list_remote,
-            ),
-        ]
         effect = prefetch_github(
-            url_hasher=self.url_hasher,
-            repository=repository,
+            self.url_hasher,
+            self.revision_index,
+            repository=self.repository,
             prefetch=False,
             rev="refs/heads/master",
         )
-        prefetch_result = perform_sequence(sequence, effect)
+        prefetch_result = perform_sequence([], effect)
         self.assertEqual(
             prefetch_result.rev, self.pypi2nix_list_remote.branch("master")
         )
         self.assertEqual(prefetch_result.sha256, "TEST_ACTUALHASH")
 
     def test_that_prefetch_github_understands_fetch_submodules(self):
-        repository = GithubRepository(owner="seppeljordan", name="pypi2nix")
-        sequence = [
-            (
-                GetListRemote(repository=repository),
-                lambda i: self.pypi2nix_list_remote,
-            ),
-        ]
         effect = prefetch_github(
-            url_hasher=self.url_hasher,
-            repository=repository,
+            self.url_hasher,
+            self.revision_index,
+            repository=self.repository,
             prefetch=False,
             fetch_submodules=True,
         )
-        prefetch_info = perform_sequence(sequence, effect)
+        prefetch_info = perform_sequence([], effect)
         assert prefetch_info.fetch_submodules
 
     def test_that_prefetch_github_without_submodules_is_understood_and_respected(self):
-        repository = GithubRepository(owner="seppeljordan", name="pypi2nix")
-        sequence = [
-            (
-                GetListRemote(repository=repository),
-                lambda i: self.pypi2nix_list_remote,
-            ),
-        ]
         effect = prefetch_github(
-            url_hasher=self.url_hasher,
-            repository=repository,
+            self.url_hasher,
+            self.revision_index,
+            repository=self.repository,
             prefetch=False,
             fetch_submodules=False,
         )
-        prefetch_info = perform_sequence(sequence, effect)
+        prefetch_info = perform_sequence([], effect)
         assert not prefetch_info.fetch_submodules
 
 
@@ -217,6 +185,8 @@ class TestPrefetchLatest(TestCase):
     def setUp(self) -> None:
         self.repository = GithubRepository(owner="owner", name="repo")
         self.url_hasher = FakeUrlHasher()
+        self.list_remote_factory = FakeListRemoteFactory()
+        self.revision_index = RevisionIndex(self.list_remote_factory)
 
     def test_prefetch_latest_calculates_the_propper_commit(self):
         expected_revision = "123"
@@ -238,7 +208,11 @@ class TestPrefetchLatest(TestCase):
             ),
         ]
         effect = prefetch_latest_release(
-            self.url_hasher, self.repository, prefetch=True, fetch_submodules=False
+            self.url_hasher,
+            self.revision_index,
+            self.repository,
+            prefetch=True,
+            fetch_submodules=False,
         )
         result = perform_sequence(sequence, effect)
         assert result.rev == expected_revision
@@ -260,7 +234,11 @@ class TestPrefetchLatest(TestCase):
             ),
         ]
         effect = prefetch_latest_release(
-            self.url_hasher, self.repository, prefetch=True, fetch_submodules=False
+            self.url_hasher,
+            self.revision_index,
+            self.repository,
+            prefetch=True,
+            fetch_submodules=False,
         )
         with self.assertRaises(AbortWithError):
             perform_sequence(sequence, effect)
@@ -276,7 +254,11 @@ class TestPrefetchLatest(TestCase):
             ),
         ]
         effect = prefetch_latest_release(
-            self.url_hasher, self.repository, prefetch=False, fetch_submodules=False
+            self.url_hasher,
+            self.revision_index,
+            self.repository,
+            prefetch=False,
+            fetch_submodules=False,
         )
         result = perform_sequence(sequence, effect)
         assert result.rev == expected_revision
@@ -293,7 +275,11 @@ class TestPrefetchLatest(TestCase):
             ),
         ]
         effect = prefetch_latest_release(
-            self.url_hasher, self.repository, prefetch=False, fetch_submodules=True
+            self.url_hasher,
+            self.revision_index,
+            self.repository,
+            prefetch=False,
+            fetch_submodules=True,
         )
         result = perform_sequence(sequence, effect)
         assert result.rev == expected_revision

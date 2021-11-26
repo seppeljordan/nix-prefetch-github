@@ -21,10 +21,12 @@ from .prefetch import (
     revision_not_found_errormessage,
 )
 from .repository import GithubRepository
+from .revision_index import RemoteListFactory, RevisionIndex
 from .url_hasher import PrefetchOptions
 
 __all__ = [
     "AbortWithError",
+    "RevisionIndex",
     "AbortWithErrorMessage",
     "CheckGitRepoIsDirty",
     "DetectGithubRepository",
@@ -36,6 +38,7 @@ __all__ = [
     "ListRemote",
     "PrefetchOptions",
     "PrefetchedRepository",
+    "RemoteListFactory",
     "ShowWarning",
     "TryPrefetch",
     "check_repository_is_dirty",

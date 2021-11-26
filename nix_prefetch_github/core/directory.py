@@ -8,12 +8,18 @@ from .effects import (
     ShowWarning,
 )
 from .prefetch import prefetch_github
+from .revision_index import RevisionIndex
 from .url_hasher import UrlHasher
 
 
 @do
 def prefetch_directory(
-    url_hasher: UrlHasher, directory, remote, prefetch=True, fetch_submodules=True
+    url_hasher: UrlHasher,
+    revision_index: RevisionIndex,
+    directory,
+    remote,
+    prefetch=True,
+    fetch_submodules=True,
 ):
     is_repo_dirty = yield check_repository_is_dirty(directory)
     if is_repo_dirty:
@@ -23,6 +29,7 @@ def prefetch_directory(
     )
     current_revision = yield Effect(DetectRevision(directory))
     prefetched_repository = yield prefetch_github(
+        revision_index=revision_index,
         url_hasher=url_hasher,
         repository=repository,
         prefetch=prefetch,

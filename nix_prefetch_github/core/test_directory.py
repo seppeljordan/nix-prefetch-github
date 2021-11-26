@@ -2,13 +2,14 @@ from unittest import TestCase
 
 from effect.testing import perform_sequence
 
-from ..tests import FakeUrlHasher
+from ..tests import FakeListRemoteFactory, FakeUrlHasher
 from . import (
     CheckGitRepoIsDirty,
     DetectGithubRepository,
     DetectRevision,
     GithubRepository,
     PrefetchedRepository,
+    RevisionIndex,
     ShowWarning,
     TryPrefetch,
     prefetch_directory,
@@ -18,6 +19,8 @@ from . import (
 class PrefetchDirectoryTests(TestCase):
     def setUp(self) -> None:
         self.url_hasher = FakeUrlHasher()
+        self.list_remote_factory = FakeListRemoteFactory()
+        self.revision_index = RevisionIndex(self.list_remote_factory)
 
     def test_prefetch_directory_with_clean_working_directory(self):
         repo_directory = "/directory"
@@ -50,7 +53,10 @@ class PrefetchDirectoryTests(TestCase):
             ),
         ]
         effect = prefetch_directory(
-            self.url_hasher, directory=repo_directory, remote=remote_name
+            self.url_hasher,
+            self.revision_index,
+            directory=repo_directory,
+            remote=remote_name,
         )
         prefetch_result = perform_sequence(sequence, effect)
         assert prefetch_result == expected
@@ -87,7 +93,10 @@ class PrefetchDirectoryTests(TestCase):
             ),
         ]
         effect = prefetch_directory(
-            self.url_hasher, directory=repo_directory, remote=remote_name
+            self.url_hasher,
+            self.revision_index,
+            directory=repo_directory,
+            remote=remote_name,
         )
         prefetch_result = perform_sequence(sequence, effect)
         assert prefetch_result == expected

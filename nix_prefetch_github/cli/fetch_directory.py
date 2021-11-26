@@ -3,8 +3,10 @@ import argparse
 from effect import Effect
 from effect.do import do
 
-from nix_prefetch_github.core import GetCurrentDirectory, prefetch_directory
-from nix_prefetch_github.effects import perform_effects
+from ..core import GetCurrentDirectory, RevisionIndex, prefetch_directory
+from ..effects import perform_effects
+from ..remote_list_factory import RemoteListFactoryImpl
+from ..url_hasher import UrlHasherImpl
 
 
 def main(args=None):
@@ -15,6 +17,8 @@ def main(args=None):
         if not arguments.directory:
             directory = yield Effect(GetCurrentDirectory())
         return prefetch_directory(
+            url_hasher=UrlHasherImpl(),
+            revision_index=RevisionIndex(RemoteListFactoryImpl()),
             directory=directory,
             remote=arguments.remote,
             prefetch=arguments.prefetch,
