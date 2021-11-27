@@ -3,7 +3,7 @@ from unittest import TestCase
 from effect.testing import perform_sequence
 
 from ..tests import FakeListRemoteFactory, FakeRevisionIndexFactory, FakeUrlHasher
-from .effects import AbortWithErrorMessage, GetRevisionForLatestRelease, TryPrefetch
+from .effects import AbortWithErrorMessage, GetRevisionForLatestRelease
 from .error import AbortWithError
 from .list_remote import ListRemote
 from .prefetch import (
@@ -38,25 +38,13 @@ class PrefetchGithubTests(TestCase):
             self.pypi2nix_list_remote
         )
 
-    def test_prefetch_github_actual_prefetch(self):
-        seq = [
-            (
-                TryPrefetch(
-                    repository=self.repository,
-                    rev=self.pypi2nix_list_remote.branch("master"),
-                    sha256="TEST_ACTUALHASH",
-                    fetch_submodules=True,
-                ),
-                lambda i: None,
-            ),
-        ]
+    def test_can_prefetch_from_branch(self):
         eff = prefetch_github(
             self.url_hasher,
             self.revision_index_factory,
             repository=self.repository,
-            prefetch=True,
         )
-        prefetch_result = perform_sequence(seq, eff)
+        prefetch_result = perform_sequence([], eff)
         self.assertEqual(
             prefetch_result.rev, self.pypi2nix_list_remote.branch("master")
         )
@@ -67,33 +55,18 @@ class PrefetchGithubTests(TestCase):
             self.url_hasher,
             self.revision_index_factory,
             repository=self.repository,
-            prefetch=False,
             rev="v1.0",
         )
         prefetch_result = perform_sequence([], eff)
         self.assertEqual(prefetch_result.rev, self.pypi2nix_list_remote.tag("v1.0"))
         self.assertEqual(prefetch_result.sha256, "TEST_ACTUALHASH")
 
-    def test_prefetch_github_no_actual_prefetch(self):
-        eff = prefetch_github(
-            self.url_hasher,
-            self.revision_index_factory,
-            repository=self.repository,
-            prefetch=False,
-        )
-        prefetch_result = perform_sequence([], eff)
-        self.assertEqual(
-            prefetch_result.rev, self.pypi2nix_list_remote.branch("master")
-        )
-        self.assertEqual(prefetch_result.sha256, "TEST_ACTUALHASH")
-
-    def test_prefetch_github_rev_given(self):
+    def test_can_prefetch_revision_from_its_sha_hash(self):
         commit_hash = "50553a665d2700c353ac41ab28c23b1027b7c1f0"
         eff = prefetch_github(
             self.url_hasher,
             self.revision_index_factory,
             repository=self.repository,
-            prefetch=False,
             rev=commit_hash,
         )
         prefetch_result = perform_sequence([], eff)
@@ -125,7 +98,6 @@ class PrefetchGithubTests(TestCase):
             self.url_hasher,
             self.revision_index_factory,
             repository=self.repository,
-            prefetch=False,
             rev="refs/heads/master",
         )
         prefetch_result = perform_sequence([], effect)
@@ -139,7 +111,6 @@ class PrefetchGithubTests(TestCase):
             self.url_hasher,
             self.revision_index_factory,
             repository=self.repository,
-            prefetch=False,
             fetch_submodules=True,
         )
         prefetch_info = perform_sequence([], effect)
@@ -150,7 +121,6 @@ class PrefetchGithubTests(TestCase):
             self.url_hasher,
             self.revision_index_factory,
             repository=self.repository,
-            prefetch=False,
             fetch_submodules=False,
         )
         prefetch_info = perform_sequence([], effect)
@@ -196,21 +166,11 @@ class TestPrefetchLatest(TestCase):
                 GetRevisionForLatestRelease(repository=self.repository),
                 lambda _: expected_revision,
             ),
-            (
-                TryPrefetch(
-                    repository=self.repository,
-                    sha256=expected_sha256,
-                    rev=expected_revision,
-                    fetch_submodules=False,
-                ),
-                lambda _: None,
-            ),
         ]
         effect = prefetch_latest_release(
             self.url_hasher,
             self.revision_index_factory,
             self.repository,
-            prefetch=True,
             fetch_submodules=False,
         )
         result = perform_sequence(sequence, effect)
@@ -236,32 +196,10 @@ class TestPrefetchLatest(TestCase):
             self.url_hasher,
             self.revision_index_factory,
             self.repository,
-            prefetch=True,
             fetch_submodules=False,
         )
         with self.assertRaises(AbortWithError):
             perform_sequence(sequence, effect)
-
-    def test_prefetch_latest_respects_no_prefetching(self):
-        expected_revision = "123"
-        expected_sha256 = "456"
-        self.url_hasher.default_hash = expected_sha256
-        sequence = [
-            (
-                GetRevisionForLatestRelease(repository=self.repository),
-                lambda _: expected_revision,
-            ),
-        ]
-        effect = prefetch_latest_release(
-            self.url_hasher,
-            self.revision_index_factory,
-            self.repository,
-            prefetch=False,
-            fetch_submodules=False,
-        )
-        result = perform_sequence(sequence, effect)
-        assert result.rev == expected_revision
-        assert result.sha256 == expected_sha256
 
     def test_prefetch_latest_respects_fetching_submodules(self):
         expected_revision = "123"
@@ -277,7 +215,6 @@ class TestPrefetchLatest(TestCase):
             self.url_hasher,
             self.revision_index_factory,
             self.repository,
-            prefetch=False,
             fetch_submodules=True,
         )
         result = perform_sequence(sequence, effect)

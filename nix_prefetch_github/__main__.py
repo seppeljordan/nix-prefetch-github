@@ -17,7 +17,6 @@ def main(arguments=None):
     prefetched_repository = nix_prefetch_github(
         arguments.owner,
         arguments.repo,
-        arguments.prefetch,
         arguments.rev,
         fetch_submodules=arguments.fetch_submodules,
     )
@@ -46,8 +45,6 @@ def parse_arguments(arguments) -> argparse.Namespace:
     parser.add_argument("--nix", default=NIX_DEFAULT, action="store_true")
     parser.add_argument("--json", dest="nix", action="store_false")
     parser.add_argument("--version", "-V", action="store_true")
-    parser.add_argument("--prefetch", action="store_true")
-    parser.add_argument("--no-prefetch", action="store_false")
     return parser.parse_args(arguments)
 
 

@@ -4,13 +4,12 @@ import json
 from dataclasses import dataclass
 from typing import Optional, Protocol, cast
 
-from attr import attrib, attrs
 from effect import Effect
 from effect.do import do
 
 from nix_prefetch_github.templates import output_template
 
-from .effects import AbortWithErrorMessage, GetRevisionForLatestRelease, TryPrefetch
+from .effects import AbortWithErrorMessage, GetRevisionForLatestRelease
 from .error import AbortWithError
 from .hash import is_sha1_hash
 from .repository import GithubRepository
@@ -18,7 +17,9 @@ from .revision_index import RevisionIndex
 from .url_hasher import PrefetchOptions, UrlHasher
 
 
-def revision_not_found_errormessage(repository: GithubRepository, revision: str):
+def revision_not_found_errormessage(
+    repository: GithubRepository, revision: Optional[str]
+):
     return f"Revision {revision} not found for repository {repository.owner}/{repository.name}"
 
 
@@ -35,10 +36,10 @@ class _Prefetcher:
     def prefetch_github(
         self,
         repository: GithubRepository,
-        prefetch: bool,
-        rev,
+        rev: Optional[str],
         prefetch_options: PrefetchOptions,
     ):
+        revision: Optional[str]
         if rev is not None and self._is_proper_revision_hash(rev):
             revision = rev
         else:
@@ -52,17 +53,12 @@ class _Prefetcher:
                 )
             )
             raise AbortWithError()
-        return (
-            yield self._prefetch_github(
-                repository, prefetch, revision, prefetch_options
-            )
-        )
+        return (yield self._prefetch_github(repository, revision, prefetch_options))
 
     @do
     def prefetch_latest_release(
         self,
         repository: GithubRepository,
-        prefetch: bool,
         prefetch_options: PrefetchOptions,
     ):
         revision = yield Effect(GetRevisionForLatestRelease(repository=repository))
@@ -71,17 +67,12 @@ class _Prefetcher:
                 AbortWithErrorMessage(repository_not_found_error_message(repository))
             )
             raise AbortWithError()
-        return (
-            yield self._prefetch_github(
-                repository, prefetch, revision, prefetch_options
-            )
-        )
+        return (yield self._prefetch_github(repository, revision, prefetch_options))
 
     @do
     def _prefetch_github(
         self,
         repository: GithubRepository,
-        prefetch: bool,
         revision: str,
         prefetch_options: PrefetchOptions,
     ):
@@ -97,13 +88,9 @@ class _Prefetcher:
                     )
                 )
             )
-        if prefetch:
-            yield self._prefetch_repository(
-                repository, revision, calculated_hash, prefetch_options
-            )
         return PrefetchedRepository(
             repository=repository,
-            sha256=calculated_hash,
+            sha256=cast(str, calculated_hash),
             rev=revision,
             fetch_submodules=prefetch_options.fetch_submodules,
         )
@@ -136,30 +123,13 @@ class _Prefetcher:
             prefetch_options=prefetch_options,
         )
 
-    @do
-    def _prefetch_repository(
-        self,
-        repository: GithubRepository,
-        revision: str,
-        calculated_hash: str,
-        prefetch_options: PrefetchOptions,
-    ):
-        yield Effect(
-            TryPrefetch(
-                repository=repository,
-                sha256=calculated_hash,
-                rev=revision,
-                fetch_submodules=prefetch_options.fetch_submodules,
-            )
-        )
 
-
-@attrs
+@dataclass(frozen=True)
 class PrefetchedRepository:
-    repository = attrib()
-    rev = attrib()
-    sha256 = attrib()
-    fetch_submodules = attrib()
+    repository: GithubRepository
+    rev: str
+    sha256: str
+    fetch_submodules: bool
 
     def to_nix_expression(self):
         return output_template(
@@ -193,15 +163,13 @@ class RevisionIndexFactory(Protocol):
 def prefetch_github(
     url_hasher: UrlHasher,
     revision_index_factory: RevisionIndexFactory,
-    repository,
-    prefetch=True,
-    rev=None,
-    fetch_submodules=True,
+    repository: GithubRepository,
+    rev: Optional[str] = None,
+    fetch_submodules: bool = True,
 ):
     prefetcher = _Prefetcher(url_hasher, revision_index_factory)
     return prefetcher.prefetch_github(
         repository=repository,
-        prefetch=prefetch,
         rev=rev,
         prefetch_options=PrefetchOptions(fetch_submodules=fetch_submodules),
     )
@@ -210,13 +178,11 @@ def prefetch_github(
 def prefetch_latest_release(
     url_hasher: UrlHasher,
     revision_index_factory: RevisionIndexFactory,
-    repository,
-    prefetch,
-    fetch_submodules,
+    repository: GithubRepository,
+    fetch_submodules: bool,
 ):
     prefetcher = _Prefetcher(url_hasher, revision_index_factory)
     return prefetcher.prefetch_latest_release(
         repository=repository,
-        prefetch=prefetch,
         prefetch_options=PrefetchOptions(fetch_submodules=fetch_submodules),
     )

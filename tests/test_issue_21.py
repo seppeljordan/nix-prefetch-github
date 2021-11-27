@@ -36,7 +36,6 @@ class TestIssue21(TestCase):
             self.url_hasher,
             self.revision_index_factory,
             repository=self.repository,
-            prefetch=False,
             rev="5.11.0",
         )
         prefetch_result = perform_sequence([], effect)

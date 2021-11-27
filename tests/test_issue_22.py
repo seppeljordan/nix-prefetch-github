@@ -38,7 +38,6 @@ class Issue22Tests(TestCase):
             self.url_hasher,
             self.revision_index_factory,
             repository=self.repository,
-            prefetch=False,
             rev="jrg/mvp",
         )
         prefetch_result = perform_sequence([], effect)

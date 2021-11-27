@@ -16,14 +16,6 @@ class ShowWarning:
 
 
 @attrs
-class TryPrefetch:
-    repository = attrib()
-    sha256 = attrib()
-    rev = attrib()
-    fetch_submodules = attrib()
-
-
-@attrs
 class DetectGithubRepository:
     directory = attrib()
     remote = attrib()

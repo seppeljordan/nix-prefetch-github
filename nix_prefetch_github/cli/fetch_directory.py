@@ -21,7 +21,6 @@ def main(args=None):
             revision_index_factory=dependency_injector.get_revision_index_factory(),
             directory=directory,
             remote=arguments.remote,
-            prefetch=arguments.prefetch,
             fetch_submodules=arguments.fetch_submodules,
         )
 
@@ -43,13 +42,6 @@ def parser_arguments(arguments=None) -> argparse.Namespace:
     )
     parser.add_argument("--json", dest="nix", action="store_false")
     parser.add_argument("--remote", default="origin")
-    parser.add_argument(
-        "--prefetch",
-        default=False,
-        action="store_true",
-        help="Prefetch given repository into nix store",
-    )
-    parser.add_argument("--no-prefetch", dest="prefetch", action="store_false")
     parser.add_argument(
         "--fetch-submodules",
         default=False,

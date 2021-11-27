@@ -14,11 +14,10 @@ from .url_hasher import UrlHasher
 @do
 def prefetch_directory(
     url_hasher: UrlHasher,
-    revision_index: RevisionIndexFactory,
-    directory,
-    remote,
-    prefetch=True,
-    fetch_submodules=True,
+    revision_index_factory: RevisionIndexFactory,
+    directory: str,
+    remote: str,
+    fetch_submodules: bool = True,
 ):
     is_repo_dirty = yield check_repository_is_dirty(directory)
     if is_repo_dirty:
@@ -28,10 +27,9 @@ def prefetch_directory(
     )
     current_revision = yield Effect(DetectRevision(directory))
     prefetched_repository = yield prefetch_github(
-        revision_index_factory=revision_index,
+        revision_index_factory=revision_index_factory,
         url_hasher=url_hasher,
         repository=repository,
-        prefetch=prefetch,
         fetch_submodules=fetch_submodules,
         rev=current_revision,
     )

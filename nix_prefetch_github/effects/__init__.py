@@ -2,7 +2,6 @@ import json
 import os
 import re
 import sys
-from tempfile import TemporaryDirectory
 from urllib.error import HTTPError
 from urllib.request import urlopen
 
@@ -26,10 +25,8 @@ from ..core import (
     GetRevisionForLatestRelease,
     GithubRepository,
     ShowWarning,
-    TryPrefetch,
 )
 from ..remote_list_factory import RemoteListFactoryImpl
-from ..templates import output_template
 
 trash_sha256 = "1y4ly7lgqm03wap4mh01yzcmvryp29w739fy07zzvz15h2z9x3dv"
 base_dispatcher = effect.ComposedDispatcher(
@@ -59,14 +56,13 @@ def dispatcher():
             GetCurrentDirectory: get_current_directory_performer,
             ShowWarning: show_warning_performer,
             GetRevisionForLatestRelease: get_revision_for_latest_release_performer,
-            TryPrefetch: try_prefetch_performer,
             CheckGitRepoIsDirty: check_git_repo_is_dirty_performer,
+            DetectRevision: detect_revision,
         }
     )
     composed_performers = make_effect_dispatcher(
         {
             DetectGithubRepository: detect_github_repository,
-            DetectRevision: detect_revision,
         }
     )
     return ComposedDispatcher(
@@ -95,8 +91,8 @@ def detect_github_repository(intent):
         )
 
 
-@do
-def detect_revision(intent):
+@sync_performer
+def detect_revision(_, intent):
     _, stdout = run_command(command=["git", "rev-parse", "HEAD"], cwd=intent.directory)
     return stdout[:-1]
 
@@ -104,26 +100,6 @@ def detect_revision(intent):
 @sync_performer
 def get_current_directory_performer(_, _intent):
     return os.getcwd()
-
-
-@sync_performer
-def try_prefetch_performer(_, try_prefetch):
-    nix_code_calculate_hash = output_template(
-        owner=try_prefetch.repository.owner,
-        repo=try_prefetch.repository.name,
-        rev=try_prefetch.rev,
-        sha256=try_prefetch.sha256,
-        fetch_submodules=try_prefetch.fetch_submodules,
-    )
-    with TemporaryDirectory() as temp_dir_name:
-        nix_filename = temp_dir_name + "/prefetch-github.nix"
-        with open(nix_filename, "w") as f:
-            f.write(nix_code_calculate_hash)
-        result = run_command(
-            command=["nix-build", nix_filename, "--no-out-link"],
-            merge_stderr=True,
-        )
-        return result
 
 
 def perform_effects(effects):

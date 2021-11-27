@@ -8,7 +8,6 @@ def main(args=None):
     arguments = parse_arguments(args)
     prefetched_repository = prefetch_latest_release(
         GithubRepository(owner=arguments.owner, name=arguments.repo),
-        prefetch=arguments.prefetch,
         fetch_submodules=arguments.fetch_submodules,
     )
     if arguments.nix:
@@ -28,8 +27,6 @@ def parse_arguments(arguments) -> argparse.Namespace:
     parser.add_argument("--nix", default=False, action="store_true")
     parser.add_argument("--json", dest="nix", action="store_false")
     parser.add_argument("--version", "-V", action="store_true")
-    parser.add_argument("--prefetch", action="store_true")
-    parser.add_argument("--no-prefetch", action="store_false")
     return parser.parse_args(arguments)
 
 

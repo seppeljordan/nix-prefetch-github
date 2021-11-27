@@ -11,7 +11,6 @@ from . import (
     PrefetchedRepository,
     RevisionIndex,
     ShowWarning,
-    TryPrefetch,
     prefetch_directory,
 )
 from .list_remote import ListRemote
@@ -42,15 +41,6 @@ class PrefetchDirectoryTests(TestCase):
                 lambda _: github_repo,
             ),
             (DetectRevision(directory=repo_directory), lambda _: current_revision),
-            (
-                TryPrefetch(
-                    repository=github_repo,
-                    rev=current_revision,
-                    fetch_submodules=True,
-                    sha256=sha256_sum,
-                ),
-                lambda _: None,
-            ),
         ]
         effect = prefetch_directory(
             self.url_hasher,
@@ -82,15 +72,6 @@ class PrefetchDirectoryTests(TestCase):
                 lambda _: github_repo,
             ),
             (DetectRevision(directory=repo_directory), lambda _: current_revision),
-            (
-                TryPrefetch(
-                    repository=github_repo,
-                    rev=current_revision,
-                    fetch_submodules=True,
-                    sha256=sha256_sum,
-                ),
-                lambda _: None,
-            ),
         ]
         effect = prefetch_directory(
             self.url_hasher,

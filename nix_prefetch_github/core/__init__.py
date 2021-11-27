@@ -7,7 +7,6 @@ from .effects import (
     GetCurrentDirectory,
     GetRevisionForLatestRelease,
     ShowWarning,
-    TryPrefetch,
 )
 from .error import AbortWithError
 from .list_remote import ListRemote
@@ -39,7 +38,6 @@ __all__ = [
     "RevisionIndex",
     "RevisionIndexFactory",
     "ShowWarning",
-    "TryPrefetch",
     "UrlHasher",
     "check_repository_is_dirty",
     "is_sha1_hash",

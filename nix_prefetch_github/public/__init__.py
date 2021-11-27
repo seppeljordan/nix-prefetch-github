@@ -26,7 +26,7 @@ def make_standalone(f):
     return wrapper
 
 
-def nix_prefetch_github(owner, repo, prefetch=True, rev=None, fetch_submodules=False):
+def nix_prefetch_github(owner, repo, rev=None, fetch_submodules=False):
     injector = get_injector()
     return perform_effects(
         core.prefetch_github(
@@ -34,20 +34,18 @@ def nix_prefetch_github(owner, repo, prefetch=True, rev=None, fetch_submodules=F
             revision_index_factory=injector.get_revision_index_factory(),
             repository=core.GithubRepository(owner=owner, name=repo),
             rev=rev,
-            prefetch=prefetch,
             fetch_submodules=fetch_submodules,
         )
     )
 
 
-def prefetch_latest_release(repository, prefetch=True, fetch_submodules=False):
+def prefetch_latest_release(repository, fetch_submodules=False):
     injector = get_injector()
     return perform_effects(
         core.prefetch_latest_release(
             url_hasher=injector.get_url_hasher(),
             revision_index_factory=injector.get_revision_index_factory(),
             repository=repository,
-            prefetch=prefetch,
             fetch_submodules=fetch_submodules,
         )
     )

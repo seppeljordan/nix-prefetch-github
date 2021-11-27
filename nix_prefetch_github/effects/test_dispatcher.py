@@ -9,12 +9,11 @@ from nix_prefetch_github.core import (
     CheckGitRepoIsDirty,
     GetRevisionForLatestRelease,
     GithubRepository,
-    TryPrefetch,
     is_sha1_hash,
 )
 from nix_prefetch_github.effects import perform_effects
 
-from ..tests import network, requires_nix_build
+from ..tests import network
 
 
 class DispatcherTests(TestCase):
@@ -28,38 +27,6 @@ class DispatcherTests(TestCase):
 
     def tearDown(self):
         shutil.rmtree(self.tmpdir)
-
-    @network
-    @requires_nix_build
-    def test_try_prefetch_returns_errorcode_when_fetching_with_invalid_sha256(self):
-        repository = GithubRepository(owner="seppeljordan", name="nix-prefetch-github")
-        returncode, _ = perform_effects(
-            Effect(
-                TryPrefetch(
-                    repository=repository,
-                    sha256="abc",
-                    rev="e632ce77435a4ab269c227c3ebcbaeaf746f8627",
-                    fetch_submodules=True,
-                )
-            )
-        )
-        self.assertTrue(returncode)
-
-    @network
-    @requires_nix_build
-    def test_try_prefetch_actually_fetches_proper_commits_with_correct_hash(self):
-        repository = GithubRepository(owner="seppeljordan", name="nix-prefetch-github")
-        returncode, _ = perform_effects(
-            Effect(
-                TryPrefetch(
-                    repository=repository,
-                    sha256="sAXKffNUTfepcMfgOZahs7hofkMpsxI9NRhT2L17UCw=",
-                    rev="e632ce77435a4ab269c227c3ebcbaeaf746f8627",
-                    fetch_submodules=True,
-                )
-            )
-        )
-        self.assertFalse(returncode)
 
     @network
     def test_get_latest_revision(self):
