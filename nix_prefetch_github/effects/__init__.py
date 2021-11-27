@@ -1,15 +1,12 @@
 import json
 import os
 import re
-import subprocess
 import sys
 from tempfile import TemporaryDirectory
-from typing import Dict, Optional
 from urllib.error import HTTPError
 from urllib.request import urlopen
 
 import effect.io
-from attr import attrib, attrs
 from effect import (
     ComposedDispatcher,
     Effect,
@@ -19,6 +16,7 @@ from effect import (
 )
 from effect.do import do
 
+from ..command import run_command
 from ..core import (
     AbortWithErrorMessage,
     CheckGitRepoIsDirty,
@@ -58,18 +56,17 @@ def dispatcher():
     prefetch_dispatcher = TypeDispatcher(
         {
             AbortWithErrorMessage: abort_with_error_message_performer,
-            ExecuteCommand: execute_command_performer,
             GetCurrentDirectory: get_current_directory_performer,
             ShowWarning: show_warning_performer,
             GetRevisionForLatestRelease: get_revision_for_latest_release_performer,
+            TryPrefetch: try_prefetch_performer,
+            CheckGitRepoIsDirty: check_git_repo_is_dirty_performer,
         }
     )
     composed_performers = make_effect_dispatcher(
         {
-            TryPrefetch: try_prefetch_performer,
             DetectGithubRepository: detect_github_repository,
             DetectRevision: detect_revision,
-            CheckGitRepoIsDirty: check_git_repo_is_dirty_performer,
         }
     )
     return ComposedDispatcher(
@@ -79,10 +76,8 @@ def dispatcher():
 
 @do
 def detect_github_repository(intent):
-    returncode, stdout = yield Effect(
-        ExecuteCommand(
-            command=["git", "remote", "get-url", intent.remote], cwd=intent.directory
-        )
+    returncode, stdout = run_command(
+        command=["git", "remote", "get-url", intent.remote], cwd=intent.directory
     )
     match = re.match("(git@github.com:|https://github.com/)(.+)/(.+).git", stdout)
     if not match:
@@ -102,9 +97,7 @@ def detect_github_repository(intent):
 
 @do
 def detect_revision(intent):
-    returncode, stdout = yield Effect(
-        ExecuteCommand(command=["git", "rev-parse", "HEAD"], cwd=intent.directory)
-    )
+    _, stdout = run_command(command=["git", "rev-parse", "HEAD"], cwd=intent.directory)
     return stdout[:-1]
 
 
@@ -113,8 +106,8 @@ def get_current_directory_performer(_, _intent):
     return os.getcwd()
 
 
-@do
-def try_prefetch_performer(try_prefetch):
+@sync_performer
+def try_prefetch_performer(_, try_prefetch):
     nix_code_calculate_hash = output_template(
         owner=try_prefetch.repository.owner,
         repo=try_prefetch.repository.name,
@@ -126,33 +119,11 @@ def try_prefetch_performer(try_prefetch):
         nix_filename = temp_dir_name + "/prefetch-github.nix"
         with open(nix_filename, "w") as f:
             f.write(nix_code_calculate_hash)
-        result = yield Effect(
-            ExecuteCommand(
-                command=["nix-build", nix_filename, "--no-out-link"],
-                merge_stderr=True,
-            )
+        result = run_command(
+            command=["nix-build", nix_filename, "--no-out-link"],
+            merge_stderr=True,
         )
         return result
-
-
-@sync_performer
-def execute_command_performer(_, intent):
-    target_environment = dict(os.environ, **intent.environment_variables)
-    stderr = subprocess.STDOUT if intent.merge_stderr else subprocess.PIPE
-    process = subprocess.Popen(
-        intent.command,
-        stdout=subprocess.PIPE,
-        stderr=stderr,
-        universal_newlines=True,
-        cwd=intent.cwd,
-        env=target_environment,
-    )
-    process_stdout, process_stderr = process.communicate()
-    if intent.merge_stderr:
-        print(process_stdout, file=sys.stderr)
-    else:
-        print(process_stderr, file=sys.stderr)
-    return process.returncode, process_stdout
 
 
 def perform_effects(effects):
@@ -170,13 +141,11 @@ def show_warning_performer(_, intent):
     print(f"WARNING: {intent.message}", file=sys.stderr)
 
 
-@do
-def check_git_repo_is_dirty_performer(intent):
-    returncode, _ = yield Effect(
-        ExecuteCommand(
-            command=["git", "diff", "HEAD", "--quiet"],
-            cwd=intent.directory,
-        )
+@sync_performer
+def check_git_repo_is_dirty_performer(_, intent):
+    returncode, _ = run_command(
+        command=["git", "diff", "HEAD", "--quiet"],
+        cwd=intent.directory,
     )
     if returncode == 128:
         raise Exception(
@@ -199,11 +168,3 @@ def get_revision_for_latest_release_performer(_, intent):
     remote_list = RemoteListFactoryImpl().get_remote_list(intent.repository)
     assert remote_list
     return remote_list.tag(tag)
-
-
-@attrs
-class ExecuteCommand:
-    command = attrib()
-    cwd = attrib(default=None)
-    merge_stderr = attrib(default=False)
-    environment_variables: Dict[str, Optional[str]] = attrib(default={})
