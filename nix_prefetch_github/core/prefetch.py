@@ -1,6 +1,8 @@
+from __future__ import annotations
+
 import json
 from dataclasses import dataclass
-from typing import Optional, cast
+from typing import Optional, Protocol, cast
 
 from attr import attrib, attrs
 from effect import Effect
@@ -27,7 +29,7 @@ def repository_not_found_error_message(repository: GithubRepository):
 @dataclass(frozen=True)
 class _Prefetcher:
     url_hasher: UrlHasher
-    revision_index: RevisionIndex
+    revision_index_factory: RevisionIndexFactory
 
     @do
     def prefetch_github(
@@ -37,7 +39,10 @@ class _Prefetcher:
         rev,
         prefetch_options: PrefetchOptions,
     ):
-        revision = self._detect_revision(repository, rev)
+        if rev is not None and self._is_proper_revision_hash(rev):
+            revision = rev
+        else:
+            revision = self._detect_revision(repository, rev)
         if revision is None:
             yield Effect(
                 AbortWithErrorMessage(
@@ -103,18 +108,20 @@ class _Prefetcher:
             fetch_submodules=prefetch_options.fetch_submodules,
         )
 
+    def _is_proper_revision_hash(self, revision: str) -> bool:
+        return is_sha1_hash(revision)
+
     def _detect_revision(
         self, repository: GithubRepository, revision: Optional[str]
     ) -> Optional[str]:
         actual_rev: Optional[str]
-        if isinstance(revision, str) and is_sha1_hash(revision):
-            actual_rev = revision
-        elif revision is None:
-            actual_rev = self.revision_index.get_revision_by_name(repository, "HEAD")
+        revision_index = self.revision_index_factory.get_revision_index(repository)
+        if revision_index is None:
+            return None
+        if revision is None:
+            actual_rev = revision_index.get_revision_by_name("HEAD")
         else:
-            actual_rev = self.revision_index.get_revision_by_name(
-                repository, cast(str, revision)
-            )
+            actual_rev = revision_index.get_revision_by_name(cast(str, revision))
         return actual_rev
 
     def _calculate_sha256_sum(
@@ -176,15 +183,22 @@ class PrefetchedRepository:
         )
 
 
+class RevisionIndexFactory(Protocol):
+    def get_revision_index(
+        self, repository: GithubRepository
+    ) -> Optional[RevisionIndex]:
+        ...
+
+
 def prefetch_github(
     url_hasher: UrlHasher,
-    revision_index: RevisionIndex,
+    revision_index_factory: RevisionIndexFactory,
     repository,
     prefetch=True,
     rev=None,
     fetch_submodules=True,
 ):
-    prefetcher = _Prefetcher(url_hasher, revision_index)
+    prefetcher = _Prefetcher(url_hasher, revision_index_factory)
     return prefetcher.prefetch_github(
         repository=repository,
         prefetch=prefetch,
@@ -195,12 +209,12 @@ def prefetch_github(
 
 def prefetch_latest_release(
     url_hasher: UrlHasher,
-    revision_index: RevisionIndex,
+    revision_index_factory: RevisionIndexFactory,
     repository,
     prefetch,
     fetch_submodules,
 ):
-    prefetcher = _Prefetcher(url_hasher, revision_index)
+    prefetcher = _Prefetcher(url_hasher, revision_index_factory)
     return prefetcher.prefetch_latest_release(
         repository=repository,
         prefetch=prefetch,

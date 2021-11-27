@@ -7,15 +7,14 @@ from .effects import (
     DetectRevision,
     ShowWarning,
 )
-from .prefetch import prefetch_github
-from .revision_index import RevisionIndex
+from .prefetch import RevisionIndexFactory, prefetch_github
 from .url_hasher import UrlHasher
 
 
 @do
 def prefetch_directory(
     url_hasher: UrlHasher,
-    revision_index: RevisionIndex,
+    revision_index: RevisionIndexFactory,
     directory,
     remote,
     prefetch=True,
@@ -29,7 +28,7 @@ def prefetch_directory(
     )
     current_revision = yield Effect(DetectRevision(directory))
     prefetched_repository = yield prefetch_github(
-        revision_index=revision_index,
+        revision_index_factory=revision_index,
         url_hasher=url_hasher,
         repository=repository,
         prefetch=prefetch,

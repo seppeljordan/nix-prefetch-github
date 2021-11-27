@@ -8,13 +8,8 @@ from unittest import TestCase
 
 from effect.testing import perform_sequence
 
-from nix_prefetch_github.core import (
-    GithubRepository,
-    ListRemote,
-    RevisionIndex,
-    prefetch_github,
-)
-from nix_prefetch_github.tests import FakeListRemoteFactory, FakeUrlHasher
+from nix_prefetch_github.core import GithubRepository, ListRemote, prefetch_github
+from nix_prefetch_github.tests import FakeRevisionIndexFactory, FakeUrlHasher
 
 
 class Issue22Tests(TestCase):
@@ -33,17 +28,15 @@ class Issue22Tests(TestCase):
             owner="jraygauthier", name="nixos-secure-factory"
         )
         self.url_hasher = FakeUrlHasher()
-        self.list_remote_factory = FakeListRemoteFactory()
-        self.list_remote_factory[
-            self.repository
-        ] = self.nixos_secure_factory_ls_remote_output
-        self.revision_index = RevisionIndex(self.list_remote_factory)
+        self.revision_index_factory = FakeRevisionIndexFactory(
+            self.nixos_secure_factory_ls_remote_output
+        )
 
     def test_issue_22(self) -> None:
         self.url_hasher.default_hash = "TEST_HASH_SUM"
         effect = prefetch_github(
             self.url_hasher,
-            self.revision_index,
+            self.revision_index_factory,
             repository=self.repository,
             prefetch=False,
             rev="jrg/mvp",

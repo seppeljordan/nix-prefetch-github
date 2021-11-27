@@ -1,4 +1,5 @@
 import os
+import shlex
 import subprocess
 import sys
 from typing import Dict, List, Optional, Tuple
@@ -14,6 +15,7 @@ def run_command(
         environment_variables = dict()
     target_environment = dict(os.environ, **environment_variables)
     stderr = subprocess.STDOUT if merge_stderr else subprocess.PIPE
+    print(f"Running command: {shlex.join(command)}", file=sys.stderr)
     process = subprocess.Popen(
         command,
         stdout=subprocess.PIPE,

@@ -3,13 +3,13 @@ import argparse
 from effect import Effect
 from effect.do import do
 
-from ..core import GetCurrentDirectory, RevisionIndex, prefetch_directory
+from ..core import GetCurrentDirectory, prefetch_directory
+from ..dependency_injector import DependencyInjector
 from ..effects import perform_effects
-from ..remote_list_factory import RemoteListFactoryImpl
-from ..url_hasher import UrlHasherImpl
 
 
 def main(args=None):
+    dependency_injector = DependencyInjector()
     arguments = parser_arguments(args)
 
     @do
@@ -17,8 +17,8 @@ def main(args=None):
         if not arguments.directory:
             directory = yield Effect(GetCurrentDirectory())
         return prefetch_directory(
-            url_hasher=UrlHasherImpl(),
-            revision_index=RevisionIndex(RemoteListFactoryImpl()),
+            url_hasher=dependency_injector.get_url_hasher(),
+            revision_index_factory=dependency_injector.get_revision_index_factory(),
             directory=directory,
             remote=arguments.remote,
             prefetch=arguments.prefetch,

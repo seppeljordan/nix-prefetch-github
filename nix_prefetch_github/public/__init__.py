@@ -1,12 +1,21 @@
 """Provide routines to the public without the need to use the effect library"""
 
 from functools import wraps
+from typing import cast
 
 from nix_prefetch_github import core
 
+from ..dependency_injector import DependencyInjector
 from ..effects import perform_effects
-from ..remote_list_factory import RemoteListFactoryImpl
-from ..url_hasher import UrlHasherImpl
+
+_injector = None
+
+
+def get_injector() -> DependencyInjector:
+    global _injector
+    if _injector is None:
+        _injector = DependencyInjector()
+    return cast(DependencyInjector, _injector)
 
 
 def make_standalone(f):
@@ -18,12 +27,11 @@ def make_standalone(f):
 
 
 def nix_prefetch_github(owner, repo, prefetch=True, rev=None, fetch_submodules=False):
+    injector = get_injector()
     return perform_effects(
         core.prefetch_github(
-            url_hasher=UrlHasherImpl(),
-            revision_index=core.RevisionIndex(
-                remote_list_factory=RemoteListFactoryImpl()
-            ),
+            url_hasher=injector.get_url_hasher(),
+            revision_index_factory=injector.get_revision_index_factory(),
             repository=core.GithubRepository(owner=owner, name=repo),
             rev=rev,
             prefetch=prefetch,
@@ -33,12 +41,11 @@ def nix_prefetch_github(owner, repo, prefetch=True, rev=None, fetch_submodules=F
 
 
 def prefetch_latest_release(repository, prefetch=True, fetch_submodules=False):
+    injector = get_injector()
     return perform_effects(
         core.prefetch_latest_release(
-            url_hasher=UrlHasherImpl(),
-            revision_index=core.RevisionIndex(
-                remote_list_factory=RemoteListFactoryImpl()
-            ),
+            url_hasher=injector.get_url_hasher(),
+            revision_index_factory=injector.get_revision_index_factory(),
             repository=repository,
             prefetch=prefetch,
             fetch_submodules=fetch_submodules,

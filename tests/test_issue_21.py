@@ -8,13 +8,8 @@ from unittest import TestCase
 
 from effect.testing import perform_sequence
 
-from nix_prefetch_github.core import (
-    GithubRepository,
-    ListRemote,
-    RevisionIndex,
-    prefetch_github,
-)
-from nix_prefetch_github.tests import FakeListRemoteFactory, FakeUrlHasher
+from nix_prefetch_github.core import GithubRepository, ListRemote, prefetch_github
+from nix_prefetch_github.tests import FakeRevisionIndexFactory, FakeUrlHasher
 
 
 class TestIssue21(TestCase):
@@ -27,19 +22,19 @@ class TestIssue21(TestCase):
 
     def setUp(self) -> None:
         self.url_hasher = FakeUrlHasher()
-        self.list_remote_factory = FakeListRemoteFactory()
         self.repository = GithubRepository(
             owner="sensu",
             name="sensu-go",
         )
-        self.list_remote_factory[self.repository] = self.sensu_go_ls_remote_output
-        self.revision_index = RevisionIndex(self.list_remote_factory)
+        self.revision_index_factory = FakeRevisionIndexFactory(
+            self.sensu_go_ls_remote_output
+        )
 
     def test_prefetch_sensu_go_5_11(self):
         self.url_hasher.default_hash = "TEST_HASH_SUM"
         effect = prefetch_github(
             self.url_hasher,
-            self.revision_index,
+            self.revision_index_factory,
             repository=self.repository,
             prefetch=False,
             rev="5.11.0",

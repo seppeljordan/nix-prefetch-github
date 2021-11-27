@@ -2,7 +2,7 @@ from unittest import TestCase
 
 from effect.testing import perform_sequence
 
-from ..tests import FakeListRemoteFactory, FakeUrlHasher
+from ..tests import FakeUrlHasher
 from . import (
     CheckGitRepoIsDirty,
     DetectGithubRepository,
@@ -14,13 +14,13 @@ from . import (
     TryPrefetch,
     prefetch_directory,
 )
+from .list_remote import ListRemote
 
 
 class PrefetchDirectoryTests(TestCase):
     def setUp(self) -> None:
         self.url_hasher = FakeUrlHasher()
-        self.list_remote_factory = FakeListRemoteFactory()
-        self.revision_index = RevisionIndex(self.list_remote_factory)
+        self.revision_index = RevisionIndex(ListRemote())
 
     def test_prefetch_directory_with_clean_working_directory(self):
         repo_directory = "/directory"

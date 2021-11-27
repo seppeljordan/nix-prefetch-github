@@ -2,7 +2,7 @@ from unittest import TestCase
 
 from effect.testing import perform_sequence
 
-from ..tests import FakeListRemoteFactory, FakeUrlHasher
+from ..tests import FakeListRemoteFactory, FakeRevisionIndexFactory, FakeUrlHasher
 from .effects import AbortWithErrorMessage, GetRevisionForLatestRelease, TryPrefetch
 from .error import AbortWithError
 from .list_remote import ListRemote
@@ -14,7 +14,6 @@ from .prefetch import (
     revision_not_found_errormessage,
 )
 from .repository import GithubRepository
-from .revision_index import RevisionIndex
 
 
 class PrefetchGithubTests(TestCase):
@@ -35,8 +34,9 @@ class PrefetchGithubTests(TestCase):
                 ]
             )
         )
-        self.list_remote_factory[self.repository] = self.pypi2nix_list_remote
-        self.revision_index = RevisionIndex(self.list_remote_factory)
+        self.revision_index_factory = FakeRevisionIndexFactory(
+            self.pypi2nix_list_remote
+        )
 
     def test_prefetch_github_actual_prefetch(self):
         seq = [
@@ -52,7 +52,7 @@ class PrefetchGithubTests(TestCase):
         ]
         eff = prefetch_github(
             self.url_hasher,
-            self.revision_index,
+            self.revision_index_factory,
             repository=self.repository,
             prefetch=True,
         )
@@ -65,7 +65,7 @@ class PrefetchGithubTests(TestCase):
     def test_can_prefetch_from_tag_given_as_rev(self):
         eff = prefetch_github(
             self.url_hasher,
-            self.revision_index,
+            self.revision_index_factory,
             repository=self.repository,
             prefetch=False,
             rev="v1.0",
@@ -77,7 +77,7 @@ class PrefetchGithubTests(TestCase):
     def test_prefetch_github_no_actual_prefetch(self):
         eff = prefetch_github(
             self.url_hasher,
-            self.revision_index,
+            self.revision_index_factory,
             repository=self.repository,
             prefetch=False,
         )
@@ -91,7 +91,7 @@ class PrefetchGithubTests(TestCase):
         commit_hash = "50553a665d2700c353ac41ab28c23b1027b7c1f0"
         eff = prefetch_github(
             self.url_hasher,
-            self.revision_index,
+            self.revision_index_factory,
             repository=self.repository,
             prefetch=False,
             rev=commit_hash,
@@ -113,7 +113,7 @@ class PrefetchGithubTests(TestCase):
         ]
         effect = prefetch_github(
             self.url_hasher,
-            self.revision_index,
+            self.revision_index_factory,
             repository=self.repository,
             rev="does-not-exist",
         )
@@ -123,7 +123,7 @@ class PrefetchGithubTests(TestCase):
     def test_that_prefetch_github_understands_full_ref_names(self):
         effect = prefetch_github(
             self.url_hasher,
-            self.revision_index,
+            self.revision_index_factory,
             repository=self.repository,
             prefetch=False,
             rev="refs/heads/master",
@@ -137,7 +137,7 @@ class PrefetchGithubTests(TestCase):
     def test_that_prefetch_github_understands_fetch_submodules(self):
         effect = prefetch_github(
             self.url_hasher,
-            self.revision_index,
+            self.revision_index_factory,
             repository=self.repository,
             prefetch=False,
             fetch_submodules=True,
@@ -148,7 +148,7 @@ class PrefetchGithubTests(TestCase):
     def test_that_prefetch_github_without_submodules_is_understood_and_respected(self):
         effect = prefetch_github(
             self.url_hasher,
-            self.revision_index,
+            self.revision_index_factory,
             repository=self.repository,
             prefetch=False,
             fetch_submodules=False,
@@ -185,8 +185,7 @@ class TestPrefetchLatest(TestCase):
     def setUp(self) -> None:
         self.repository = GithubRepository(owner="owner", name="repo")
         self.url_hasher = FakeUrlHasher()
-        self.list_remote_factory = FakeListRemoteFactory()
-        self.revision_index = RevisionIndex(self.list_remote_factory)
+        self.revision_index_factory = FakeRevisionIndexFactory(ListRemote())
 
     def test_prefetch_latest_calculates_the_propper_commit(self):
         expected_revision = "123"
@@ -209,7 +208,7 @@ class TestPrefetchLatest(TestCase):
         ]
         effect = prefetch_latest_release(
             self.url_hasher,
-            self.revision_index,
+            self.revision_index_factory,
             self.repository,
             prefetch=True,
             fetch_submodules=False,
@@ -235,7 +234,7 @@ class TestPrefetchLatest(TestCase):
         ]
         effect = prefetch_latest_release(
             self.url_hasher,
-            self.revision_index,
+            self.revision_index_factory,
             self.repository,
             prefetch=True,
             fetch_submodules=False,
@@ -255,7 +254,7 @@ class TestPrefetchLatest(TestCase):
         ]
         effect = prefetch_latest_release(
             self.url_hasher,
-            self.revision_index,
+            self.revision_index_factory,
             self.repository,
             prefetch=False,
             fetch_submodules=False,
@@ -276,7 +275,7 @@ class TestPrefetchLatest(TestCase):
         ]
         effect = prefetch_latest_release(
             self.url_hasher,
-            self.revision_index,
+            self.revision_index_factory,
             self.repository,
             prefetch=False,
             fetch_submodules=True,

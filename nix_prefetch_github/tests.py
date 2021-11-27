@@ -1,8 +1,9 @@
 import os
 import unittest
+from dataclasses import dataclass
 from typing import Dict, Optional, Set
 
-from .core import GithubRepository, ListRemote, PrefetchOptions
+from .core import GithubRepository, ListRemote, PrefetchOptions, RevisionIndex
 
 
 def get_disabled_tests() -> Set[str]:
@@ -40,3 +41,13 @@ class FakeListRemoteFactory:
 
     def __setitem__(self, key: GithubRepository, value: ListRemote) -> None:
         self._remotes[key] = value
+
+
+@dataclass
+class FakeRevisionIndexFactory:
+    list_remote: ListRemote
+
+    def get_revision_index(
+        self, repository: GithubRepository
+    ) -> Optional[RevisionIndex]:
+        return RevisionIndex(self.list_remote)
