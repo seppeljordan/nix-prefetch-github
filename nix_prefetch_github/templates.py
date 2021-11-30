@@ -5,8 +5,7 @@ in
     owner = "{owner}";
     repo = "{repo}";
     rev = "{rev}";
-    sha256 = "{sha256}";
-    fetchSubmodules = {fetch_submodules};
+    sha256 = "{sha256}";{fetch_submodules}
   }}
 """
 
@@ -19,5 +18,5 @@ def output_template(
         repo=repo,
         rev=rev,
         sha256=sha256,
-        fetch_submodules="true" if fetch_submodules else "false",
+        fetch_submodules="\n    fetchSubmodules = true;" if fetch_submodules else "",
     )
