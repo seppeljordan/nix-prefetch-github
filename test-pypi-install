@@ -1,15 +1,15 @@
 #!/usr/bin/env python3
 from __future__ import annotations
 
+import argparse
 import os
 import shutil
 import subprocess
-from argparse import ArgumentParser
 from contextlib import contextmanager
 from dataclasses import dataclass
 from pathlib import Path
 from tempfile import TemporaryDirectory
-from typing import Generator
+from typing import Generator, Optional
 
 
 class Main:
@@ -97,7 +97,7 @@ class Virtualenv:
     def install(self, target: str) -> None:
         self.run(f"pip install {target}")
 
-    def install_without_deps(self, target, index=None) -> None:
+    def install_without_deps(self, target: str, index: Optional[str] = None) -> None:
         self.run(f"pip install --no-deps {target} {'-i '+index if index else ''}")
 
 
@@ -111,12 +111,12 @@ class Twine:
 
 
 class Configuration:
-    def get(self):
+    def get(self) -> ApplicationConfiguration:
         arguments = self._parse_args()
         return ApplicationConfiguration(do_upload_test=arguments.upload_test)
 
-    def _parse_args(self):
-        parser = ArgumentParser()
+    def _parse_args(self) -> argparse.Namespace:
+        parser = argparse.ArgumentParser()
         parser.add_argument("--upload-test", action="store_true", dest="upload_test")
         parser.add_argument(
             "--no-upload-test", action="store_false", dest="upload_test"

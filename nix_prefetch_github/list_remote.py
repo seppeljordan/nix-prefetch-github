@@ -31,13 +31,13 @@ class ListRemote:
     def branch(self, branch_name: str) -> Optional[str]:
         return self.heads.get(branch_name)
 
-    def symref(self, ref_name) -> Optional[str]:
+    def symref(self, ref_name: str) -> Optional[str]:
         return self.symrefs.get(ref_name)
 
-    def tag(self, tag_name) -> Optional[str]:
+    def tag(self, tag_name: str) -> Optional[str]:
         return self.tags.get(tag_name)
 
-    def full_ref_name(self, ref_name) -> Optional[str]:
+    def full_ref_name(self, ref_name: str) -> Optional[str]:
         try:
             kind = kind_from_ref(ref_name)
         except ValueError:
@@ -59,7 +59,7 @@ class _Builder:
         self.heads: Dict[str, str] = dict()
         self.tags: Dict[str, str] = dict()
 
-    def parse_line(self, line) -> None:
+    def parse_line(self, line: str) -> None:
         try:
             prefix, suffix = line.split("\t")
         except ValueError:

@@ -2,12 +2,13 @@ from dataclasses import dataclass
 from typing import Optional
 
 from .command import run_command
-from .core import GithubRepository, ListRemote
+from .list_remote import ListRemote
+from .repository import GithubRepository
 
 
 @dataclass(frozen=True)
-class RemoteListFactoryImpl:
-    def get_remote_list(self, repository: GithubRepository) -> Optional[ListRemote]:
+class ListRemoteFactoryImpl:
+    def get_list_remote(self, repository: GithubRepository) -> Optional[ListRemote]:
         repository_url = repository.url()
         returncode, output = run_command(
             command=["git", "ls-remote", "--symref", repository_url],

@@ -1,25 +1,21 @@
 from dataclasses import dataclass
-from logging import Logger
-from typing import Optional, Protocol
+from typing import Optional
 
-from .core import GithubRepository, ListRemote, RevisionIndex
-
-
-class RemoteListFactory(Protocol):
-    def get_remote_list(self, repository: GithubRepository) -> Optional[ListRemote]:
-        ...
+from .list_remote import ListRemote
 
 
-@dataclass
-class RevisionIndexFactoryImpl:
-    remote_list_factory: RemoteListFactory
-    logger: Logger
+@dataclass(frozen=True)
+class RevisionIndex:
+    remote_list: ListRemote
 
-    def get_revision_index(
-        self, repository: GithubRepository
-    ) -> Optional[RevisionIndex]:
-        remote_list = self.remote_list_factory.get_remote_list(repository)
-        if remote_list is None:
-            self.logger.error(f"Could not download git references for {repository}")
+    def get_revision_by_name(self, name: str) -> Optional[str]:
+        if self.remote_list is None:
             return None
-        return RevisionIndex(remote_list)
+        if (symref := self.remote_list.symref(name)) is not None:
+            name = symref
+        return (
+            self.remote_list.full_ref_name(name)
+            or self.remote_list.branch(name)
+            or self.remote_list.tag(f"{name}^{{}}")
+            or self.remote_list.tag(name)
+        )

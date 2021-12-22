@@ -1,6 +1,6 @@
 from unittest import TestCase
 
-from ..core import GithubRepository
+from ..repository import GithubRepository
 from ..tests import network, requires_nix_build
 from . import PrefetchOptions, UrlHasherImpl, detect_actual_hash_from_nix_output
 
@@ -36,7 +36,7 @@ class UrlHasherTests(TestCase):
 
 
 class DetectActualHashFromNixOutputTests(TestCase):
-    def setUp(self):
+    def setUp(self) -> None:
         self.data = (
             (
                 [
@@ -71,7 +71,7 @@ class DetectActualHashFromNixOutputTests(TestCase):
 
     def test_that_detect_actual_hash_from_nix_output_works_for_multiple_version_of_nix(
         self,
-    ):
+    ) -> None:
         # This test checks if the nix-prefetch-github is compatible with
         # different versions of nix
         for nix_build_output, actual_hash in self.data:

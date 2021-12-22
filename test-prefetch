@@ -5,3 +5,7 @@ set -x
 
 nix flake check --print-build-logs
 python -m unittest discover
+nix build
+nix-instantiate -E --strict "$(result/bin/nix-prefetch-github seppeljordan nix-prefetch-github --nix)"
+nix-instantiate -E --strict "$(result/bin/nix-prefetch-github-latest-release seppeljordan nix-prefetch-github --nix)"
+nix-instantiate -E --strict "$(result/bin/nix-prefetch-github-directory --nix)"

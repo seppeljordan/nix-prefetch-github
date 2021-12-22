@@ -1,6 +1,12 @@
 import argparse
+import sys
+from typing import List, Optional
 
-from .public import nix_prefetch_github
+from . import presenter
+from .dependency_injector import DependencyInjector
+from .interfaces import PrefetchOptions
+from .prefetch import PrefetchedRepository
+from .repository import GithubRepository
 from .version import VERSION_STRING
 
 PREFETCH_DEFAULT = True
@@ -9,29 +15,37 @@ FETCH_SUBMODULES_DEFAULT = True
 REV_DEFAULT = None
 
 
-def main(arguments=None):
-    arguments = parse_arguments(arguments)
+def main(argv: Optional[List[str]] = None) -> None:
+    arguments = parse_arguments(argv)
     if arguments.version:
         print_version_info()
         return None
-    prefetched_repository = nix_prefetch_github(
-        arguments.owner,
-        arguments.repo,
+    injector = DependencyInjector()
+    prefetcher = injector.get_prefetcher()
+    prefetch_options = PrefetchOptions(fetch_submodules=arguments.fetch_submodules)
+    prefetch_result = prefetcher.prefetch_github(
+        GithubRepository(arguments.owner, arguments.repo),
         arguments.rev,
-        fetch_submodules=arguments.fetch_submodules,
+        prefetch_options=prefetch_options,
     )
-    if arguments.nix:
-        output_to_user = prefetched_repository.to_nix_expression()
+    if isinstance(prefetch_result, PrefetchedRepository):
+        if arguments.nix:
+            output_to_user = presenter.to_nix_expression(
+                prefetch_result, prefetch_options
+            )
+        else:
+            output_to_user = presenter.to_json_string(prefetch_result, prefetch_options)
+        print(output_to_user, end="")
     else:
-        output_to_user = prefetched_repository.to_json_string()
-    print(output_to_user, end="")
+        print(presenter.render_prefetch_failure(prefetch_result), file=sys.stderr)
+        sys.exit(1)
 
 
 def print_version_info() -> None:
     print(f"nix-prefetch-github {VERSION_STRING}")
 
 
-def parse_arguments(arguments) -> argparse.Namespace:
+def parse_arguments(arguments: Optional[List[str]]) -> argparse.Namespace:
     parser = argparse.ArgumentParser("nix-prefetch-github")
     parser.add_argument("owner")
     parser.add_argument("repo")

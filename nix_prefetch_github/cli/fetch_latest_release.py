@@ -1,22 +1,37 @@
 import argparse
+import sys
+from typing import List, Optional
 
-from nix_prefetch_github.core import GithubRepository
-from nix_prefetch_github.public import prefetch_latest_release
+from nix_prefetch_github.repository import GithubRepository
+
+from .. import presenter
+from ..dependency_injector import DependencyInjector
+from ..interfaces import PrefetchedRepository, PrefetchOptions
 
 
-def main(args=None):
+def main(args: Optional[List[str]] = None) -> None:
+    injector = DependencyInjector()
     arguments = parse_arguments(args)
-    prefetched_repository = prefetch_latest_release(
-        GithubRepository(owner=arguments.owner, name=arguments.repo),
-        fetch_submodules=arguments.fetch_submodules,
+    repository = GithubRepository(owner=arguments.owner, name=arguments.repo)
+    prefetch_options = PrefetchOptions(fetch_submodules=arguments.fetch_submodules)
+    github_api = injector.get_github_api()
+    prefetcher = injector.get_prefetcher()
+    prefetched_repository = prefetcher.prefetch_github(
+        repository,
+        rev=github_api.get_tag_of_latest_release(repository),
+        prefetch_options=prefetch_options,
     )
-    if arguments.nix:
-        print(prefetched_repository.to_nix_expression())
+    if isinstance(prefetched_repository, PrefetchedRepository):
+        if arguments.nix:
+            print(presenter.to_nix_expression(prefetched_repository, prefetch_options))
+        else:
+            print(presenter.to_json_string(prefetched_repository, prefetch_options))
     else:
-        print(prefetched_repository.to_json_string())
+        print(presenter.render_prefetch_failure(prefetched_repository), file=sys.stderr)
+        sys.exit(1)
 
 
-def parse_arguments(arguments) -> argparse.Namespace:
+def parse_arguments(arguments: Optional[List[str]]) -> argparse.Namespace:
     parser = argparse.ArgumentParser("nix-prefetch-github")
     parser.add_argument("owner")
     parser.add_argument("repo")

@@ -22,40 +22,40 @@ cffdbcb3351f500b5ca8867a65261443b576b215	refs/tags/v2.0
 """
         self.remote_list = ListRemote.from_git_ls_remote_output(self.output)
 
-    def test_contains_master_branch(self):
+    def test_contains_master_branch(self) -> None:
         assert (
             self.remote_list.branch("master")
             == "9ce3bcc3610ffeb36f53bc690682f48c8d311764"
         )
 
-    def test_branch_returns_none_for_unknown_branch(self):
+    def test_branch_returns_none_for_unknown_branch(self) -> None:
         assert self.remote_list.branch("does not exist") is None
 
-    def test_contains_HEAD_symref(self):
+    def test_contains_HEAD_symref(self) -> None:
         assert self.remote_list.symref("HEAD") == "master"
 
-    def test_symref_returns_none_for_unknown_reference_name(self):
+    def test_symref_returns_none_for_unknown_reference_name(self) -> None:
         assert self.remote_list.symref("unknown") is None
 
-    def test_contains_tag_v2_0(self):
+    def test_contains_tag_v2_0(self) -> None:
         assert (
             self.remote_list.tag("v2.0") == "cffdbcb3351f500b5ca8867a65261443b576b215"
         )
 
-    def test_tag_returns_none_for_unkown_tag(self):
+    def test_tag_returns_none_for_unkown_tag(self) -> None:
         assert self.remote_list.tag("unkown") is None
 
-    def test_branch_with_slash_is_recognized(self):
+    def test_branch_with_slash_is_recognized(self) -> None:
         assert (
             self.remote_list.branch("test/branch")
             == "1234567789473873487438239389538913598723"
         )
 
-    def test_full_ref_name_resolves_refs_heads_master(self):
+    def test_full_ref_name_resolves_refs_heads_master(self) -> None:
         assert (
             self.remote_list.full_ref_name("refs/heads/master")
             == "9ce3bcc3610ffeb36f53bc690682f48c8d311764"
         )
 
-    def test_full_ref_name_returns_none_for_invalid_refs(self):
+    def test_full_ref_name_returns_none_for_invalid_refs(self) -> None:
         assert self.remote_list.full_ref_name("blabla") is None

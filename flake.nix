@@ -17,7 +17,7 @@
             with pythonPackages.nix-prefetch-github;
             with pythonPackages;
             buildInputs ++ propagatedBuildInputs ++ nativeBuildInputs
-            ++ [ black flake8 mypy twine virtualenv isort ]);
+            ++ [ black flake8 mypy twine virtualenv isort coverage ]);
         in {
           defaultPackage = with python.pkgs;
             toPythonApplication nix-prefetch-github;
@@ -53,7 +53,6 @@
               ${python.pkgs.isort}/bin/isort \
                   --settings-path setup.cfg \
                   --check-only \
-                  -df \
                   . \
                   test-pypi-install
               mkdir $out

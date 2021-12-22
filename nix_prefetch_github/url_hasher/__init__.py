@@ -5,8 +5,8 @@ from typing import List, Optional, Tuple
 from nix_prefetch_github.templates import output_template
 
 from ..command import run_command
-from ..core.repository import GithubRepository
-from ..core.url_hasher import PrefetchOptions
+from ..interfaces import PrefetchOptions
+from ..repository import GithubRepository
 
 trash_sha256 = "1y4ly7lgqm03wap4mh01yzcmvryp29w739fy07zzvz15h2z9x3dv"
 

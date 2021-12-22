@@ -6,5 +6,5 @@ class GithubRepository:
     owner: str
     name: str
 
-    def url(self):
+    def url(self) -> str:
         return f"https://github.com/{self.owner}/{self.name}.git"

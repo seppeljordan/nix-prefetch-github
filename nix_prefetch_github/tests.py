@@ -1,27 +1,21 @@
-import os
-import unittest
-from dataclasses import dataclass
-from typing import Dict, Optional, Set
+from os import getenv
+from typing import Optional
+from unittest import skipIf
 
-from .core import GithubRepository, ListRemote, PrefetchOptions, RevisionIndex
+from .interfaces import PrefetchOptions
+from .repository import GithubRepository
+from .revision_index import RevisionIndex
 
-
-def get_disabled_tests() -> Set[str]:
-    return set(os.getenv("DISABLED_TESTS", "").split())
-
-
-disabled_tests = get_disabled_tests()
-
-
-requires_nix_build = unittest.skipIf(
-    "requires_nix_build" in disabled_tests, "disabled via configuration"
+_disabled_tests = set(filter(bool, getenv("DISABLED_TESTS", "").split(" ")))
+network = skipIf("network" in _disabled_tests, "networking tests are disabled")
+requires_nix_build = skipIf(
+    "requires_nix_build" in _disabled_tests, "tests requiring nix build are disabled"
 )
-network = unittest.skipIf("network" in disabled_tests, "disabled via configuration")
 
 
 class FakeUrlHasher:
     def __init__(self) -> None:
-        self.default_hash = "TEST_ACTUALHASH"
+        self.sha256_sum: Optional[str] = None
 
     def calculate_sha256_sum(
         self,
@@ -29,25 +23,14 @@ class FakeUrlHasher:
         revision: str,
         prefetch_options: PrefetchOptions,
     ) -> Optional[str]:
-        return self.default_hash
+        return self.sha256_sum
 
 
-class FakeListRemoteFactory:
-    def __init__(self) -> None:
-        self._remotes: Dict[GithubRepository, ListRemote] = dict()
-
-    def get_remote_list(self, repository: GithubRepository) -> Optional[ListRemote]:
-        return self._remotes.get(repository)
-
-    def __setitem__(self, key: GithubRepository, value: ListRemote) -> None:
-        self._remotes[key] = value
-
-
-@dataclass
 class FakeRevisionIndexFactory:
-    list_remote: ListRemote
+    def __init__(self) -> None:
+        self.revision_index: Optional[RevisionIndex] = None
 
     def get_revision_index(
         self, repository: GithubRepository
     ) -> Optional[RevisionIndex]:
-        return RevisionIndex(self.list_remote)
+        return self.revision_index

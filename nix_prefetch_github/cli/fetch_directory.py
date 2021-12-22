@@ -1,37 +1,39 @@
 import argparse
+import os
+import sys
+from typing import List, Optional
 
-from effect import Effect
-from effect.do import do
-
-from ..core import GetCurrentDirectory, prefetch_directory
+from .. import presenter
 from ..dependency_injector import DependencyInjector
-from ..effects import perform_effects
+from ..interfaces import PrefetchedRepository, PrefetchOptions
 
 
-def main(args=None):
+def main(args: Optional[List[str]] = None) -> None:
     dependency_injector = DependencyInjector()
     arguments = parser_arguments(args)
-
-    @do
-    def detect_directory_and_prefetch():
-        if not arguments.directory:
-            directory = yield Effect(GetCurrentDirectory())
-        return prefetch_directory(
-            url_hasher=dependency_injector.get_url_hasher(),
-            revision_index_factory=dependency_injector.get_revision_index_factory(),
-            directory=directory,
-            remote=arguments.remote,
-            fetch_submodules=arguments.fetch_submodules,
-        )
-
-    prefetched_repository = perform_effects(detect_directory_and_prefetch())
-    if arguments.nix:
-        print(prefetched_repository.to_nix_expression())
+    repository_detector = dependency_injector.get_repository_detector()
+    prefetcher = dependency_injector.get_prefetcher()
+    directory = arguments.directory or os.getcwd()
+    repository = repository_detector.detect_github_repository(
+        directory, remote_name=arguments.remote
+    )
+    assert repository
+    revision = repository_detector.get_current_revision(directory)
+    prefetch_options = PrefetchOptions(fetch_submodules=arguments.fetch_submodules)
+    prefetched_repository = prefetcher.prefetch_github(
+        repository, revision, prefetch_options
+    )
+    if isinstance(prefetched_repository, PrefetchedRepository):
+        if arguments.nix:
+            print(presenter.to_nix_expression(prefetched_repository, prefetch_options))
+        else:
+            print(presenter.to_json_string(prefetched_repository, prefetch_options))
     else:
-        print(prefetched_repository.to_json_string())
+        print(presenter.render_prefetch_failure(prefetched_repository), file=sys.stderr)
+        sys.exit(1)
 
 
-def parser_arguments(arguments=None) -> argparse.Namespace:
+def parser_arguments(arguments: Optional[List[str]] = None) -> argparse.Namespace:
     parser = argparse.ArgumentParser()
     parser.add_argument("--directory")
     parser.add_argument(

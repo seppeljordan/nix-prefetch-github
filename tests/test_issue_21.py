@@ -6,9 +6,11 @@ https://github.com/seppeljordan/nix-prefetch-github/issues/21
 import os
 from unittest import TestCase
 
-from effect.testing import perform_sequence
-
-from nix_prefetch_github.core import GithubRepository, ListRemote, prefetch_github
+from nix_prefetch_github.interfaces import PrefetchOptions
+from nix_prefetch_github.list_remote import ListRemote
+from nix_prefetch_github.prefetch import PrefetchedRepository, PrefetcherImpl
+from nix_prefetch_github.repository import GithubRepository
+from nix_prefetch_github.revision_index import RevisionIndex
 from nix_prefetch_github.tests import FakeRevisionIndexFactory, FakeUrlHasher
 
 
@@ -26,18 +28,19 @@ class TestIssue21(TestCase):
             owner="sensu",
             name="sensu-go",
         )
-        self.revision_index_factory = FakeRevisionIndexFactory(
+        self.revision_index_factory = FakeRevisionIndexFactory()
+        self.prefetcher = PrefetcherImpl(self.url_hasher, self.revision_index_factory)
+
+    def test_prefetch_sensu_go_5_11(self) -> None:
+        self.url_hasher.sha256_sum = "TEST_HASH_SUM"
+        self.revision_index_factory.revision_index = RevisionIndex(
             self.sensu_go_ls_remote_output
         )
-
-    def test_prefetch_sensu_go_5_11(self):
-        self.url_hasher.default_hash = "TEST_HASH_SUM"
-        effect = prefetch_github(
-            self.url_hasher,
-            self.revision_index_factory,
+        result = self.prefetcher.prefetch_github(
             repository=self.repository,
             rev="5.11.0",
+            prefetch_options=PrefetchOptions(),
         )
-        prefetch_result = perform_sequence([], effect)
-        assert prefetch_result.rev == "dd8f160a9033ecb5ad0384baf6a9965fa7bd3c17"
-        assert prefetch_result.sha256 == "TEST_HASH_SUM"
+        assert isinstance(result, PrefetchedRepository)
+        assert result.rev == "dd8f160a9033ecb5ad0384baf6a9965fa7bd3c17"
+        assert result.sha256 == "TEST_HASH_SUM"
