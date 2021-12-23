@@ -1,0 +1,6 @@
+[run]
+omit =
+     */test_*.py
+     nix_prefetch_github/tests.py
+source =
+    nix_prefetch_github
