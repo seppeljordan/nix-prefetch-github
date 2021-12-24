@@ -6,14 +6,15 @@ from nix_prefetch_github.repository import GithubRepository
 
 from .. import presenter
 from ..dependency_injector import DependencyInjector
-from ..interfaces import PrefetchedRepository, PrefetchOptions
+from ..interfaces import PrefetchedRepository
+from .arguments import get_options_argument_parser
 
 
 def main(args: Optional[List[str]] = None) -> None:
     injector = DependencyInjector()
     arguments = parse_arguments(args)
     repository = GithubRepository(owner=arguments.owner, name=arguments.repo)
-    prefetch_options = PrefetchOptions(fetch_submodules=arguments.fetch_submodules)
+    prefetch_options = arguments.prefetch_options
     github_api = injector.get_github_api()
     prefetcher = injector.get_prefetcher()
     prefetched_repository = prefetcher.prefetch_github(
@@ -32,13 +33,11 @@ def main(args: Optional[List[str]] = None) -> None:
 
 
 def parse_arguments(arguments: Optional[List[str]]) -> argparse.Namespace:
-    parser = argparse.ArgumentParser("nix-prefetch-github")
+    parser = argparse.ArgumentParser(
+        "nix-prefetch-github", parents=[get_options_argument_parser()]
+    )
     parser.add_argument("owner")
     parser.add_argument("repo")
-    parser.add_argument("--fetch-submodules", action="store_true", default=False)
-    parser.add_argument(
-        "--no-fetch-submodules", action="store_false", dest="fetch_submodules"
-    )
     parser.add_argument("--nix", default=False, action="store_true")
     parser.add_argument("--json", dest="nix", action="store_false")
     parser.add_argument("--version", "-V", action="store_true")

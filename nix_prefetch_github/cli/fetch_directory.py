@@ -5,7 +5,8 @@ from typing import List, Optional
 
 from .. import presenter
 from ..dependency_injector import DependencyInjector
-from ..interfaces import PrefetchedRepository, PrefetchOptions
+from ..interfaces import PrefetchedRepository
+from .arguments import get_options_argument_parser
 
 
 def main(args: Optional[List[str]] = None) -> None:
@@ -19,7 +20,7 @@ def main(args: Optional[List[str]] = None) -> None:
     )
     assert repository
     revision = repository_detector.get_current_revision(directory)
-    prefetch_options = PrefetchOptions(fetch_submodules=arguments.fetch_submodules)
+    prefetch_options = arguments.prefetch_options
     prefetched_repository = prefetcher.prefetch_github(
         repository, revision, prefetch_options
     )
@@ -34,7 +35,7 @@ def main(args: Optional[List[str]] = None) -> None:
 
 
 def parser_arguments(arguments: Optional[List[str]] = None) -> argparse.Namespace:
-    parser = argparse.ArgumentParser()
+    parser = argparse.ArgumentParser(parents=[get_options_argument_parser()])
     parser.add_argument("--directory")
     parser.add_argument(
         "--nix",
@@ -44,12 +45,6 @@ def parser_arguments(arguments: Optional[List[str]] = None) -> argparse.Namespac
     )
     parser.add_argument("--json", dest="nix", action="store_false")
     parser.add_argument("--remote", default="origin")
-    parser.add_argument(
-        "--fetch-submodules",
-        default=False,
-        action="store_true",
-        help="Whether to fetch submodules contained in the target repository",
-    )
     return parser.parse_args(arguments)
 
 
