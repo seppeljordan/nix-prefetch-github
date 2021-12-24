@@ -15,6 +15,8 @@ def main(args: Optional[List[str]] = None) -> None:
     repository_detector = dependency_injector.get_repository_detector()
     prefetcher = dependency_injector.get_prefetcher()
     directory = arguments.directory or os.getcwd()
+    if repository_detector.is_repository_dirty(directory):
+        print(f"Warning: Git repository at `{directory}` is dirty", file=sys.stderr)
     repository = repository_detector.detect_github_repository(
         directory, remote_name=arguments.remote
     )
