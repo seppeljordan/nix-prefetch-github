@@ -1,5 +1,7 @@
+from logging import getLogger
 from unittest import TestCase
 
+from ..command import CommandRunner
 from ..repository import GithubRepository
 from ..tests import network, requires_nix_build
 from . import PrefetchOptions, UrlHasherImpl, detect_actual_hash_from_nix_output
@@ -9,7 +11,7 @@ from . import PrefetchOptions, UrlHasherImpl, detect_actual_hash_from_nix_output
 @network
 class UrlHasherTests(TestCase):
     def setUp(self) -> None:
-        self.hasher = UrlHasherImpl()
+        self.hasher = UrlHasherImpl(command_runner=CommandRunner(getLogger(__name__)))
         self.repository = GithubRepository(
             owner="git-up",
             name="test-repo-submodules",

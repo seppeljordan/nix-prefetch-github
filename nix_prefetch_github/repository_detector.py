@@ -1,13 +1,17 @@
 import re
+from dataclasses import dataclass
 from typing import Optional
 
-from .command import run_command
+from .command import CommandRunner
 from .repository import GithubRepository
 
 
+@dataclass
 class RepositoryDetectorImpl:
+    command_runner: CommandRunner
+
     def is_repository_dirty(self, directory: str) -> bool:
-        returncode, _ = run_command(
+        returncode, _ = self.command_runner.run_command(
             command=["git", "diff", "HEAD", "--quiet"],
             cwd=directory,
         )
@@ -20,13 +24,13 @@ class RepositoryDetectorImpl:
             remote = "origin"
         else:
             remote = remote_name
-        returncode, stdout = run_command(
+        returncode, stdout = self.command_runner.run_command(
             command=["git", "remote", "get-url", remote], cwd=directory
         )
         return detect_github_repository_from_remote_url(stdout)
 
     def get_current_revision(self, directory: str) -> Optional[str]:
-        exitcode, stdout = run_command(
+        exitcode, stdout = self.command_runner.run_command(
             command=["git", "rev-parse", "HEAD"], cwd=directory
         )
         if exitcode != 0:

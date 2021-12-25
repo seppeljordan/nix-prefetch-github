@@ -20,7 +20,8 @@ def main(argv: Optional[List[str]] = None) -> None:
     if arguments.version:
         print_version_info()
         return None
-    injector = DependencyInjector()
+    injector = DependencyInjector(logging_configuration=arguments.logging_configuration)
+    logger = injector.get_logger()
     prefetcher = injector.get_prefetcher()
     prefetch_options = arguments.prefetch_options
     prefetch_result = prefetcher.prefetch_github(
@@ -37,7 +38,7 @@ def main(argv: Optional[List[str]] = None) -> None:
             output_to_user = presenter.to_json_string(prefetch_result, prefetch_options)
         print(output_to_user, end="")
     else:
-        print(presenter.render_prefetch_failure(prefetch_result), file=sys.stderr)
+        logger.error(presenter.render_prefetch_failure(prefetch_result))
         sys.exit(1)
 
 

@@ -10,13 +10,16 @@ from .arguments import get_options_argument_parser
 
 
 def main(args: Optional[List[str]] = None) -> None:
-    dependency_injector = DependencyInjector()
     arguments = parser_arguments(args)
+    dependency_injector = DependencyInjector(
+        logging_configuration=arguments.logging_configuration
+    )
+    logger = dependency_injector.get_logger()
     repository_detector = dependency_injector.get_repository_detector()
     prefetcher = dependency_injector.get_prefetcher()
     directory = arguments.directory or os.getcwd()
     if repository_detector.is_repository_dirty(directory):
-        print(f"Warning: Git repository at `{directory}` is dirty", file=sys.stderr)
+        logger.warning(f"Warning: Git repository at `{directory}` is dirty")
     repository = repository_detector.detect_github_repository(
         directory, remote_name=arguments.remote
     )
@@ -32,7 +35,7 @@ def main(args: Optional[List[str]] = None) -> None:
         else:
             print(presenter.to_json_string(prefetched_repository, prefetch_options))
     else:
-        print(presenter.render_prefetch_failure(prefetched_repository), file=sys.stderr)
+        logger.error(presenter.render_prefetch_failure(prefetched_repository))
         sys.exit(1)
 
 

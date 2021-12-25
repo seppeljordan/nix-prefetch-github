@@ -1,3 +1,4 @@
+from logging import INFO, WARNING
 from unittest import TestCase
 
 from ..interfaces import PrefetchOptions
@@ -25,3 +26,13 @@ class TestGetOptionsArgumentParser(TestCase):
         parser = get_options_argument_parser()
         arguments = parser.parse_args(["--fetch-submodules", "--no-fetch-submodules"])
         self.assertFalse(arguments.prefetch_options.fetch_submodules)
+
+    def test_that_log_level_is_WARNING_by_default(self) -> None:
+        parser = get_options_argument_parser()
+        arguments = parser.parse_args([])
+        self.assertEqual(arguments.logging_configuration.log_level, WARNING)
+
+    def test_that_verbosity_flag_increases_log_level_to_INFO(self) -> None:
+        parser = get_options_argument_parser()
+        arguments = parser.parse_args(["--verbose"])
+        self.assertEqual(arguments.logging_configuration.log_level, INFO)

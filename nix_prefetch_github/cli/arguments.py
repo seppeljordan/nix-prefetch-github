@@ -1,7 +1,10 @@
 import argparse
+import sys
+from logging import INFO, WARNING
 from typing import Any, Optional, Type
 
 from ..interfaces import PrefetchOptions
+from ..logging import LoggingConfiguration
 
 
 def set_argument(name: str, value: Any) -> Type[argparse.Action]:
@@ -57,5 +60,12 @@ def get_options_argument_parser() -> argparse.ArgumentParser:
         "--no-fetch-submodules",
         dest="prefetch_options",
         action=set_argument("fetch_submodules", False),
+    )
+    parser.add_argument(
+        "--verbose",
+        "-v",
+        dest="logging_configuration",
+        default=LoggingConfiguration(output_file=sys.stderr, log_level=WARNING),
+        action=set_argument("log_level", INFO),
     )
     return parser

@@ -1,5 +1,7 @@
+from logging import getLogger
 from unittest import TestCase
 
+from .command import CommandRunner
 from .list_remote_factory import ListRemoteFactoryImpl
 from .repository import GithubRepository
 from .tests import network
@@ -8,7 +10,9 @@ from .tests import network
 @network
 class RemoteListFactoryTests(TestCase):
     def setUp(self) -> None:
-        self.factory = ListRemoteFactoryImpl()
+        self.factory = ListRemoteFactoryImpl(
+            command_runner=CommandRunner(getLogger(__name__))
+        )
 
     def test_for_non_existing_repo_we_get_none(self) -> None:
         repository = GithubRepository(

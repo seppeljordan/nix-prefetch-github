@@ -1,24 +1,28 @@
 import re
+from dataclasses import dataclass
 from tempfile import TemporaryDirectory
 from typing import List, Optional, Tuple
 
 from nix_prefetch_github.templates import output_template
 
-from ..command import run_command
+from ..command import CommandRunner
 from ..interfaces import PrefetchOptions
 from ..repository import GithubRepository
 
 trash_sha256 = "1y4ly7lgqm03wap4mh01yzcmvryp29w739fy07zzvz15h2z9x3dv"
 
 
+@dataclass(frozen=True)
 class UrlHasherImpl:
+    command_runner: CommandRunner
+
     def calculate_sha256_sum(
         self,
         repository: GithubRepository,
         revision: str,
         prefetch_options: PrefetchOptions,
     ) -> Optional[str]:
-        status_code, output = run_fetch_command(
+        status_code, output = self.run_fetch_command(
             repository,
             revision,
             trash_sha256,
@@ -26,29 +30,29 @@ class UrlHasherImpl:
         )
         return detect_actual_hash_from_nix_output(output.splitlines())
 
-
-def run_fetch_command(
-    repository: GithubRepository,
-    rev: str,
-    sha256: str,
-    prefetch_options: PrefetchOptions,
-) -> Tuple[int, str]:
-    nix_code_calculate_hash = output_template(
-        owner=repository.owner,
-        repo=repository.name,
-        rev=rev,
-        sha256=sha256,
-        fetch_submodules=prefetch_options.fetch_submodules,
-    )
-    with TemporaryDirectory() as temp_dir_name:
-        nix_filename = temp_dir_name + "/prefetch-github.nix"
-        with open(nix_filename, "w") as f:
-            f.write(nix_code_calculate_hash)
-        result = run_command(
-            command=["nix-build", nix_filename, "--no-out-link"],
-            merge_stderr=True,
+    def run_fetch_command(
+        self,
+        repository: GithubRepository,
+        rev: str,
+        sha256: str,
+        prefetch_options: PrefetchOptions,
+    ) -> Tuple[int, str]:
+        nix_code_calculate_hash = output_template(
+            owner=repository.owner,
+            repo=repository.name,
+            rev=rev,
+            sha256=sha256,
+            fetch_submodules=prefetch_options.fetch_submodules,
         )
-        return result
+        with TemporaryDirectory() as temp_dir_name:
+            nix_filename = temp_dir_name + "/prefetch-github.nix"
+            with open(nix_filename, "w") as f:
+                f.write(nix_code_calculate_hash)
+            result = self.command_runner.run_command(
+                command=["nix-build", nix_filename, "--no-out-link"],
+                merge_stderr=True,
+            )
+            return result
 
 
 def detect_actual_hash_from_nix_output(lines: List[str]) -> Optional[str]:

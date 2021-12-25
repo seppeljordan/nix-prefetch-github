@@ -11,8 +11,9 @@ from .arguments import get_options_argument_parser
 
 
 def main(args: Optional[List[str]] = None) -> None:
-    injector = DependencyInjector()
     arguments = parse_arguments(args)
+    injector = DependencyInjector(logging_configuration=arguments.logging_configuration)
+    logger = injector.get_logger()
     repository = GithubRepository(owner=arguments.owner, name=arguments.repo)
     prefetch_options = arguments.prefetch_options
     github_api = injector.get_github_api()
@@ -28,7 +29,7 @@ def main(args: Optional[List[str]] = None) -> None:
         else:
             print(presenter.to_json_string(prefetched_repository, prefetch_options))
     else:
-        print(presenter.render_prefetch_failure(prefetched_repository), file=sys.stderr)
+        logger.error(presenter.render_prefetch_failure(prefetched_repository))
         sys.exit(1)
 
 
