@@ -61,7 +61,7 @@ class PrefetchedRepository:
     repository: GithubRepository
     rev: str
     sha256: str
-    fetch_submodules: bool
+    options: PrefetchOptions
 
 
 @dataclass

@@ -5,6 +5,7 @@ from typing import Any, Optional, Type
 
 from ..interfaces import PrefetchOptions
 from ..logging import LoggingConfiguration
+from ..presenter import RenderingFormat
 
 
 def set_argument(name: str, value: Any) -> Type[argparse.Action]:
@@ -67,5 +68,18 @@ def get_options_argument_parser() -> argparse.ArgumentParser:
         dest="logging_configuration",
         default=LoggingConfiguration(output_file=sys.stderr, log_level=WARNING),
         action=set_argument("log_level", INFO),
+    )
+    parser.add_argument(
+        "--nix",
+        dest="rendering_format",
+        default=RenderingFormat.json,
+        action="store_const",
+        const=RenderingFormat.nix,
+    )
+    parser.add_argument(
+        "--json",
+        dest="rendering_format",
+        action="store_const",
+        const=RenderingFormat.json,
     )
     return parser

@@ -2,6 +2,7 @@ from logging import INFO, WARNING
 from unittest import TestCase
 
 from ..interfaces import PrefetchOptions
+from ..presenter import RenderingFormat
 from .arguments import get_options_argument_parser
 
 
@@ -36,3 +37,18 @@ class TestGetOptionsArgumentParser(TestCase):
         parser = get_options_argument_parser()
         arguments = parser.parse_args(["--verbose"])
         self.assertEqual(arguments.logging_configuration.log_level, INFO)
+
+    def test_rendering_option_is_json_by_default(self) -> None:
+        parser = get_options_argument_parser()
+        arguments = parser.parse_args([])
+        self.assertEqual(arguments.rendering_format, RenderingFormat.json)
+
+    def test_specifying_nix_sets_rendering_option_to_nix(self) -> None:
+        parser = get_options_argument_parser()
+        arguments = parser.parse_args(["--nix"])
+        self.assertEqual(arguments.rendering_format, RenderingFormat.nix)
+
+    def test_specifying_nix_and_then_json_sets_rendering_option_to_json(self) -> None:
+        parser = get_options_argument_parser()
+        arguments = parser.parse_args(["--nix", "--json"])
+        self.assertEqual(arguments.rendering_format, RenderingFormat.json)

@@ -54,7 +54,7 @@ class PrefetcherImpl:
             repository=repository,
             sha256=calculated_hash,
             rev=revision,
-            fetch_submodules=prefetch_options.fetch_submodules,
+            options=prefetch_options,
         )
 
     def _is_proper_revision_hash(self, revision: str) -> bool:

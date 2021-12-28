@@ -2,10 +2,8 @@ import argparse
 import sys
 from typing import List, Optional
 
-from . import presenter
 from .cli.arguments import get_options_argument_parser
 from .dependency_injector import DependencyInjector
-from .prefetch import PrefetchedRepository
 from .repository import GithubRepository
 from .version import VERSION_STRING
 
@@ -20,8 +18,11 @@ def main(argv: Optional[List[str]] = None) -> None:
     if arguments.version:
         print_version_info()
         return None
-    injector = DependencyInjector(logging_configuration=arguments.logging_configuration)
-    logger = injector.get_logger()
+    injector = DependencyInjector(
+        logging_configuration=arguments.logging_configuration,
+        rendering_format=arguments.rendering_format,
+    )
+    presenter = injector.get_presenter()
     prefetcher = injector.get_prefetcher()
     prefetch_options = arguments.prefetch_options
     prefetch_result = prefetcher.prefetch_github(
@@ -29,17 +30,7 @@ def main(argv: Optional[List[str]] = None) -> None:
         arguments.rev,
         prefetch_options=prefetch_options,
     )
-    if isinstance(prefetch_result, PrefetchedRepository):
-        if arguments.nix:
-            output_to_user = presenter.to_nix_expression(
-                prefetch_result, prefetch_options
-            )
-        else:
-            output_to_user = presenter.to_json_string(prefetch_result, prefetch_options)
-        print(output_to_user, end="")
-    else:
-        logger.error(presenter.render_prefetch_failure(prefetch_result))
-        sys.exit(1)
+    sys.exit(presenter.present(prefetch_result))
 
 
 def print_version_info() -> None:
@@ -53,8 +44,6 @@ def parse_arguments(arguments: Optional[List[str]]) -> argparse.Namespace:
     parser.add_argument("owner")
     parser.add_argument("repo")
     parser.add_argument("--rev", default=REV_DEFAULT)
-    parser.add_argument("--nix", default=NIX_DEFAULT, action="store_true")
-    parser.add_argument("--json", dest="nix", action="store_false")
     parser.add_argument("--version", "-V", action="store_true")
     return parser.parse_args(arguments)
 
