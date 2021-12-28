@@ -145,10 +145,27 @@ development environment
 -----------------------
 
 Use ``nix develop`` with flake support enabled.  Development without
-nix flake support is not officially supported.
+nix flake support is not officially supported.  Run the provided tests
+via ``python -m unittest discover``.  You can control what kind of
+tests are run via the variable ``DISABLED_TESTS``::
+
+  # Only run tests that don't hit network and don't use nix
+  DISABLED_TESTS="network requires_nix_build" python -m unittest discover
+
+Currently ``network`` and ``requires_nix_build`` are the only values
+that make sense with this environment variable.
 
 changes
 -------
+
+v5.0.0
+^^^^^^
+
+- Remove all dependencies to other python packages other than "core" ones
+- Allow users to control debugging output via the ``--verbosity`` cli
+  option
+- All commands now understand ``--fetch-submodules`` and
+  ``--no-fetch-submodules`` options
 
 v4.0.4
 ^^^^^^
