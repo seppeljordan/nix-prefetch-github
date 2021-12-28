@@ -27,7 +27,7 @@ class UrlHasherTests(TestCase):
         )
         self.assertEqual(hash_sum, "B5AlNwg6kbcaqUiQEC6jslCRKVpErXLMsKC+b9aPlrM=")
 
-    def test_with_fetching_submosules(self) -> None:
+    def test_with_fetching_submodules(self) -> None:
         prefetch_options = PrefetchOptions(fetch_submodules=True)
         hash_sum = self.hasher.calculate_sha256_sum(
             repository=self.repository,
