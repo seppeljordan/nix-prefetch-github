@@ -85,14 +85,16 @@ class TestingRepositoryRenderer:
 
 
 class GeneralRepositoryRendererTests(TestCase):
-    def test_that_rendering_prefetched_repo_with_and_without_dot_git_directory_produces_different_output(
-        self,
-    ) -> None:
-        renderers: List[RepositoryRenderer] = [
+    def setUp(self) -> None:
+        self.renderers: List[RepositoryRenderer] = [
             NixRepositoryRenderer(),
             JsonRepositoryRenderer(),
         ]
-        for renderer in renderers:
+
+    def test_that_rendering_prefetched_repo_with_and_without_dot_git_directory_produces_different_output(
+        self,
+    ) -> None:
+        for renderer in self.renderers:
             with self.subTest():
                 without_dot_git = self._make_repository(leave_dot_git=False)
                 with_dot_git = self._make_repository(leave_dot_git=True)

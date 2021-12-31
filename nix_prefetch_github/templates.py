@@ -10,6 +10,10 @@ in
 """
 
 
+def _render_line_if_enabled(line: str, condition: bool) -> str:
+    return f"\n    {line};" if condition else ""
+
+
 def output_template(
     owner: str,
     repo: str,
@@ -24,7 +28,9 @@ def output_template(
         repo=repo,
         rev=rev,
         sha256=sha256,
-        fetch_submodules="\n    fetchSubmodules = true;" if fetch_submodules else "",
-        leave_dot_git="\n    leaveDotGit = true;" if leave_dot_git else "",
-        deep_clone="\n    deepClone = true;" if deep_clone else "",
+        fetch_submodules=_render_line_if_enabled(
+            "fetchSubmodules = true", fetch_submodules
+        ),
+        leave_dot_git=_render_line_if_enabled("leaveDotGit = true", leave_dot_git),
+        deep_clone=_render_line_if_enabled("deepClone = true", deep_clone),
     )
