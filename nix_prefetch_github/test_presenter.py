@@ -1,8 +1,14 @@
 from io import StringIO
+from typing import List
 from unittest import TestCase
 
 from .interfaces import PrefetchedRepository, PrefetchFailure, PrefetchOptions
-from .presenter import Presenter
+from .presenter import (
+    JsonRepositoryRenderer,
+    NixRepositoryRenderer,
+    Presenter,
+    RepositoryRenderer,
+)
 from .repository import GithubRepository
 
 
@@ -10,7 +16,7 @@ class PresenterTests(TestCase):
     def setUp(self) -> None:
         self.result_output = StringIO()
         self.error_output = StringIO()
-        self.renderer = RepositoryRenderer()
+        self.renderer = TestingRepositoryRenderer()
         self.presenter = Presenter(
             result_output=self.result_output,
             error_output=self.error_output,
@@ -73,6 +79,32 @@ class PresenterTests(TestCase):
         return self.result_output.read()
 
 
-class RepositoryRenderer:
+class TestingRepositoryRenderer:
     def render_prefetched_repository(self, repository: PrefetchedRepository) -> str:
         return str(repository)
+
+
+class GeneralRepositoryRendererTests(TestCase):
+    def test_that_rendering_prefetched_repo_with_and_without_dot_git_directory_produces_different_output(
+        self,
+    ) -> None:
+        renderers: List[RepositoryRenderer] = [
+            NixRepositoryRenderer(),
+            JsonRepositoryRenderer(),
+        ]
+        for renderer in renderers:
+            with self.subTest():
+                without_dot_git = self._make_repository(leave_dot_git=False)
+                with_dot_git = self._make_repository(leave_dot_git=True)
+                self.assertNotEqual(
+                    renderer.render_prefetched_repository(without_dot_git),
+                    renderer.render_prefetched_repository(with_dot_git),
+                )
+
+    def _make_repository(self, leave_dot_git: bool) -> PrefetchedRepository:
+        return PrefetchedRepository(
+            repository=GithubRepository(owner="test", name="test"),
+            rev="test",
+            sha256="test",
+            options=PrefetchOptions(leave_dot_git=leave_dot_git),
+        )

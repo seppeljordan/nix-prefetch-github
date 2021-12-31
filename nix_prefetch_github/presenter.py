@@ -21,6 +21,7 @@ class NixRepositoryRenderer:
             rev=repository.rev,
             sha256=repository.sha256,
             fetch_submodules=repository.options.fetch_submodules,
+            leave_dot_git=repository.options.leave_dot_git,
         )
 
 
@@ -46,6 +47,7 @@ class JsonRepositoryRenderer:
                 "rev": repository.rev,
                 "sha256": repository.sha256,
                 "fetchSubmodules": repository.options.fetch_submodules,
+                "leaveDotGit": repository.options.leave_dot_git,
             },
             indent=4,
         )

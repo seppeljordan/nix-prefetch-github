@@ -63,6 +63,16 @@ def get_options_argument_parser() -> argparse.ArgumentParser:
         action=set_argument("fetch_submodules", False),
     )
     parser.add_argument(
+        "--leave-dot-git",
+        dest="prefetch_options",
+        action=set_argument("leave_dot_git", True),
+    )
+    parser.add_argument(
+        "--no-leave-dot-git",
+        dest="prefetch_options",
+        action=set_argument("leave_dot_git", False),
+    )
+    parser.add_argument(
         "--verbose",
         "-v",
         dest="logging_configuration",

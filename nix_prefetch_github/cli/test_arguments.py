@@ -28,6 +28,23 @@ class TestGetOptionsArgumentParser(TestCase):
         arguments = parser.parse_args(["--fetch-submodules", "--no-fetch-submodules"])
         self.assertFalse(arguments.prefetch_options.fetch_submodules)
 
+    def test_that_by_default_leave_dot_git_is_disabled(self) -> None:
+        parser = get_options_argument_parser()
+        arguments = parser.parse_args([])
+        self.assertFalse(arguments.prefetch_options.leave_dot_git)
+
+    def test_that_leave_dot_git_can_be_enabled_via_appropriate_cli_option(self) -> None:
+        parser = get_options_argument_parser()
+        arguments = parser.parse_args(["--leave-dot-git"])
+        self.assertTrue(arguments.prefetch_options.leave_dot_git)
+
+    def test_that_leave_dot_git_can_be_disabled_via_appropriate_cli_option(
+        self,
+    ) -> None:
+        parser = get_options_argument_parser()
+        arguments = parser.parse_args(["--leave-dot-git", "--no-leave-dot-git"])
+        self.assertFalse(arguments.prefetch_options.leave_dot_git)
+
     def test_that_log_level_is_WARNING_by_default(self) -> None:
         parser = get_options_argument_parser()
         arguments = parser.parse_args([])

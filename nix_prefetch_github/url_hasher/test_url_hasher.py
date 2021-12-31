@@ -36,6 +36,15 @@ class UrlHasherTests(TestCase):
         )
         self.assertEqual(hash_sum, "wCo1YobyatxSOE85xQNSJw6jvufghFNHlZl4ToQjRHA=")
 
+    def test_with_leaving_dotgit_dir(self) -> None:
+        prefetch_options = PrefetchOptions(leave_dot_git=True)
+        hash_sum = self.hasher.calculate_sha256_sum(
+            repository=self.repository,
+            revision=self.revision,
+            prefetch_options=prefetch_options,
+        )
+        self.assertNotEqual(hash_sum, "B5AlNwg6kbcaqUiQEC6jslCRKVpErXLMsKC+b9aPlrM=")
+
 
 class DetectActualHashFromNixOutputTests(TestCase):
     def setUp(self) -> None:

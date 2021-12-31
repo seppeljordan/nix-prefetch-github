@@ -43,6 +43,7 @@ class UrlHasherImpl:
             rev=rev,
             sha256=sha256,
             fetch_submodules=prefetch_options.fetch_submodules,
+            leave_dot_git=prefetch_options.leave_dot_git,
         )
         with TemporaryDirectory() as temp_dir_name:
             nix_filename = temp_dir_name + "/prefetch-github.nix"
