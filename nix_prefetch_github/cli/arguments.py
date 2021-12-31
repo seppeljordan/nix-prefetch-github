@@ -73,6 +73,16 @@ def get_options_argument_parser() -> argparse.ArgumentParser:
         action=set_argument("leave_dot_git", False),
     )
     parser.add_argument(
+        "--deep-clone",
+        dest="prefetch_options",
+        action=set_argument("deep_clone", True),
+    )
+    parser.add_argument(
+        "--no-deep-clone",
+        dest="prefetch_options",
+        action=set_argument("deep_clone", False),
+    )
+    parser.add_argument(
         "--verbose",
         "-v",
         dest="logging_configuration",

@@ -101,10 +101,28 @@ class GeneralRepositoryRendererTests(TestCase):
                     renderer.render_prefetched_repository(with_dot_git),
                 )
 
-    def _make_repository(self, leave_dot_git: bool) -> PrefetchedRepository:
+    def test_that_rendering_prefetched_repo_with_and_without_deep_clone_produces_different_output(
+        self,
+    ) -> None:
+        renderers: List[RepositoryRenderer] = [
+            NixRepositoryRenderer(),
+            JsonRepositoryRenderer(),
+        ]
+        for renderer in renderers:
+            with self.subTest():
+                without_deep_clone = self._make_repository(deep_clone=False)
+                with_deep_clone = self._make_repository(deep_clone=True)
+                self.assertNotEqual(
+                    renderer.render_prefetched_repository(without_deep_clone),
+                    renderer.render_prefetched_repository(with_deep_clone),
+                )
+
+    def _make_repository(
+        self, leave_dot_git: bool = False, deep_clone: bool = False
+    ) -> PrefetchedRepository:
         return PrefetchedRepository(
             repository=GithubRepository(owner="test", name="test"),
             rev="test",
             sha256="test",
-            options=PrefetchOptions(leave_dot_git=leave_dot_git),
+            options=PrefetchOptions(leave_dot_git=leave_dot_git, deep_clone=deep_clone),
         )

@@ -45,6 +45,21 @@ class TestGetOptionsArgumentParser(TestCase):
         arguments = parser.parse_args(["--leave-dot-git", "--no-leave-dot-git"])
         self.assertFalse(arguments.prefetch_options.leave_dot_git)
 
+    def test_that_specifying_deep_clone_sets_prefetch_options_properly(self) -> None:
+        parser = get_options_argument_parser()
+        arguments = parser.parse_args(["--deep-clone"])
+        self.assertTrue(arguments.prefetch_options.deep_clone)
+
+    def test_that_specifying_no_deep_clone_sets_prefetch_options_propery(self) -> None:
+        parser = get_options_argument_parser()
+        arguments = parser.parse_args(["--deep-clone", "--no-deep-clone"])
+        self.assertFalse(arguments.prefetch_options.deep_clone)
+
+    def test_that_deep_clone_is_disabled_by_default(self) -> None:
+        parser = get_options_argument_parser()
+        arguments = parser.parse_args([])
+        self.assertFalse(arguments.prefetch_options.deep_clone)
+
     def test_that_log_level_is_WARNING_by_default(self) -> None:
         parser = get_options_argument_parser()
         arguments = parser.parse_args([])

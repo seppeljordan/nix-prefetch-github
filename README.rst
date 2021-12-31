@@ -166,8 +166,9 @@ v5.0.0
   option
 - All commands now understand ``--fetch-submodules`` and
   ``--no-fetch-submodules`` options
-- Commands no understand ``--leave-dot-git`` and
+- Commands now understand ``--leave-dot-git`` and
   ``--no-leave-dot-git`` options
+- Commands now understand ``--deep-clone`` and ``--no-deep-clone``
 
 v4.0.4
 ^^^^^^

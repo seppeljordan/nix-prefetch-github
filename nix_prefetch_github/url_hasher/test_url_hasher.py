@@ -45,6 +45,15 @@ class UrlHasherTests(TestCase):
         )
         self.assertNotEqual(hash_sum, "B5AlNwg6kbcaqUiQEC6jslCRKVpErXLMsKC+b9aPlrM=")
 
+    def test_with_deep_clone(self) -> None:
+        prefetch_options = PrefetchOptions(deep_clone=True)
+        hash_sum = self.hasher.calculate_sha256_sum(
+            repository=self.repository,
+            revision=self.revision,
+            prefetch_options=prefetch_options,
+        )
+        self.assertNotEqual(hash_sum, "B5AlNwg6kbcaqUiQEC6jslCRKVpErXLMsKC+b9aPlrM=")
+
 
 class DetectActualHashFromNixOutputTests(TestCase):
     def setUp(self) -> None:

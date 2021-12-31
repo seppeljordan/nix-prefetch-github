@@ -22,6 +22,7 @@ class NixRepositoryRenderer:
             sha256=repository.sha256,
             fetch_submodules=repository.options.fetch_submodules,
             leave_dot_git=repository.options.leave_dot_git,
+            deep_clone=repository.options.deep_clone,
         )
 
 
@@ -48,6 +49,7 @@ class JsonRepositoryRenderer:
                 "sha256": repository.sha256,
                 "fetchSubmodules": repository.options.fetch_submodules,
                 "leaveDotGit": repository.options.leave_dot_git,
+                "deepClone": repository.options.deep_clone,
             },
             indent=4,
         )
