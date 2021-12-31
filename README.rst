@@ -166,6 +166,8 @@ v5.0.0
   option
 - All commands now understand ``--fetch-submodules`` and
   ``--no-fetch-submodules`` options
+- Commands no understand ``--leave-dot-git`` and
+  ``--no-leave-dot-git`` options
 
 v4.0.4
 ^^^^^^
