@@ -14,65 +14,15 @@ command line example
 ::
 
     $ nix-prefetch-github seppeljordan nix-prefetch-github
-
-    this derivation will be built:
-      /nix/store/81pc9rhpfw47khbf5g6s8frf3c9idndr-source.drv
-    building '/nix/store/81pc9rhpfw47khbf5g6s8frf3c9idndr-source.drv'...
-    exporting https://github.com/seppeljordan/nix-prefetch-github.git (rev ac1135c6e442aa738012bf03acad1406e2c33813) into /nix/store/sjmd6h045cp416pmfbxr1idsidcd7bl0-source
-    Initialized empty Git repository in /nix/store/sjmd6h045cp416pmfbxr1idsidcd7bl0-source/.git/
-    remote: Enumerating objects: 77, done.
-    remote: Counting objects: 100% (77/77), done.
-    remote: Compressing objects: 100% (71/71), done.
-    remote: Total 77 (delta 1), reused 42 (delta 0), pack-reused 0
-    Unpacking objects: 100% (77/77), 92.42 KiB | 610.00 KiB/s, done.
-    From https://github.com/seppeljordan/nix-prefetch-github
-     * branch            HEAD       -> FETCH_HEAD
-    Switched to a new branch 'fetchgit'
-    removing `.git'...
-    error: hash mismatch in fixed-output derivation '/nix/store/81pc9rhpfw47khbf5g6s8frf3c9idndr-source.drv':
-	     specified: sha256-u42evoAl/P3/Ad6lcXgS1+dd2fcBwEqu4gNU/OjxlPg=
-		got:    sha256-UaNZNLcjBVx2FVSBNHW8pIle+77QZAze801vjbiJHEI=
-
-    /nix/store/r4s5kri1ppqbvkpfm7gcv38x8dvsf0x3-source
-
     {
 	"owner": "seppeljordan",
 	"repo": "nix-prefetch-github",
-	"rev": "ac1135c6e442aa738012bf03acad1406e2c33813",
-	"sha256": "UaNZNLcjBVx2FVSBNHW8pIle+77QZAze801vjbiJHEI=",
-	"fetchSubmodules": true
+	"rev": "856d511bd65dec00bfa2bee6b68b1479699def3d",
+	"sha256": "ACSWdkcCCfptbkusYiPs5j651tC62JN+W4s5gdWhEdk=",
+	"fetchSubmodules": false,
+	"leaveDotGit": false,
+	"deepClone": false
     }
-
-python example
---------------
-
-::
-
-    $ python
-    Python 3.8.9 (default, Apr  2 2021, 11:20:07)
-    [GCC 10.3.0] on linux
-    Type "help", "copyright", "credits" or "license" for more information.
-    >>> import nix_prefetch_github
-    >>> nix_prefetch_github.nix_prefetch_github(owner="seppeljordan", repo="nix-prefetch-github")
-
-    this derivation will be built:
-      /nix/store/rd1aliq59rb580pfyz05h43kj87s09yp-source.drv
-    building '/nix/store/rd1aliq59rb580pfyz05h43kj87s09yp-source.drv'...
-
-    trying https://github.com/seppeljordan/nix-prefetch-github/archive/ac1135c6e442aa738012bf03acad1406e2c33813.tar.gz
-      % Total    % Received % Xferd  Average Speed   Time    Time     Time  Current
-				     Dload  Upload   Total   Spent    Left  Speed
-    100   174  100   174    0     0    646      0 --:--:-- --:--:-- --:--:--   646
-    100 88107    0 88107    0     0   149k      0 --:--:-- --:--:-- --:--:--  149k
-    unpacking source archive /build/ac1135c6e442aa738012bf03acad1406e2c33813.tar.gz
-    error: hash mismatch in fixed-output derivation '/nix/store/rd1aliq59rb580pfyz05h43kj87s09yp-source.drv':
-	     specified: sha256-u42evoAl/P3/Ad6lcXgS1+dd2fcBwEqu4gNU/OjxlPg=
-		got:    sha256-UaNZNLcjBVx2FVSBNHW8pIle+77QZAze801vjbiJHEI=
-
-    /nix/store/r4s5kri1ppqbvkpfm7gcv38x8dvsf0x3-source
-
-    PrefetchedRepository(repository=GithubRepository(owner='seppeljordan', name='nix-prefetch-github'), rev='ac1135c6e442aa738012bf03acad1406e2c33813', sha256='UaNZNLcjBVx2FVSBNHW8pIle+77QZAze801vjbiJHEI=', fetch_submodules=False)
-
 
 available commands
 ------------------
@@ -84,19 +34,32 @@ This command downloads the code from a github repository and puts it
 into the local nix store.  It also prints the function arguments to
 ``fetchFromGitHub`` to the standard output.  ::
 
-   $ nix-prefetch-github --help
-   Usage: nix-prefetch-github [OPTIONS] OWNER REPO
+    $ nix-prefetch-github --help
+    usage: nix-prefetch-github [-h] [--fetch-submodules]
+			       [--no-fetch-submodules]
+			       [--leave-dot-git]
+			       [--no-leave-dot-git] [--deep-clone]
+			       [--no-deep-clone] [--verbose] [--nix]
+			       [--json] [--rev REV] [--version]
+			       owner repo
 
-   Options:
-     --prefetch / --no-prefetch  Prefetch given repository into nix store
-     --nix                       Format output as Nix expression
-     --fetch-submodules          Whether to fetch submodules contained in the
-				 target repository
+    positional arguments:
+      owner
+      repo
 
-     --rev TEXT
-     --version                   Show the version and exit.
-     --help                      Show this message and exit.
-
+    optional arguments:
+      -h, --help            show this help message and exit
+      --fetch-submodules
+      --no-fetch-submodules
+      --leave-dot-git
+      --no-leave-dot-git
+      --deep-clone
+      --no-deep-clone
+      --verbose, -v
+      --nix
+      --json
+      --rev REV
+      --version, -V
 
 nix-prefetch-github-directory
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
@@ -109,19 +72,30 @@ from the ``origin`` remote repository similar to the command
 ::
 
     $ nix-prefetch-github-directory --help
-    Usage: nix-prefetch-github-directory [OPTIONS]
+    usage: nix-prefetch-github-directory [-h] [--fetch-submodules]
+					 [--no-fetch-submodules]
+					 [--leave-dot-git]
+					 [--no-leave-dot-git]
+					 [--deep-clone]
+					 [--no-deep-clone]
+					 [--verbose] [--nix]
+					 [--json]
+					 [--directory DIRECTORY]
+					 [--remote REMOTE]
 
-    Options:
-      --directory TEXT
-      --nix                       Format output as Nix expression
-      --prefetch / --no-prefetch  Prefetch given repository into nix store
-      --remote TEXT
-      --fetch-submodules          Whether to fetch submodules contained in the
-				  target repository
-
-      --help                      Show this message and exit.
-
-
+    optional arguments:
+      -h, --help            show this help message and exit
+      --fetch-submodules
+      --no-fetch-submodules
+      --leave-dot-git
+      --no-leave-dot-git
+      --deep-clone
+      --no-deep-clone
+      --verbose, -v
+      --nix
+      --json
+      --directory DIRECTORY
+      --remote REMOTE
 
 nix-prefetch-github-latest-release
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
@@ -131,15 +105,30 @@ repository.
 ::
 
     $ nix-prefetch-github-latest-release --help
-    Usage: nix-prefetch-github-latest-release [OPTIONS] OWNER REPO
+    usage: nix-prefetch-github [-h] [--fetch-submodules]
+			       [--no-fetch-submodules]
+			       [--leave-dot-git]
+			       [--no-leave-dot-git] [--deep-clone]
+			       [--no-deep-clone] [--verbose] [--nix]
+			       [--json] [--version]
+			       owner repo
 
-    Options:
-      --nix                       Format output as Nix expression
-      --prefetch / --no-prefetch  Prefetch given repository into nix store
-      --fetch-submodules          Whether to fetch submodules contained in the
-				  target repository
+    positional arguments:
+      owner
+      repo
 
-      --help                      Show this message and exit.
+    optional arguments:
+      -h, --help            show this help message and exit
+      --fetch-submodules
+      --no-fetch-submodules
+      --leave-dot-git
+      --no-leave-dot-git
+      --deep-clone
+      --no-deep-clone
+      --verbose, -v
+      --nix
+      --json
+      --version, -V
 
 development environment
 -----------------------
@@ -157,6 +146,11 @@ that make sense with this environment variable.
 
 changes
 -------
+
+v5.0.1
+^^^^^^
+
+- Fix breaking bug in hash generation
 
 v5.0.0
 ^^^^^^
