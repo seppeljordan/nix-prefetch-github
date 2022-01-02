@@ -35,7 +35,9 @@ class DependencyInjector:
         return ListRemoteFactoryImpl(command_runner=self.get_command_runner())
 
     def get_url_hasher(self) -> UrlHasher:
-        return UrlHasherImpl(command_runner=self.get_command_runner())
+        return UrlHasherImpl(
+            command_runner=self.get_command_runner(), logger=self.get_logger()
+        )
 
     def get_prefetcher(self) -> PrefetcherImpl:
         return PrefetcherImpl(self.get_url_hasher(), self.get_revision_index_factory())

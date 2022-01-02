@@ -11,7 +11,9 @@ from . import PrefetchOptions, UrlHasherImpl, detect_actual_hash_from_nix_output
 @network
 class UrlHasherTests(TestCase):
     def setUp(self) -> None:
-        self.hasher = UrlHasherImpl(command_runner=CommandRunner(getLogger(__name__)))
+        self.hasher = UrlHasherImpl(
+            command_runner=CommandRunner(getLogger(__name__)), logger=getLogger()
+        )
         self.repository = GithubRepository(
             owner="git-up",
             name="test-repo-submodules",

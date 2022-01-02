@@ -2,4 +2,5 @@
 include = '''
       (\.pyi?)
     | (^/test\-pypi\-install)
+    | (^/test\-prefetch)
 '''

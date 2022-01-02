@@ -1,13 +1,64 @@
-#!/usr/bin/env sh
+#!/usr/bin/env python
 
-set -e
-set -x
+import shutil
+import subprocess
+import tempfile
+from os import path
+from unittest import TestCase, main
 
-nix flake check --print-build-logs
-coverage run -m unittest discover
-coverage html
-nix build
-nix-instantiate -E --strict "$(result/bin/nix-prefetch-github seppeljordan nix-prefetch-github --nix)"
-nix-instantiate -E --strict "$(result/bin/nix-prefetch-github-latest-release seppeljordan nix-prefetch-github --nix)"
-nix-instantiate -E --strict "$(result/bin/nix-prefetch-github-directory --nix)"
-nix-instantiate -E --strict "$(result/bin/nix-prefetch-github seppeljordan nix-prefetch-github --nix --leave-dot-git)"
+
+class FlakeCheckTest(TestCase):
+    def test_that_flake_check_runs_successfully(self) -> None:
+        finished_process = subprocess.run(
+            ["nix", "flake", "check", "--print-build-logs"]
+        )
+        self.assertEqual(finished_process.returncode, 0)
+
+
+class NixEvaluationTests(TestCase):
+    def setUp(self) -> None:
+        self.directory = tempfile.mkdtemp()
+        self.output = path.join(self.directory, "result")
+        subprocess.run(["nix", "build", "--out-link", self.output])
+
+    def test_can_build_nix_expressions(self) -> None:
+        expressions = [
+            [
+                f"{self.output}/bin/nix-prefetch-github",
+                "seppeljordan",
+                "nix-prefetch-github",
+                "--nix",
+                "-v",
+            ],
+            [
+                f"{self.output}/bin/nix-prefetch-github-latest-release",
+                "seppeljordan",
+                "nix-prefetch-github",
+                "--nix",
+                "-v",
+            ],
+            [f"{self.output}/bin/nix-prefetch-github-directory", "--nix", "-v"],
+            [
+                f"{self.output}/bin/nix-prefetch-github",
+                "seppeljordan",
+                "nix-prefetch-github",
+                "--nix",
+                "--leave-dot-git",
+                "-v",
+            ],
+        ]
+        for expression in expressions:
+            with self.subTest():
+                finished_process = subprocess.run(expression, capture_output=True)
+                self.assertEqual(finished_process.returncode, 0)
+                build_process = subprocess.run(
+                    ["nix-build", "-E", finished_process.stdout, "--no-out-link"]
+                )
+                self.assertEqual(build_process.returncode, 0)
+
+    def tearDown(self) -> None:
+        shutil.rmtree(self.directory)
+
+
+if __name__ == "__main__":
+    main()

@@ -1,5 +1,6 @@
 import re
 from dataclasses import dataclass
+from logging import Logger
 from tempfile import TemporaryDirectory
 from typing import List, Optional, Tuple
 
@@ -9,12 +10,13 @@ from ..command import CommandRunner
 from ..interfaces import PrefetchOptions
 from ..repository import GithubRepository
 
-trash_sha256 = "1y4ly7lgqm03wap4mh01yzcmvryp29w739fy07zzvz15h2z9x3dv"
+trash_sha256 = ""
 
 
 @dataclass(frozen=True)
 class UrlHasherImpl:
     command_runner: CommandRunner
+    logger: Logger
 
     def calculate_sha256_sum(
         self,
@@ -46,6 +48,7 @@ class UrlHasherImpl:
             leave_dot_git=prefetch_options.leave_dot_git,
             deep_clone=prefetch_options.deep_clone,
         )
+        self.logger.info("Evaluating nix expression \n%s", nix_code_calculate_hash)
         with TemporaryDirectory() as temp_dir_name:
             nix_filename = temp_dir_name + "/prefetch-github.nix"
             with open(nix_filename, "w") as f:
