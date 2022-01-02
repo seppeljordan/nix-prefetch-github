@@ -6,7 +6,11 @@ import tempfile
 from os import path
 from unittest import TestCase, main
 
+from nix_prefetch_github.tests import network, requires_nix_build
 
+
+@network
+@requires_nix_build
 class FlakeCheckTest(TestCase):
     def test_that_flake_check_runs_successfully(self) -> None:
         finished_process = subprocess.run(
@@ -15,6 +19,8 @@ class FlakeCheckTest(TestCase):
         self.assertEqual(finished_process.returncode, 0)
 
 
+@network
+@requires_nix_build
 class NixEvaluationTests(TestCase):
     def setUp(self) -> None:
         self.directory = tempfile.mkdtemp()

@@ -1,5 +1,5 @@
 #!/usr/bin/env sh
 
 nixfmt $(find . -type f -name '*.nix')
-black . test-prefetch
-isort . test-pypi-install test-prefetch
+black .
+isort . test-pypi-install
