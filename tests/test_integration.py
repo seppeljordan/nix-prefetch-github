@@ -1,5 +1,6 @@
 #!/usr/bin/env python
 
+import shlex
 import shutil
 import subprocess
 import tempfile
@@ -43,7 +44,6 @@ class NixEvaluationTests(TestCase):
                 "--nix",
                 "-v",
             ],
-            [f"{self.output}/bin/nix-prefetch-github-directory", "--nix", "-v"],
             [
                 f"{self.output}/bin/nix-prefetch-github",
                 "seppeljordan",
@@ -54,7 +54,7 @@ class NixEvaluationTests(TestCase):
             ],
         ]
         for expression in expressions:
-            with self.subTest():
+            with self.subTest(msg=shlex.join(expression)):
                 finished_process = subprocess.run(expression, capture_output=True)
                 self.assertEqual(finished_process.returncode, 0)
                 build_process = subprocess.run(
