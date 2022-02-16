@@ -85,7 +85,10 @@ class Virtualenv:
 
     def run(self, command: str) -> None:
         env = dict(os.environ)
-        del env["PYTHONPATH"]
+        try:
+            del env["PYTHONPATH"]
+        except KeyError:
+            pass
         subprocess.run(
             str(self._target_path / "bin") + "/" + command,
             check=True,
