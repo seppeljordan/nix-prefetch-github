@@ -16,7 +16,7 @@ from .presenter import (
 )
 from .repository_detector import RepositoryDetectorImpl
 from .revision_index_factory import RevisionIndexFactoryImpl
-from .url_hasher import UrlHasherImpl
+from .url_hasher.nix_build import UrlHasherImpl
 
 
 class DependencyInjector:

@@ -4,7 +4,11 @@ from unittest import TestCase
 from ..command import CommandRunner
 from ..repository import GithubRepository
 from ..tests import network, requires_nix_build
-from . import PrefetchOptions, UrlHasherImpl, detect_actual_hash_from_nix_output
+from .nix_build import (
+    PrefetchOptions,
+    UrlHasherImpl,
+    detect_actual_hash_from_nix_output,
+)
 
 
 @requires_nix_build

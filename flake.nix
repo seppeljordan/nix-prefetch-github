@@ -23,15 +23,16 @@
             nix-prefetch-github = self.defaultPackage."${system}";
           };
           devShell = pkgs.mkShell {
-            packages = (with pkgs; [ git nixfmt ]) ++ (with python.pkgs; [
-              black
-              flake8
-              mypy
-              twine
-              virtualenv
-              isort
-              coverage
-            ]);
+            packages = (with pkgs; [ git nixfmt nix-prefetch-scripts ])
+              ++ (with python.pkgs; [
+                black
+                flake8
+                mypy
+                twine
+                virtualenv
+                isort
+                coverage
+              ]);
             inputsFrom = [ python.pkgs.nix-prefetch-github ];
           };
           checks = {
