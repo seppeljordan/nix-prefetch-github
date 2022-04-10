@@ -52,6 +52,14 @@ class NixEvaluationTests(TestCase):
                 "--leave-dot-git",
                 "-v",
             ],
+            [
+                f"{self.output}/bin/nix-prefetch-github",
+                "NixOS",
+                "nixpkgs",
+                "--nix",
+                "--deep-clone",
+                "-v",
+            ],
         ]
         for expression in expressions:
             with self.subTest(msg=shlex.join(expression)):

@@ -54,7 +54,7 @@ class UrlHasherTests(TestCase):
             revision=self.revision,
             prefetch_options=prefetch_options,
         )
-        self.assertNotEqual(hash_sum, "B5AlNwg6kbcaqUiQEC6jslCRKVpErXLMsKC+b9aPlrM=")
+        self.assertEqual(hash_sum, "gBAtCILDbqofa6+9/bXR9drxymCGrgwf0+5mDxwF9p0=")
 
 
 class DetectActualHashFromNixOutputTests(TestCase):
