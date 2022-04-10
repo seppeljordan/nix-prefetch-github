@@ -1,7 +1,10 @@
 {
   description = "nix-prefetch-github";
 
-  inputs = { flake-utils.url = "github:numtide/flake-utils"; };
+  inputs = {
+    flake-utils.url = "github:numtide/flake-utils";
+    nixpkgs.url = "github:NixOS/nixpkgs/nixos-unstable";
+  };
 
   outputs = { self, nixpkgs, flake-utils, ... }:
     let
@@ -12,11 +15,6 @@
             overlays = [ self.overlay ];
           };
           python = pkgs.python3;
-          pythonEnvironment = python.withPackages (pythonPackages:
-            with pythonPackages.nix-prefetch-github;
-            with pythonPackages;
-            buildInputs ++ propagatedBuildInputs ++ nativeBuildInputs
-            ++ [ black flake8 mypy twine virtualenv isort coverage ]);
         in {
           defaultPackage = with python.pkgs;
             toPythonApplication nix-prefetch-github;
@@ -25,8 +23,16 @@
             nix-prefetch-github = self.defaultPackage."${system}";
           };
           devShell = pkgs.mkShell {
-            name = "dev-shell";
-            buildInputs = with pkgs; [ git pythonEnvironment nixfmt ];
+            packages = (with pkgs; [ git nixfmt ]) ++ (with python.pkgs; [
+              black
+              flake8
+              mypy
+              twine
+              virtualenv
+              isort
+              coverage
+            ]);
+            inputsFrom = [ python.pkgs.nix-prefetch-github ];
           };
           checks = {
             defaultPackage = self.defaultPackage.${system};
