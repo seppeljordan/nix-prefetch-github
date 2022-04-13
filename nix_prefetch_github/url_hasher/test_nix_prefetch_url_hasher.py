@@ -1,5 +1,5 @@
 from logging import getLogger
-from unittest import TestCase, expectedFailure
+from unittest import TestCase
 
 from ..command import CommandRunner
 from ..interfaces import PrefetchOptions
@@ -48,7 +48,6 @@ class UrlHasherTests(TestCase):
         )
         self.assertNotEqual(hash_sum, "B5AlNwg6kbcaqUiQEC6jslCRKVpErXLMsKC+b9aPlrM=")
 
-    @expectedFailure
     def test_with_deep_clone(self) -> None:
         # There is currently a bug in `nix-prefetch-git` that prevents
         # the UrlHasher under test to fail.  See

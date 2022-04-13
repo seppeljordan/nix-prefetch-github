@@ -14,7 +14,7 @@ trash_sha256 = ""
 
 
 @dataclass(frozen=True)
-class UrlHasherImpl:
+class NixBuildUrlHasherImpl:
     command_runner: CommandRunner
     logger: Logger
 

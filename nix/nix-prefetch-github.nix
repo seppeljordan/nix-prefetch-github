@@ -1,10 +1,10 @@
-{ buildPythonPackage, git }:
+{ buildPythonPackage, git, which }:
 let version = builtins.readFile ../nix_prefetch_github/VERSION;
 in buildPythonPackage {
   pname = "nix-prefetch-github";
   version = "${version}-dev";
   src = ../.;
-  checkInputs = [ git ];
+  checkInputs = [ git which ];
   checkPhase = ''
     python -m unittest discover
   '';

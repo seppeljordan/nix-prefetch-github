@@ -5,8 +5,8 @@ from ..command import CommandRunner
 from ..repository import GithubRepository
 from ..tests import network, requires_nix_build
 from .nix_build import (
+    NixBuildUrlHasherImpl,
     PrefetchOptions,
-    UrlHasherImpl,
     detect_actual_hash_from_nix_output,
 )
 
@@ -15,7 +15,7 @@ from .nix_build import (
 @network
 class UrlHasherTests(TestCase):
     def setUp(self) -> None:
-        self.hasher = UrlHasherImpl(
+        self.hasher = NixBuildUrlHasherImpl(
             command_runner=CommandRunner(getLogger(__name__)), logger=getLogger()
         )
         self.repository = GithubRepository(

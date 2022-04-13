@@ -3,6 +3,7 @@ from functools import lru_cache
 from logging import Logger
 
 from .command import CommandRunner
+from .command_availability_checker import CommandAvailabilityCheckerImpl
 from .github import GithubAPIImpl
 from .interfaces import GithubAPI, RepositoryDetector, RevisionIndexFactory, UrlHasher
 from .list_remote_factory import ListRemoteFactoryImpl
@@ -16,7 +17,12 @@ from .presenter import (
 )
 from .repository_detector import RepositoryDetectorImpl
 from .revision_index_factory import RevisionIndexFactoryImpl
-from .url_hasher.nix_build import UrlHasherImpl
+from .url_hasher.nix_build import NixBuildUrlHasherImpl
+from .url_hasher.nix_prefetch import NixPrefetchUrlHasherImpl
+from .url_hasher.url_hasher_selector import (
+    CommandAvailabilityChecker,
+    UrlHasherSelector,
+)
 
 
 class DependencyInjector:
@@ -34,10 +40,29 @@ class DependencyInjector:
     def get_remote_list_factory(self) -> ListRemoteFactoryImpl:
         return ListRemoteFactoryImpl(command_runner=self.get_command_runner())
 
-    def get_url_hasher(self) -> UrlHasher:
-        return UrlHasherImpl(
+    def get_url_hasher_selector(self) -> UrlHasherSelector:
+        return UrlHasherSelector(
+            availability_checker=self.get_command_availability_checker(),
+            nix_build_implementation=self.get_nix_build_url_hasher_impl(),
+            nix_prefetch_implementation=self.get_nix_prefetch_url_hasher_impl(),
+        )
+
+    def get_command_availability_checker(self) -> CommandAvailabilityChecker:
+        return CommandAvailabilityCheckerImpl(command_runner=self.get_command_runner())
+
+    def get_nix_build_url_hasher_impl(self) -> NixBuildUrlHasherImpl:
+        return NixBuildUrlHasherImpl(
             command_runner=self.get_command_runner(), logger=self.get_logger()
         )
+
+    def get_nix_prefetch_url_hasher_impl(self) -> NixPrefetchUrlHasherImpl:
+        return NixPrefetchUrlHasherImpl(
+            command_runner=self.get_command_runner(), logger=self.get_logger()
+        )
+
+    def get_url_hasher(self) -> UrlHasher:
+        selector = self.get_url_hasher_selector()
+        return selector.get_url_hasher()
 
     def get_prefetcher(self) -> PrefetcherImpl:
         return PrefetcherImpl(self.get_url_hasher(), self.get_revision_index_factory())

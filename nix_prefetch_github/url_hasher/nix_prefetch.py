@@ -63,7 +63,7 @@ class NixPrefetchUrlHasherImpl:
         options: List[str] = []
         if prefetch_options.deep_clone:
             options.append("--deepClone")
-        if prefetch_options.leave_dot_git:
+        if prefetch_options.leave_dot_git or prefetch_options.deep_clone:
             options.append("--leave-dotGit")
         if prefetch_options.fetch_submodules:
             options.append("--fetch-submodules")
