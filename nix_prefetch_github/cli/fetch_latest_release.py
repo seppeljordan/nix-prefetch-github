@@ -29,7 +29,7 @@ def main(args: Optional[List[str]] = None) -> None:
 
 def parse_arguments(arguments: Optional[List[str]]) -> argparse.Namespace:
     parser = argparse.ArgumentParser(
-        "nix-prefetch-github", parents=[get_options_argument_parser()]
+        "nix-prefetch-github-latest-release", parents=[get_options_argument_parser()]
     )
     parser.add_argument("owner")
     parser.add_argument("repo")
