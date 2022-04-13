@@ -147,6 +147,13 @@ that make sense with this environment variable.
 changes
 -------
 
+v5.1.0
+^^^^^^
+
+- Use ``nix-prefetch-git`` and ``nix-prefetch-url`` for calculating
+  sha256 sums when possible. The application will fall back to the old
+  method when ``nix-prefetch-*`` are not available.
+
 v5.0.1
 ^^^^^^
 
