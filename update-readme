@@ -1,0 +1,6 @@
+#!/usr/bin/env bash
+
+set -e
+
+nix build
+emacs -Q --batch README.org -l elisp/update-readme.el
