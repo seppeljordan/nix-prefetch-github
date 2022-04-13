@@ -1,3 +1,6 @@
+.. contents::
+
+
 nix-prefetch-github
 ===================
 
@@ -9,7 +12,7 @@ License Version 3.  Check out ``LICENSE.txt`` to read the license
 text.
 
 command line example
---------------------
+====================
 
 ::
 
@@ -25,10 +28,10 @@ command line example
     }
 
 available commands
-------------------
+==================
 
 nix-prefetch-github
-^^^^^^^^^^^^^^^^^^^
+-------------------
 
 This command downloads the code from a github repository and puts it
 into the local nix store.  It also prints the function arguments to
@@ -62,7 +65,7 @@ into the local nix store.  It also prints the function arguments to
       --version, -V
 
 nix-prefetch-github-directory
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+-----------------------------
 
 This command examins the current working directory and tries to figure
 out if it is part of a git repository linked to github.  If this was
@@ -98,7 +101,7 @@ from the ``origin`` remote repository similar to the command
       --remote REMOTE
 
 nix-prefetch-github-latest-release
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+----------------------------------
 
 This command fetches the code for the latest release of the specified
 repository.
@@ -131,7 +134,7 @@ repository.
       --version, -V
 
 development environment
------------------------
+=======================
 
 Use ``nix develop`` with flake support enabled.  Development without
 nix flake support is not officially supported.  Run the provided tests
@@ -145,22 +148,22 @@ Currently ``network`` and ``requires_nix_build`` are the only values
 that make sense with this environment variable.
 
 changes
--------
+=======
 
 v5.1.0
-^^^^^^
+------
 
 - Use ``nix-prefetch-git`` and ``nix-prefetch-url`` for calculating
   sha256 sums when possible. The application will fall back to the old
   method when ``nix-prefetch-*`` are not available.
 
 v5.0.1
-^^^^^^
+------
 
 - Fix breaking bug in hash generation
 
 v5.0.0
-^^^^^^
+------
 
 - Remove all dependencies to other python packages other than "core" ones
 - Allow users to control debugging output via the ``--verbosity`` cli
@@ -172,27 +175,27 @@ v5.0.0
 - Commands now understand ``--deep-clone`` and ``--no-deep-clone``
 
 v4.0.4
-^^^^^^
+------
 
 - Print standard error output of subprocesses for better debugging
 
 v4.0.3
-^^^^^^
+------
 
 - Generated hashes now don't have a "sha256-" prefix
 - jinja2 is no longer a dependency of nix-prefetch-github
 
 v4.0.2
-^^^^^^
+------
 - packaging release, no bugfixes or features
 
 v4.0.1
-^^^^^^
+------
 
 - Fix issue #38
 
 v4.0
-^^^^
+----
 
 - Make fetching submodules the default in calls to python routines.
   The CLI should be uneffected by this change.
@@ -201,52 +204,52 @@ v4.0
 - Implement ``nix-prefetch-github-latest-release`` command
 
 v3.0
-^^^^
+----
 
 - major changes to the internal module structure
 - introduction of the ``nix-prefetch-github-directory`` command
 - code repository now functions as a nix flake
 
 v2.4
-^^^^
+----
 
 - added ``--fetch-submodules`` flag
 - Fixed incompability with nix 2.4
 
 v2.3.2
-^^^^^^
+------
 
 - fix issues #21, #22
 - nix-prefetch-github now accepts full ref names,
   e.g. ``refs/heads/master`` which was broken since 2.3 (#23)
 
 v2.3.1
-^^^^^^
+------
 
 - Fix bug in generated nix expression
 - Fix bug that prevented targeting tags with prefetch command
 - Improve error message format in case revision is not found
 
 v2.3
-^^^^
+----
 
 - Remove dependency to ``requests``
 - Default to ``master`` branch instead of first branch in list
 
 v2.2
-^^^^
+----
 
 - Add ``--version`` flag
 - Fix bug in output formatting
 
 v2.1
-^^^^
+----
 
 - Fix bug (#4) that made ``nix-prefetch-github`` incompatible with
   ``nix 2.2``.
 
 v2.0
-^^^^
+----
 
 - The result of nix_pretch_github and its corresponding command line
   tool now contains always the actual commit hash as detected by the
