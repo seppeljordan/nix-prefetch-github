@@ -3,7 +3,7 @@ from typing import Optional
 from urllib.error import HTTPError
 from urllib.request import urlopen
 
-from .repository import GithubRepository
+from .interfaces import GithubRepository
 
 
 class GithubAPIImpl:

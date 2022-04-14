@@ -5,6 +5,7 @@ from typing import Optional
 
 from .hash import is_sha1_hash
 from .interfaces import (
+    GithubRepository,
     PrefetchedRepository,
     PrefetchFailure,
     PrefetchOptions,
@@ -12,7 +13,6 @@ from .interfaces import (
     RevisionIndexFactory,
     UrlHasher,
 )
-from .repository import GithubRepository
 
 
 @dataclass(frozen=True)

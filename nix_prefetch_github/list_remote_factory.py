@@ -1,9 +1,8 @@
 from dataclasses import dataclass
 from typing import Optional
 
-from .interfaces import CommandRunner
+from .interfaces import CommandRunner, GithubRepository
 from .list_remote import ListRemote
-from .repository import GithubRepository
 
 
 @dataclass(frozen=True)

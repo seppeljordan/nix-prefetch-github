@@ -3,10 +3,16 @@ from dataclasses import dataclass
 from typing import Dict, List, Optional, Protocol, Tuple, Union
 
 from .list_remote import ListRemote
-from .repository import GithubRepository
 from .revision_index import RevisionIndex
 
-trash_sha256 = "1y4ly7lgqm03wap4mh01yzcmvryp29w739fy07zzvz15h2z9x3dv"
+
+@dataclass(frozen=True)
+class GithubRepository:
+    owner: str
+    name: str
+
+    def url(self) -> str:
+        return f"https://github.com/{self.owner}/{self.name}.git"
 
 
 @dataclass

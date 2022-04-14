@@ -2,8 +2,7 @@ from logging import getLogger
 from unittest import TestCase
 
 from ..command.command_runner import CommandRunnerImpl
-from ..interfaces import PrefetchOptions
-from ..repository import GithubRepository
+from ..interfaces import GithubRepository, PrefetchOptions
 from ..tests import network, requires_nix_build
 from .nix_prefetch import NixPrefetchUrlHasherImpl
 

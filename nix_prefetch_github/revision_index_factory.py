@@ -2,8 +2,7 @@ from dataclasses import dataclass
 from typing import Optional
 
 from .functor import map_or_none
-from .interfaces import ListRemoteFactory
-from .repository import GithubRepository
+from .interfaces import GithubRepository, ListRemoteFactory
 from .revision_index import RevisionIndex
 
 

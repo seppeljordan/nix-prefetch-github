@@ -1,7 +1,7 @@
 import argparse
 from typing import List, Optional
 
-from nix_prefetch_github.repository import GithubRepository
+from nix_prefetch_github.interfaces import GithubRepository
 
 from ..dependency_injector import DependencyInjector
 from ..use_cases.prefetch_latest_release import Request

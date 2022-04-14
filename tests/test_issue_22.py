@@ -6,10 +6,9 @@ https://github.com/seppeljordan/nix-prefetch-github/issues/22
 import os
 from unittest import TestCase
 
-from nix_prefetch_github.interfaces import PrefetchOptions
+from nix_prefetch_github.interfaces import GithubRepository, PrefetchOptions
 from nix_prefetch_github.list_remote import ListRemote
 from nix_prefetch_github.prefetch import PrefetchedRepository, PrefetcherImpl
-from nix_prefetch_github.repository import GithubRepository
 from nix_prefetch_github.revision_index import RevisionIndex
 from nix_prefetch_github.tests import FakeRevisionIndexFactory, FakeUrlHasher
 

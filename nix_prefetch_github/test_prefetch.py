@@ -1,7 +1,7 @@
 from typing import Callable, Optional, cast
 from unittest import TestCase
 
-from .interfaces import PrefetchOptions
+from .interfaces import GithubRepository, PrefetchOptions
 from .list_remote import ListRemote
 from .prefetch import (
     PrefetchedRepository,
@@ -9,7 +9,6 @@ from .prefetch import (
     PrefetchFailure,
     PrefetchResult,
 )
-from .repository import GithubRepository
 from .revision_index import RevisionIndex
 from .tests import FakeRevisionIndexFactory, FakeUrlHasher
 

@@ -1,8 +1,8 @@
 from typing import Optional
 from unittest import TestCase
 
+from .interfaces import GithubRepository
 from .list_remote import ListRemote
-from .repository import GithubRepository
 from .revision_index import RevisionIndex
 from .revision_index_factory import RevisionIndexFactoryImpl
 

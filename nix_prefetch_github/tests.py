@@ -2,8 +2,7 @@ from os import getenv
 from typing import Optional
 from unittest import skipIf
 
-from .interfaces import PrefetchOptions
-from .repository import GithubRepository
+from .interfaces import GithubRepository, PrefetchOptions
 from .revision_index import RevisionIndex
 
 _disabled_tests = set(filter(bool, getenv("DISABLED_TESTS", "").split(" ")))

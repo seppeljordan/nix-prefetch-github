@@ -2,7 +2,7 @@ import argparse
 from typing import List, Optional
 
 from ..dependency_injector import DependencyInjector
-from ..repository import GithubRepository
+from ..interfaces import GithubRepository
 from ..use_cases.prefetch_github_repository import Request
 from .arguments import get_options_argument_parser
 

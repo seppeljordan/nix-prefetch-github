@@ -6,7 +6,7 @@ from logging import getLogger
 from unittest import TestCase
 
 from .command.command_runner import CommandRunnerImpl
-from .repository import GithubRepository
+from .interfaces import GithubRepository
 from .repository_detector import (
     RepositoryDetectorImpl,
     detect_github_repository_from_remote_url,

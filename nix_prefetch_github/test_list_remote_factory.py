@@ -2,8 +2,8 @@ from logging import getLogger
 from unittest import TestCase
 
 from .command.command_runner import CommandRunnerImpl
+from .interfaces import GithubRepository
 from .list_remote_factory import ListRemoteFactoryImpl
-from .repository import GithubRepository
 from .tests import network
 
 

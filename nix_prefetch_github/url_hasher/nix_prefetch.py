@@ -3,8 +3,7 @@ from dataclasses import dataclass
 from logging import Logger
 from typing import List, Optional
 
-from ..interfaces import CommandRunner, PrefetchOptions
-from ..repository import GithubRepository
+from ..interfaces import CommandRunner, GithubRepository, PrefetchOptions
 
 
 @dataclass(frozen=True)

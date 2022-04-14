@@ -2,14 +2,18 @@ from io import StringIO
 from typing import List
 from unittest import TestCase
 
-from .interfaces import PrefetchedRepository, PrefetchFailure, PrefetchOptions
+from .interfaces import (
+    GithubRepository,
+    PrefetchedRepository,
+    PrefetchFailure,
+    PrefetchOptions,
+)
 from .presenter import (
     JsonRepositoryRenderer,
     NixRepositoryRenderer,
     PresenterImpl,
     RepositoryRenderer,
 )
-from .repository import GithubRepository
 
 
 class PresenterTests(TestCase):
