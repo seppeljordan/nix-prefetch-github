@@ -1,8 +1,8 @@
 from dataclasses import dataclass
 from sys import exit
-from typing import Optional
 
 from ..interfaces import (
+    GithubAPI,
     GithubRepository,
     Prefetcher,
     PrefetchOptions,
@@ -14,21 +14,22 @@ from ..interfaces import (
 @dataclass
 class Request:
     repository: GithubRepository
-    revision: Optional[str]
     prefetch_options: PrefetchOptions
     rendering_format: RenderingFormat
 
 
 @dataclass
-class PrefetchGithubRepositoryUseCase:
+class PrefetchLatestReleaseUseCase:
     nix_presenter: Presenter
     json_presenter: Presenter
     prefetcher: Prefetcher
+    github_api: GithubAPI
 
-    def prefetch_github_repository(self, request: Request) -> None:
+    def prefetch_latest_release(self, request: Request) -> None:
+        revision = self.github_api.get_tag_of_latest_release(request.repository)
         prefetch_result = self.prefetcher.prefetch_github(
             repository=request.repository,
-            rev=request.revision,
+            rev=revision,
             prefetch_options=request.prefetch_options,
         )
         if request.rendering_format == RenderingFormat.json:

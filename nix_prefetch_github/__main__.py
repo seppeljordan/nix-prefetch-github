@@ -25,6 +25,7 @@ def main(argv: Optional[List[str]] = None) -> None:
             repository=GithubRepository(arguments.owner, arguments.repo),
             revision=arguments.rev,
             prefetch_options=prefetch_options,
+            rendering_format=arguments.rendering_format,
         )
     )
 

@@ -116,3 +116,9 @@ class RepositoryRenderer(Protocol):
 class Presenter(Protocol):
     def present(self, prefetch_result: PrefetchResult) -> int:
         ...
+
+
+@enum.unique
+class RenderingFormat(enum.Enum):
+    nix = enum.auto()
+    json = enum.auto()

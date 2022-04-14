@@ -1,9 +1,13 @@
-import enum
 import json
 from dataclasses import dataclass
 from typing import TextIO
 
-from .interfaces import PrefetchFailure, PrefetchResult, RepositoryRenderer
+from .interfaces import (
+    PrefetchFailure,
+    PrefetchResult,
+    RenderingFormat,
+    RepositoryRenderer,
+)
 from .prefetch import PrefetchedRepository
 from .templates import output_template
 
@@ -19,12 +23,6 @@ class NixRepositoryRenderer:
             leave_dot_git=repository.options.leave_dot_git,
             deep_clone=repository.options.deep_clone,
         )
-
-
-@enum.unique
-class RenderingFormat(enum.Enum):
-    nix = enum.auto()
-    json = enum.auto()
 
 
 def get_renderer_from_rendering_format(format: RenderingFormat) -> RepositoryRenderer:

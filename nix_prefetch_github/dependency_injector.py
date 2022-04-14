@@ -10,6 +10,8 @@ from .list_remote_factory import ListRemoteFactoryImpl
 from .logging import LoggingConfiguration, get_logger
 from .prefetch import PrefetcherImpl
 from .presenter import (
+    JsonRepositoryRenderer,
+    NixRepositoryRenderer,
     PresenterImpl,
     RenderingFormat,
     RepositoryRenderer,
@@ -24,6 +26,7 @@ from .url_hasher.url_hasher_selector import (
     UrlHasherSelector,
 )
 from .use_cases.prefetch_github_repository import PrefetchGithubRepositoryUseCase
+from .use_cases.prefetch_latest_release import PrefetchLatestReleaseUseCase
 
 
 class DependencyInjector:
@@ -78,6 +81,12 @@ class DependencyInjector:
     def get_repository_renderer(self) -> RepositoryRenderer:
         return get_renderer_from_rendering_format(self._rendering_format)
 
+    def get_nix_repository_renderer(self) -> NixRepositoryRenderer:
+        return NixRepositoryRenderer()
+
+    def get_json_repository_renderer(self) -> JsonRepositoryRenderer:
+        return JsonRepositoryRenderer()
+
     def get_github_api(self) -> GithubAPI:
         return GithubAPIImpl()
 
@@ -94,10 +103,33 @@ class DependencyInjector:
     def get_logging_configuration(self) -> LoggingConfiguration:
         return self._logging_configuration
 
+    def get_nix_presenter(self) -> PresenterImpl:
+        return PresenterImpl(
+            result_output=sys.stdout,
+            error_output=sys.stderr,
+            repository_renderer=self.get_nix_repository_renderer(),
+        )
+
+    def get_json_presenter(self) -> PresenterImpl:
+        return PresenterImpl(
+            result_output=sys.stdout,
+            error_output=sys.stderr,
+            repository_renderer=self.get_nix_repository_renderer(),
+        )
+
+    def get_prefetch_latest_release_use_case(self) -> PrefetchLatestReleaseUseCase:
+        return PrefetchLatestReleaseUseCase(
+            nix_presenter=self.get_nix_presenter(),
+            json_presenter=self.get_json_presenter(),
+            prefetcher=self.get_prefetcher(),
+            github_api=self.get_github_api(),
+        )
+
     def get_prefetch_github_repository_use_case(
         self,
     ) -> PrefetchGithubRepositoryUseCase:
         return PrefetchGithubRepositoryUseCase(
-            presenter=self.get_presenter(),
+            nix_presenter=self.get_nix_presenter(),
+            json_presenter=self.get_json_presenter(),
             prefetcher=self.get_prefetcher(),
         )
