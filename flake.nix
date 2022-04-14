@@ -23,7 +23,7 @@
             nix-prefetch-github = self.defaultPackage."${system}";
           };
           devShell = pkgs.mkShell {
-            packages = (with pkgs; [ git nixfmt nix-prefetch-scripts ])
+            packages = (with pkgs; [ git nixfmt nix-prefetch-scripts pandoc ])
               ++ (with python.pkgs; [
                 black
                 flake8
