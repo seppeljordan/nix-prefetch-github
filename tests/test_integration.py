@@ -20,6 +20,27 @@ class FlakeCheckTest(TestCase):
         self.assertEqual(finished_process.returncode, 0)
 
 
+@requires_nix_build
+class VersionFlagTests(TestCase):
+    def setUp(self) -> None:
+        self.directory = tempfile.mkdtemp()
+        self.output = path.join(self.directory, "result")
+        subprocess.run(["nix", "build", "--out-link", self.output])
+
+    def test_can_specify_version_flag(self) -> None:
+        commands = [
+            "nix-prefetch-github",
+            "nix-prefetch-github-directory",
+            "nix-prefetch-github-latest-release",
+        ]
+        for command in commands:
+            with self.subTest(msg=command):
+                finished_process = subprocess.run(
+                    [f"{self.output}/bin/{command}", "--version"]
+                )
+                self.assertEqual(finished_process.returncode, 0)
+
+
 @network
 @requires_nix_build
 class NixEvaluationTests(TestCase):

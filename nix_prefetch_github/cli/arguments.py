@@ -6,6 +6,7 @@ from typing import Any, Optional, Type
 from ..interfaces import PrefetchOptions
 from ..logging import LoggingConfiguration
 from ..presenter import RenderingFormat
+from ..version import VERSION_STRING
 
 
 def set_argument(name: str, value: Any) -> Type[argparse.Action]:
@@ -101,5 +102,8 @@ def get_options_argument_parser() -> argparse.ArgumentParser:
         dest="rendering_format",
         action="store_const",
         const=RenderingFormat.json,
+    )
+    parser.add_argument(
+        "--version", action="version", version="%(prog)s " + VERSION_STRING
     )
     return parser

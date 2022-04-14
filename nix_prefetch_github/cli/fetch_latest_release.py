@@ -33,7 +33,6 @@ def parse_arguments(arguments: Optional[List[str]]) -> argparse.Namespace:
     )
     parser.add_argument("owner")
     parser.add_argument("repo")
-    parser.add_argument("--version", "-V", action="store_true")
     return parser.parse_args(arguments)
 
 
