@@ -1,5 +1,6 @@
 #!/usr/bin/env python
 
+import json
 import shlex
 import shutil
 import subprocess
@@ -90,6 +91,43 @@ class NixEvaluationTests(TestCase):
                     ["nix-build", "-E", finished_process.stdout, "--no-out-link"]
                 )
                 self.assertEqual(build_process.returncode, 0)
+
+    def tearDown(self) -> None:
+        shutil.rmtree(self.directory)
+
+
+@network
+@requires_nix_build
+class JsonIntegrityTests(TestCase):
+    def setUp(self) -> None:
+        self.directory = tempfile.mkdtemp()
+        self.output = path.join(self.directory, "result")
+        subprocess.run(["nix", "build", "--out-link", self.output])
+
+    def test_can_load_json_output_as_json(self) -> None:
+        expressions = [
+            [
+                f"{self.output}/bin/nix-prefetch-github",
+                "seppeljordan",
+                "nix-prefetch-github",
+                "-v",
+            ],
+            [
+                f"{self.output}/bin/nix-prefetch-github-latest-release",
+                "seppeljordan",
+                "nix-prefetch-github",
+                "-v",
+            ],
+            [
+                f"{self.output}/bin/nix-prefetch-github-directory",
+                "-v",
+            ],
+        ]
+        for expression in expressions:
+            with self.subTest(msg=shlex.join(expression)):
+                finished_process = subprocess.run(expression, capture_output=True)
+                self.assertEqual(finished_process.returncode, 0)
+                json.loads(finished_process.stdout)
 
     def tearDown(self) -> None:
         shutil.rmtree(self.directory)

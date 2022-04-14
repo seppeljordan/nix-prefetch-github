@@ -104,7 +104,7 @@ class DependencyInjector:
         return PresenterImpl(
             result_output=sys.stdout,
             error_output=sys.stderr,
-            repository_renderer=self.get_nix_repository_renderer(),
+            repository_renderer=self.get_json_repository_renderer(),
         )
 
     def get_prefetch_latest_release_use_case(self) -> PrefetchLatestReleaseUseCase:
