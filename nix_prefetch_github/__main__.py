@@ -1,10 +1,10 @@
 import argparse
-import sys
 from typing import List, Optional
 
 from .cli.arguments import get_options_argument_parser
 from .dependency_injector import DependencyInjector
 from .repository import GithubRepository
+from .use_cases.prefetch_github_repository import Request
 
 PREFETCH_DEFAULT = True
 NIX_DEFAULT = False
@@ -18,15 +18,15 @@ def main(argv: Optional[List[str]] = None) -> None:
         logging_configuration=arguments.logging_configuration,
         rendering_format=arguments.rendering_format,
     )
-    presenter = injector.get_presenter()
-    prefetcher = injector.get_prefetcher()
+    use_case = injector.get_prefetch_github_repository_use_case()
     prefetch_options = arguments.prefetch_options
-    prefetch_result = prefetcher.prefetch_github(
-        GithubRepository(arguments.owner, arguments.repo),
-        arguments.rev,
-        prefetch_options=prefetch_options,
+    use_case.prefetch_github_repository(
+        request=Request(
+            repository=GithubRepository(arguments.owner, arguments.repo),
+            revision=arguments.rev,
+            prefetch_options=prefetch_options,
+        )
     )
-    sys.exit(presenter.present(prefetch_result))
 
 
 def parse_arguments(arguments: Optional[List[str]]) -> argparse.Namespace:

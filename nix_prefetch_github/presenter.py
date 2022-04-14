@@ -1,16 +1,11 @@
 import enum
 import json
 from dataclasses import dataclass
-from typing import Protocol, TextIO
+from typing import TextIO
 
-from .interfaces import PrefetchFailure, PrefetchResult
+from .interfaces import PrefetchFailure, PrefetchResult, RepositoryRenderer
 from .prefetch import PrefetchedRepository
 from .templates import output_template
-
-
-class RepositoryRenderer(Protocol):
-    def render_prefetched_repository(self, repository: PrefetchedRepository) -> str:
-        ...
 
 
 class NixRepositoryRenderer:
@@ -56,7 +51,7 @@ class JsonRepositoryRenderer:
 
 
 @dataclass
-class Presenter:
+class PresenterImpl:
     result_output: TextIO
     error_output: TextIO
     repository_renderer: RepositoryRenderer

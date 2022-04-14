@@ -10,7 +10,7 @@ from .list_remote_factory import ListRemoteFactoryImpl
 from .logging import LoggingConfiguration, get_logger
 from .prefetch import PrefetcherImpl
 from .presenter import (
-    Presenter,
+    PresenterImpl,
     RenderingFormat,
     RepositoryRenderer,
     get_renderer_from_rendering_format,
@@ -23,6 +23,7 @@ from .url_hasher.url_hasher_selector import (
     CommandAvailabilityChecker,
     UrlHasherSelector,
 )
+from .use_cases.prefetch_github_repository import PrefetchGithubRepositoryUseCase
 
 
 class DependencyInjector:
@@ -67,8 +68,8 @@ class DependencyInjector:
     def get_prefetcher(self) -> PrefetcherImpl:
         return PrefetcherImpl(self.get_url_hasher(), self.get_revision_index_factory())
 
-    def get_presenter(self) -> Presenter:
-        return Presenter(
+    def get_presenter(self) -> PresenterImpl:
+        return PresenterImpl(
             result_output=sys.stdout,
             error_output=sys.stderr,
             repository_renderer=self.get_repository_renderer(),
@@ -92,3 +93,11 @@ class DependencyInjector:
 
     def get_logging_configuration(self) -> LoggingConfiguration:
         return self._logging_configuration
+
+    def get_prefetch_github_repository_use_case(
+        self,
+    ) -> PrefetchGithubRepositoryUseCase:
+        return PrefetchGithubRepositoryUseCase(
+            presenter=self.get_presenter(),
+            prefetcher=self.get_prefetcher(),
+        )

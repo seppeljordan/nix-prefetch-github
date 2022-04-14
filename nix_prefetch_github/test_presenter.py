@@ -6,7 +6,7 @@ from .interfaces import PrefetchedRepository, PrefetchFailure, PrefetchOptions
 from .presenter import (
     JsonRepositoryRenderer,
     NixRepositoryRenderer,
-    Presenter,
+    PresenterImpl,
     RepositoryRenderer,
 )
 from .repository import GithubRepository
@@ -17,7 +17,7 @@ class PresenterTests(TestCase):
         self.result_output = StringIO()
         self.error_output = StringIO()
         self.renderer = TestingRepositoryRenderer()
-        self.presenter = Presenter(
+        self.presenter = PresenterImpl(
             result_output=self.result_output,
             error_output=self.error_output,
             repository_renderer=self.renderer,

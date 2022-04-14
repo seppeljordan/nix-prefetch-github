@@ -106,3 +106,13 @@ class CommandRunner(Protocol):
 class CommandAvailabilityChecker(Protocol):
     def is_command_available(self, command: str) -> bool:
         ...
+
+
+class RepositoryRenderer(Protocol):
+    def render_prefetched_repository(self, repository: PrefetchedRepository) -> str:
+        ...
+
+
+class Presenter(Protocol):
+    def present(self, prefetch_result: PrefetchResult) -> int:
+        ...
