@@ -18,8 +18,8 @@
   {
       "owner": "seppeljordan",
       "repo": "nix-prefetch-github",
-      "rev": "629da48200d856d3f65233404122f9aacb164ffe",
-      "sha256": "O9IOpxlDjh5RC6TzYoCX2femrIz23BJSrQRl3Mz5gWo=",
+      "rev": "3e33bb6cf818809016ab109e71f4a5406ecd7531",
+      "sha256": "kqdrsxxLGbnE6nG6artfiPZmli5t7ODay3KvgttEp4w=",
       "fetchSubmodules": false,
       "leaveDotGit": false,
       "deepClone": false
@@ -41,7 +41,7 @@
    usage: nix-prefetch-github [-h] [--fetch-submodules] [--no-fetch-submodules]
 			      [--leave-dot-git] [--no-leave-dot-git]
 			      [--deep-clone] [--no-deep-clone] [--verbose]
-			      [--nix] [--json] [--rev REV] [--version]
+			      [--nix] [--json] [--version] [--rev REV]
 			      owner repo
 
    positional arguments:
@@ -59,8 +59,8 @@
      --verbose, -v
      --nix
      --json
+     --version             show program's version number and exit
      --rev REV
-     --version, -V
    #+end_example
 
 ** nix-prefetch-github-directory
@@ -80,8 +80,8 @@
 					[--no-fetch-submodules] [--leave-dot-git]
 					[--no-leave-dot-git] [--deep-clone]
 					[--no-deep-clone] [--verbose] [--nix]
-					[--json] [--directory DIRECTORY]
-					[--remote REMOTE]
+					[--json] [--version]
+					[--directory DIRECTORY] [--remote REMOTE]
 
    optional arguments:
      -h, --help            show this help message and exit
@@ -94,6 +94,7 @@
      --verbose, -v
      --nix
      --json
+     --version             show program's version number and exit
      --directory DIRECTORY
      --remote REMOTE
    #+end_example
@@ -131,7 +132,7 @@
      --verbose, -v
      --nix
      --json
-     --version, -V
+     --version             show program's version number and exit
    #+end_example
 
 * development environment
@@ -149,6 +150,9 @@
   that make sense with this environment variable.
 
 * changes
+** v5.1.1
+   - Fix bug that broke =nix-prefetch-github --version=
+
 ** v5.1.0
    - Use =nix-prefetch-git= and =nix-prefetch-url= for calculating
      sha256 sums when possible. The application will fall back to the
