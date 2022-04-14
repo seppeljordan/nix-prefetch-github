@@ -3,9 +3,8 @@ import sys
 from logging import INFO, WARNING
 from typing import Any, Optional, Type
 
-from ..interfaces import PrefetchOptions
+from ..interfaces import PrefetchOptions, RenderingFormat
 from ..logging import LoggingConfiguration
-from ..presenter import RenderingFormat
 from ..version import VERSION_STRING
 
 

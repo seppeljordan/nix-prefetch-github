@@ -5,18 +5,17 @@ from logging import Logger
 from .command.command_availability_checker import CommandAvailabilityCheckerImpl
 from .command.command_runner import CommandRunnerImpl
 from .github import GithubAPIImpl
-from .interfaces import GithubAPI, RepositoryDetector, RevisionIndexFactory, UrlHasher
+from .interfaces import (
+    GithubAPI,
+    RenderingFormat,
+    RepositoryDetector,
+    RevisionIndexFactory,
+    UrlHasher,
+)
 from .list_remote_factory import ListRemoteFactoryImpl
 from .logging import LoggingConfiguration, get_logger
 from .prefetch import PrefetcherImpl
-from .presenter import (
-    JsonRepositoryRenderer,
-    NixRepositoryRenderer,
-    PresenterImpl,
-    RenderingFormat,
-    RepositoryRenderer,
-    get_renderer_from_rendering_format,
-)
+from .presenter import JsonRepositoryRenderer, NixRepositoryRenderer, PresenterImpl
 from .repository_detector import RepositoryDetectorImpl
 from .revision_index_factory import RevisionIndexFactoryImpl
 from .url_hasher.nix_build import NixBuildUrlHasherImpl
@@ -71,16 +70,6 @@ class DependencyInjector:
 
     def get_prefetcher(self) -> PrefetcherImpl:
         return PrefetcherImpl(self.get_url_hasher(), self.get_revision_index_factory())
-
-    def get_presenter(self) -> PresenterImpl:
-        return PresenterImpl(
-            result_output=sys.stdout,
-            error_output=sys.stderr,
-            repository_renderer=self.get_repository_renderer(),
-        )
-
-    def get_repository_renderer(self) -> RepositoryRenderer:
-        return get_renderer_from_rendering_format(self._rendering_format)
 
     def get_nix_repository_renderer(self) -> NixRepositoryRenderer:
         return NixRepositoryRenderer()

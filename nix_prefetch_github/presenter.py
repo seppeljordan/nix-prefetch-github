@@ -2,12 +2,7 @@ import json
 from dataclasses import dataclass
 from typing import TextIO
 
-from .interfaces import (
-    PrefetchFailure,
-    PrefetchResult,
-    RenderingFormat,
-    RepositoryRenderer,
-)
+from .interfaces import PrefetchFailure, PrefetchResult, RepositoryRenderer
 from .prefetch import PrefetchedRepository
 from .templates import output_template
 
@@ -23,13 +18,6 @@ class NixRepositoryRenderer:
             leave_dot_git=repository.options.leave_dot_git,
             deep_clone=repository.options.deep_clone,
         )
-
-
-def get_renderer_from_rendering_format(format: RenderingFormat) -> RepositoryRenderer:
-    if format == RenderingFormat.nix:
-        return NixRepositoryRenderer()
-    else:
-        return JsonRepositoryRenderer()
 
 
 class JsonRepositoryRenderer:

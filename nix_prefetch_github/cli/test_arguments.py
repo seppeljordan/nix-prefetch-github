@@ -1,8 +1,7 @@
 from logging import INFO, WARNING
 from unittest import TestCase
 
-from ..interfaces import PrefetchOptions
-from ..presenter import RenderingFormat
+from ..interfaces import PrefetchOptions, RenderingFormat
 from .arguments import get_options_argument_parser
 
 
