@@ -1,5 +1,28 @@
-#!/usr/bin/env sh
+#!/usr/bin/env python
 
-nixfmt $(find . -type f -name '*.nix')
-black .
-isort . test-pypi-install
+import os
+import subprocess
+from os import path
+
+
+def main():
+    format_nix_files()
+    subprocess.run("black . test-pypi-install format-code", shell=True)
+    subprocess.run("isort . test-pypi-install format-code", shell=True)
+
+
+def format_nix_files():
+    nix_files = (
+        path.join(directory, filename)
+        for directory, _, filenames in os.walk(".")
+        for filename in filenames
+        if filename.endswith(".nix")
+    )
+    for nix_file in nix_files:
+        check_process = subprocess.run(["nixfmt", "--check", nix_file])
+        if check_process.returncode != 0:
+            subprocess.run(["nixfmt", nix_file])
+
+
+if __name__ == "__main__":
+    main()
