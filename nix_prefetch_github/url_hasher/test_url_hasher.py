@@ -1,7 +1,7 @@
 from logging import getLogger
 from unittest import TestCase
 
-from ..command import CommandRunner
+from ..command.command_runner import CommandRunnerImpl
 from ..repository import GithubRepository
 from ..tests import network, requires_nix_build
 from .nix_build import (
@@ -16,7 +16,7 @@ from .nix_build import (
 class UrlHasherTests(TestCase):
     def setUp(self) -> None:
         self.hasher = NixBuildUrlHasherImpl(
-            command_runner=CommandRunner(getLogger(__name__)), logger=getLogger()
+            command_runner=CommandRunnerImpl(getLogger(__name__)), logger=getLogger()
         )
         self.repository = GithubRepository(
             owner="git-up",

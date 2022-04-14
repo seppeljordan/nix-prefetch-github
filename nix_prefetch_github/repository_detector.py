@@ -2,7 +2,7 @@ import re
 from dataclasses import dataclass
 from typing import Optional
 
-from .command import CommandRunner
+from .interfaces import CommandRunner
 from .repository import GithubRepository
 
 

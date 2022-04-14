@@ -7,7 +7,7 @@ from typing import Dict, List, Optional, Tuple
 
 
 @dataclass(frozen=True)
-class CommandRunner:
+class CommandRunnerImpl:
     logger: Logger
 
     def run_command(

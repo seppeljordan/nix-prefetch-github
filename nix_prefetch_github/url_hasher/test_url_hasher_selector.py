@@ -2,7 +2,7 @@ from logging import getLogger
 from typing import Set
 from unittest import TestCase
 
-from nix_prefetch_github.command import CommandRunner
+from nix_prefetch_github.command.command_runner import CommandRunnerImpl
 
 from .nix_build import NixBuildUrlHasherImpl
 from .nix_prefetch import NixPrefetchUrlHasherImpl
@@ -12,7 +12,7 @@ from .url_hasher_selector import UrlHasherSelector
 class NixPrefetchUrlAndGitAvailableTests(TestCase):
     def setUp(self) -> None:
         self.logger = getLogger()
-        self.command_runner = CommandRunner(self.logger)
+        self.command_runner = CommandRunnerImpl(self.logger)
         self.nix_build_implementation = NixBuildUrlHasherImpl(
             command_runner=self.command_runner,
             logger=self.logger,
@@ -38,7 +38,7 @@ class NixPrefetchUrlAndGitAvailableTests(TestCase):
 class NixPrefetchUrlAndGitUnavailableTests(TestCase):
     def setUp(self) -> None:
         self.logger = getLogger()
-        self.command_runner = CommandRunner(self.logger)
+        self.command_runner = CommandRunnerImpl(self.logger)
         self.nix_build_implementation = NixBuildUrlHasherImpl(
             command_runner=self.command_runner,
             logger=self.logger,
@@ -66,7 +66,7 @@ class NixPrefetchUrlAndGitUnavailableTests(TestCase):
 class NixPrefetchUrlIsAvailableAndNixPrefetchGitUnavailableTests(TestCase):
     def setUp(self) -> None:
         self.logger = getLogger()
-        self.command_runner = CommandRunner(self.logger)
+        self.command_runner = CommandRunnerImpl(self.logger)
         self.nix_build_implementation = NixBuildUrlHasherImpl(
             command_runner=self.command_runner,
             logger=self.logger,

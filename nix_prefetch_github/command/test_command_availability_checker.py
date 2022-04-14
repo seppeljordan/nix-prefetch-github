@@ -1,14 +1,14 @@
 from logging import getLogger
 from unittest import TestCase
 
-from .command import CommandRunner
 from .command_availability_checker import CommandAvailabilityCheckerImpl
+from .command_runner import CommandRunnerImpl
 
 
 class Tests(TestCase):
     def setUp(self) -> None:
         self.command_availability_checker = CommandAvailabilityCheckerImpl(
-            command_runner=CommandRunner(getLogger())
+            command_runner=CommandRunnerImpl(getLogger())
         )
 
     def test_that_fantasy_command_is_not_available(self) -> None:

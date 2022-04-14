@@ -1,7 +1,7 @@
 from dataclasses import dataclass
 from typing import Optional
 
-from .command import CommandRunner
+from .interfaces import CommandRunner
 from .list_remote import ListRemote
 from .repository import GithubRepository
 

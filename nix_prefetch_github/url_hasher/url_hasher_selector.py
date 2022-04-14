@@ -1,15 +1,9 @@
 from dataclasses import dataclass
-from typing import Protocol
 
-from nix_prefetch_github.interfaces import UrlHasher
+from nix_prefetch_github.interfaces import CommandAvailabilityChecker, UrlHasher
 
 from .nix_build import NixBuildUrlHasherImpl
 from .nix_prefetch import NixPrefetchUrlHasherImpl
-
-
-class CommandAvailabilityChecker(Protocol):
-    def is_command_available(self, command: str) -> bool:
-        ...
 
 
 @dataclass

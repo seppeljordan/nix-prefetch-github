@@ -1,6 +1,6 @@
 import enum
 from dataclasses import dataclass
-from typing import Optional, Protocol, Union
+from typing import Dict, List, Optional, Protocol, Tuple, Union
 
 from .list_remote import ListRemote
 from .repository import GithubRepository
@@ -89,4 +89,20 @@ class Prefetcher(Protocol):
         rev: Optional[str],
         prefetch_options: PrefetchOptions,
     ) -> PrefetchResult:
+        ...
+
+
+class CommandRunner(Protocol):
+    def run_command(
+        self,
+        command: List[str],
+        cwd: Optional[str] = None,
+        environment_variables: Optional[Dict[str, str]] = None,
+        merge_stderr: bool = False,
+    ) -> Tuple[int, str]:
+        ...
+
+
+class CommandAvailabilityChecker(Protocol):
+    def is_command_available(self, command: str) -> bool:
         ...

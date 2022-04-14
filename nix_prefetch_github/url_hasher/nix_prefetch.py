@@ -3,8 +3,7 @@ from dataclasses import dataclass
 from logging import Logger
 from typing import List, Optional
 
-from ..command import CommandRunner
-from ..interfaces import PrefetchOptions
+from ..interfaces import CommandRunner, PrefetchOptions
 from ..repository import GithubRepository
 
 

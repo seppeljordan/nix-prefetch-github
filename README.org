@@ -18,8 +18,8 @@
   {
       "owner": "seppeljordan",
       "repo": "nix-prefetch-github",
-      "rev": "fd3b5e85dec4fd4eb4b54cbdf695b09a5789d4d4",
-      "sha256": "xWH+pNGAGoi3tKKRnl5ymkzBIdXRxDSF7IWXJ8bQCEk=",
+      "rev": "629da48200d856d3f65233404122f9aacb164ffe",
+      "sha256": "O9IOpxlDjh5RC6TzYoCX2femrIz23BJSrQRl3Mz5gWo=",
       "fetchSubmodules": false,
       "leaveDotGit": false,
       "deepClone": false

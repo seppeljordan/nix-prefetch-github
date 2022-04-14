@@ -1,6 +1,6 @@
 from dataclasses import dataclass
 
-from nix_prefetch_github.command import CommandRunner
+from nix_prefetch_github.interfaces import CommandRunner
 
 
 @dataclass
