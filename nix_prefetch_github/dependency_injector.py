@@ -25,6 +25,7 @@ from .url_hasher.url_hasher_selector import (
     CommandAvailabilityChecker,
     UrlHasherSelector,
 )
+from .use_cases.prefetch_directory import PrefetchDirectoryUseCase
 from .use_cases.prefetch_github_repository import PrefetchGithubRepositoryUseCase
 from .use_cases.prefetch_latest_release import PrefetchLatestReleaseUseCase
 
@@ -132,4 +133,13 @@ class DependencyInjector:
             nix_presenter=self.get_nix_presenter(),
             json_presenter=self.get_json_presenter(),
             prefetcher=self.get_prefetcher(),
+        )
+
+    def get_prefetch_directory_use_case(self) -> PrefetchDirectoryUseCase:
+        return PrefetchDirectoryUseCase(
+            nix_presenter=self.get_nix_presenter(),
+            json_presenter=self.get_json_presenter(),
+            prefetcher=self.get_prefetcher(),
+            repository_detector=self.get_repository_detector(),
+            logger=self.get_logger(),
         )
