@@ -9,7 +9,7 @@ from unittest import TestCase
 from nix_prefetch_github.interfaces import GithubRepository, PrefetchOptions
 from nix_prefetch_github.list_remote import ListRemote
 from nix_prefetch_github.prefetch import PrefetchedRepository, PrefetcherImpl
-from nix_prefetch_github.revision_index import RevisionIndex
+from nix_prefetch_github.revision_index import RevisionIndexImpl
 from nix_prefetch_github.tests import FakeRevisionIndexFactory, FakeUrlHasher
 
 
@@ -32,7 +32,7 @@ class TestIssue21(TestCase):
 
     def test_prefetch_sensu_go_5_11(self) -> None:
         self.url_hasher.sha256_sum = "TEST_HASH_SUM"
-        self.revision_index_factory.revision_index = RevisionIndex(
+        self.revision_index_factory.revision_index = RevisionIndexImpl(
             self.sensu_go_ls_remote_output
         )
         result = self.prefetcher.prefetch_github(

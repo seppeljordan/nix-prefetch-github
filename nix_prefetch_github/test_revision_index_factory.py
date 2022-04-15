@@ -3,7 +3,7 @@ from unittest import TestCase
 
 from .interfaces import GithubRepository
 from .list_remote import ListRemote
-from .revision_index import RevisionIndex
+from .revision_index import RevisionIndexImpl
 from .revision_index_factory import RevisionIndexFactoryImpl
 
 
@@ -38,5 +38,5 @@ class RevisionIndexFactoryTests(TestCase):
         self.set_list_remote(ListRemote())
         self.assertIsInstance(
             self.revision_index_factory.get_revision_index(self.repository),
-            RevisionIndex,
+            RevisionIndexImpl,
         )

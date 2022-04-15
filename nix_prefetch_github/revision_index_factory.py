@@ -1,9 +1,15 @@
 from dataclasses import dataclass
-from typing import Optional
+from typing import Optional, Protocol
 
 from .functor import map_or_none
-from .interfaces import GithubRepository, ListRemoteFactory
-from .revision_index import RevisionIndex
+from .interfaces import GithubRepository
+from .list_remote import ListRemote
+from .revision_index import RevisionIndexImpl
+
+
+class ListRemoteFactory(Protocol):
+    def get_list_remote(self, repository: GithubRepository) -> Optional[ListRemote]:
+        pass
 
 
 @dataclass(frozen=True)
@@ -12,7 +18,7 @@ class RevisionIndexFactoryImpl:
 
     def get_revision_index(
         self, repository: GithubRepository
-    ) -> Optional[RevisionIndex]:
+    ) -> Optional[RevisionIndexImpl]:
         return map_or_none(
-            RevisionIndex, self.list_remote_factory.get_list_remote(repository)
+            RevisionIndexImpl, self.list_remote_factory.get_list_remote(repository)
         )

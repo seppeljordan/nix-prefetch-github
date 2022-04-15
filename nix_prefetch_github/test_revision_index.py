@@ -1,12 +1,12 @@
 from unittest import TestCase
 
 from .list_remote import ListRemote
-from .revision_index import RevisionIndex
+from .revision_index import RevisionIndexImpl
 
 
 class RevisionIndexTests(TestCase):
     def setUp(self) -> None:
-        self.index = RevisionIndex(self.remote_list)
+        self.index = RevisionIndexImpl(self.remote_list)
 
     @property
     def remote_list(self) -> ListRemote:

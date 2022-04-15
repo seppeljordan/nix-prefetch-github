@@ -5,7 +5,7 @@ from .list_remote import ListRemote
 
 
 @dataclass(frozen=True)
-class RevisionIndex:
+class RevisionIndexImpl:
     remote_list: ListRemote
 
     def get_revision_by_name(self, name: str) -> Optional[str]:

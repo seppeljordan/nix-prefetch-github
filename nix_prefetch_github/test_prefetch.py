@@ -9,7 +9,7 @@ from .prefetch import (
     PrefetchFailure,
     PrefetchResult,
 )
-from .revision_index import RevisionIndex
+from .revision_index import RevisionIndexImpl
 from .tests import FakeRevisionIndexFactory, FakeUrlHasher
 
 
@@ -77,7 +77,7 @@ class PrefetcherTests(TestCase):
         self.expected_hash = "test hash"
         self.expected_revision = "test ref"
         self.url_hasher.sha256_sum = self.expected_hash
-        self.revision_index_factory.revision_index = RevisionIndex(
+        self.revision_index_factory.revision_index = RevisionIndexImpl(
             ListRemote(
                 symrefs={"HEAD": "refs/heads/master"},
                 heads={"master": self.expected_revision},

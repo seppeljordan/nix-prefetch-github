@@ -9,7 +9,7 @@ from unittest import TestCase
 from nix_prefetch_github.interfaces import GithubRepository, PrefetchOptions
 from nix_prefetch_github.list_remote import ListRemote
 from nix_prefetch_github.prefetch import PrefetchedRepository, PrefetcherImpl
-from nix_prefetch_github.revision_index import RevisionIndex
+from nix_prefetch_github.revision_index import RevisionIndexImpl
 from nix_prefetch_github.tests import FakeRevisionIndexFactory, FakeUrlHasher
 
 
@@ -30,7 +30,7 @@ class Issue22Tests(TestCase):
         )
         self.url_hasher = FakeUrlHasher()
         self.revision_index_factory = FakeRevisionIndexFactory()
-        self.revision_index_factory.revision_index = RevisionIndex(
+        self.revision_index_factory.revision_index = RevisionIndexImpl(
             self.nixos_secure_factory_ls_remote_output
         )
         self.prefetcher = PrefetcherImpl(

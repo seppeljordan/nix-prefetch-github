@@ -3,7 +3,7 @@ from typing import Optional
 from unittest import skipIf
 
 from .interfaces import GithubRepository, PrefetchOptions
-from .revision_index import RevisionIndex
+from .revision_index import RevisionIndexImpl
 
 _disabled_tests = set(filter(bool, getenv("DISABLED_TESTS", "").split(" ")))
 network = skipIf("network" in _disabled_tests, "networking tests are disabled")
@@ -27,9 +27,9 @@ class FakeUrlHasher:
 
 class FakeRevisionIndexFactory:
     def __init__(self) -> None:
-        self.revision_index: Optional[RevisionIndex] = None
+        self.revision_index: Optional[RevisionIndexImpl] = None
 
     def get_revision_index(
         self, repository: GithubRepository
-    ) -> Optional[RevisionIndex]:
+    ) -> Optional[RevisionIndexImpl]:
         return self.revision_index

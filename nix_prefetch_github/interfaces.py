@@ -2,8 +2,10 @@ import enum
 from dataclasses import dataclass
 from typing import Dict, List, Optional, Protocol, Tuple, Union
 
-from .list_remote import ListRemote
-from .revision_index import RevisionIndex
+
+class RevisionIndex(Protocol):
+    def get_revision_by_name(self, name: str) -> Optional[str]:
+        ...
 
 
 @dataclass(frozen=True)
@@ -55,11 +57,6 @@ class RepositoryDetector(Protocol):
 
     def get_current_revision(self, directory: str) -> Optional[str]:
         ...
-
-
-class ListRemoteFactory(Protocol):
-    def get_list_remote(self, repository: GithubRepository) -> Optional[ListRemote]:
-        pass
 
 
 @dataclass(frozen=True)
