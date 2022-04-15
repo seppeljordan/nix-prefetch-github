@@ -10,7 +10,6 @@ from .interfaces import (
     RenderingFormat,
     RepositoryDetector,
     RevisionIndexFactory,
-    UrlHasher,
 )
 from .list_remote_factory import ListRemoteFactoryImpl
 from .logging import LoggingConfiguration, get_logger
@@ -64,12 +63,10 @@ class DependencyInjector:
             command_runner=self.get_command_runner(), logger=self.get_logger()
         )
 
-    def get_url_hasher(self) -> UrlHasher:
-        selector = self.get_url_hasher_selector()
-        return selector.get_url_hasher()
-
     def get_prefetcher(self) -> PrefetcherImpl:
-        return PrefetcherImpl(self.get_url_hasher(), self.get_revision_index_factory())
+        return PrefetcherImpl(
+            self.get_url_hasher_selector(), self.get_revision_index_factory()
+        )
 
     def get_nix_repository_renderer(self) -> NixRepositoryRenderer:
         return NixRepositoryRenderer()

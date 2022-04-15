@@ -1,94 +1,97 @@
-from logging import getLogger
 from typing import Set
 from unittest import TestCase
 
-from nix_prefetch_github.command.command_runner import CommandRunnerImpl
-
-from .nix_build import NixBuildUrlHasherImpl
-from .nix_prefetch import NixPrefetchUrlHasherImpl
+from ..interfaces import GithubRepository, PrefetchOptions
+from ..tests import FakeUrlHasher
 from .url_hasher_selector import UrlHasherSelector
 
 
 class NixPrefetchUrlAndGitAvailableTests(TestCase):
     def setUp(self) -> None:
-        self.logger = getLogger()
-        self.command_runner = CommandRunnerImpl(self.logger)
-        self.nix_build_implementation = NixBuildUrlHasherImpl(
-            command_runner=self.command_runner,
-            logger=self.logger,
-        )
-        self.nix_prefetch_implementation = NixPrefetchUrlHasherImpl(
-            command_runner=self.command_runner,
-            logger=self.logger,
-        )
+        self.nix_build_hasher = FakeUrlHasher()
+        self.nix_prefetch_hasher = FakeUrlHasher()
         self.availability_checker = FakeCommandAvailabilityChecker()
         self.selector = UrlHasherSelector(
             availability_checker=self.availability_checker,
-            nix_build_implementation=self.nix_build_implementation,
-            nix_prefetch_implementation=self.nix_prefetch_implementation,
+            nix_build_implementation=self.nix_build_hasher,
+            nix_prefetch_implementation=self.nix_prefetch_hasher,
         )
         self.availability_checker.set_as_available("nix-prefetch-url")
         self.availability_checker.set_as_available("nix-prefetch-git")
+        self.nix_build_hasher.sha256_sum = "nix build hash"
+        self.nix_prefetch_hasher.sha256_sum = "nix prefetch hash"
+        self.repository = GithubRepository(owner="test", name="test")
+        self.revision = "test"
 
-    def test_that_prefetch_hasher_is_available(self) -> None:
-        hasher = self.selector.get_url_hasher()
-        self.assertIsInstance(hasher, NixPrefetchUrlHasherImpl)
+    def test_that_prefetch_hasher_is_used(self) -> None:
+        hash_sum = self.selector.calculate_sha256_sum(
+            repository=self.repository,
+            revision=self.revision,
+            prefetch_options=PrefetchOptions(),
+        )
+        self.assertEqual(hash_sum, "nix prefetch hash")
+
+    def test_that_nix_build_hasher_is_used_with_deep_clone_and_not_leave_dot_git(
+        self,
+    ) -> None:
+        hash_sum = self.selector.calculate_sha256_sum(
+            repository=self.repository,
+            revision=self.revision,
+            prefetch_options=PrefetchOptions(deep_clone=True, leave_dot_git=False),
+        )
+        self.assertEqual(hash_sum, "nix build hash")
 
 
 class NixPrefetchUrlAndGitUnavailableTests(TestCase):
     def setUp(self) -> None:
-        self.logger = getLogger()
-        self.command_runner = CommandRunnerImpl(self.logger)
-        self.nix_build_implementation = NixBuildUrlHasherImpl(
-            command_runner=self.command_runner,
-            logger=self.logger,
-        )
-        self.nix_prefetch_implementation = NixPrefetchUrlHasherImpl(
-            command_runner=self.command_runner,
-            logger=self.logger,
-        )
+        self.nix_build_hasher = FakeUrlHasher()
+        self.nix_prefetch_hasher = FakeUrlHasher()
         self.availability_checker = FakeCommandAvailabilityChecker()
         self.selector = UrlHasherSelector(
             availability_checker=self.availability_checker,
-            nix_build_implementation=self.nix_build_implementation,
-            nix_prefetch_implementation=self.nix_prefetch_implementation,
+            nix_build_implementation=self.nix_build_hasher,
+            nix_prefetch_implementation=self.nix_prefetch_hasher,
         )
         self.availability_checker.set_as_unavailable("nix-prefetch-url")
         self.availability_checker.set_as_unavailable("nix-prefetch-git")
+        self.nix_build_hasher.sha256_sum = "nix build hash"
+        self.nix_prefetch_hasher.sha256_sum = "nix prefetch hash"
+        self.repository = GithubRepository(owner="test", name="test")
+        self.revision = "test"
 
-        self.availability_checker.set_as_available("nix-build")
-
-    def test_that_prefetch_hasher_is_available(self) -> None:
-        hasher = self.selector.get_url_hasher()
-        self.assertIsInstance(hasher, NixBuildUrlHasherImpl)
+    def test_that_nix_build_hasher_is_used(self) -> None:
+        hash_sum = self.selector.calculate_sha256_sum(
+            repository=self.repository,
+            revision=self.revision,
+            prefetch_options=PrefetchOptions(),
+        )
+        self.assertEqual(hash_sum, "nix build hash")
 
 
 class NixPrefetchUrlIsAvailableAndNixPrefetchGitUnavailableTests(TestCase):
     def setUp(self) -> None:
-        self.logger = getLogger()
-        self.command_runner = CommandRunnerImpl(self.logger)
-        self.nix_build_implementation = NixBuildUrlHasherImpl(
-            command_runner=self.command_runner,
-            logger=self.logger,
-        )
-        self.nix_prefetch_implementation = NixPrefetchUrlHasherImpl(
-            command_runner=self.command_runner,
-            logger=self.logger,
-        )
+        self.nix_build_hasher = FakeUrlHasher()
+        self.nix_prefetch_hasher = FakeUrlHasher()
         self.availability_checker = FakeCommandAvailabilityChecker()
         self.selector = UrlHasherSelector(
             availability_checker=self.availability_checker,
-            nix_build_implementation=self.nix_build_implementation,
-            nix_prefetch_implementation=self.nix_prefetch_implementation,
+            nix_build_implementation=self.nix_build_hasher,
+            nix_prefetch_implementation=self.nix_prefetch_hasher,
         )
-        self.availability_checker.set_as_unavailable("nix-prefetch-git")
+        self.availability_checker.set_as_unavailable("nix-prefetch-url")
+        self.availability_checker.set_as_available("nix-prefetch-git")
+        self.nix_build_hasher.sha256_sum = "nix build hash"
+        self.nix_prefetch_hasher.sha256_sum = "nix prefetch hash"
+        self.repository = GithubRepository(owner="test", name="test")
+        self.revision = "test"
 
-        self.availability_checker.set_as_available("nix-prefetch-url")
-        self.availability_checker.set_as_available("nix-build")
-
-    def test_that_prefetch_hasher_is_available(self) -> None:
-        hasher = self.selector.get_url_hasher()
-        self.assertIsInstance(hasher, NixBuildUrlHasherImpl)
+    def test_that_nix_build_hasher_is_used(self) -> None:
+        hash_sum = self.selector.calculate_sha256_sum(
+            repository=self.repository,
+            revision=self.revision,
+            prefetch_options=PrefetchOptions(),
+        )
+        self.assertEqual(hash_sum, "nix build hash")
 
 
 class FakeCommandAvailabilityChecker:

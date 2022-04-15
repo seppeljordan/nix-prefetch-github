@@ -48,12 +48,6 @@ class UrlHasherTests(TestCase):
         self.assertNotEqual(hash_sum, "B5AlNwg6kbcaqUiQEC6jslCRKVpErXLMsKC+b9aPlrM=")
 
     def test_with_deep_clone(self) -> None:
-        # There is currently a bug in `nix-prefetch-git` that prevents
-        # the UrlHasher under test to fail.  See
-        # https://github.com/NixOS/nixpkgs/issues/168147 for details.
-        # If this test passes then we can assume that we could swap
-        # out the old implementation of UrlHasher with this one for
-        # improved performance.
         prefetch_options = PrefetchOptions(deep_clone=True)
         hash_sum = self.hasher.calculate_sha256_sum(
             repository=self.repository,
