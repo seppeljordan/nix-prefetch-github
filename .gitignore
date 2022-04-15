@@ -11,3 +11,4 @@ __pycache__
 /test.nix
 /.mypy_cache
 /.envrc
+/nix_prefetch_github.svg

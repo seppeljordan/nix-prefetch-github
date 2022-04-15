@@ -1,0 +1,3 @@
+#!/usr/bin/env sh
+
+pydeps nix_prefetch_github -x '*.test_*' -xx 'nix_prefetch_github.tests'
