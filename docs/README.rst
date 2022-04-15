@@ -19,8 +19,8 @@ Command Line Example
    {
        "owner": "seppeljordan",
        "repo": "nix-prefetch-github",
-       "rev": "7a9dc992dc9721c76b0175d641cbcc564f748fc9",
-       "sha256": "ZenzNTlI6bXBmZXUXLN63PbhRTe+XXZ0NkqoAbALWyM=",
+       "rev": "34ba1d4f7bf6420f896cf30dc919af112369ec84",
+       "sha256": "zd+tFmh2sH/9H6XD6YNCAYN+ZkOxBbIbJbBuf7jduQM=",
        "fetchSubmodules": false,
        "leaveDotGit": false,
        "deepClone": false
@@ -146,8 +146,18 @@ run via the variable ``DISABLED_TESTS``:
 Currently ``network`` and ``requires_nix_build`` are the only values
 that make sense with this environment variable.
 
+You can visualize the dependency graph of the individual python modules
+via the ``./generate-dependency-graph`` program.
+
 changes
 =======
+
+v5.1.2
+------
+
+-  Use old prefetch implementation because of bug in
+   ``nix-prefetch-git``. See `this github
+   issue <https://github.com/NixOS/nixpkgs/issues/168147>`__
 
 v5.1.1
 ------
