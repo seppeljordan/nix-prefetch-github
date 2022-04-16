@@ -1,8 +1,10 @@
 from logging import getLogger
 from unittest import TestCase
 
-from .command_availability_checker import CommandAvailabilityCheckerImpl
-from .command_runner import CommandRunnerImpl
+from nix_prefetch_github.command.command_availability_checker import (
+    CommandAvailabilityCheckerImpl,
+)
+from nix_prefetch_github.command.command_runner import CommandRunnerImpl
 
 
 class Tests(TestCase):

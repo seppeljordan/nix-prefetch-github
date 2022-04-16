@@ -2,8 +2,8 @@ from os import getenv
 from typing import Optional
 from unittest import skipIf
 
-from .interfaces import GithubRepository, PrefetchOptions
-from .revision_index import RevisionIndexImpl
+from nix_prefetch_github.interfaces import GithubRepository, PrefetchOptions
+from nix_prefetch_github.revision_index import RevisionIndexImpl
 
 _disabled_tests = set(filter(bool, getenv("DISABLED_TESTS", "").split(" ")))
 network = skipIf("network" in _disabled_tests, "networking tests are disabled")

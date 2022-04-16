@@ -1,8 +1,8 @@
 from unittest import TestCase
 
-from .github import GithubAPIImpl
-from .interfaces import GithubRepository
-from .tests import network
+from nix_prefetch_github.github import GithubAPIImpl
+from nix_prefetch_github.interfaces import GithubRepository
+from nix_prefetch_github.tests import network
 
 
 @network

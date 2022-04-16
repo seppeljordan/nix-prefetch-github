@@ -1,10 +1,10 @@
 from typing import Optional
 from unittest import TestCase
 
-from .interfaces import GithubRepository
-from .list_remote import ListRemote
-from .revision_index import RevisionIndexImpl
-from .revision_index_factory import RevisionIndexFactoryImpl
+from nix_prefetch_github.interfaces import GithubRepository
+from nix_prefetch_github.list_remote import ListRemote
+from nix_prefetch_github.revision_index import RevisionIndexImpl
+from nix_prefetch_github.revision_index_factory import RevisionIndexFactoryImpl
 
 
 class FakeListRemoteFactory:

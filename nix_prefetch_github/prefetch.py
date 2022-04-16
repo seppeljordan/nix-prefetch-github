@@ -3,8 +3,8 @@ from __future__ import annotations
 from dataclasses import dataclass
 from typing import Optional
 
-from .hash import is_sha1_hash
-from .interfaces import (
+from nix_prefetch_github.hash import is_sha1_hash
+from nix_prefetch_github.interfaces import (
     GithubRepository,
     PrefetchedRepository,
     PrefetchFailure,

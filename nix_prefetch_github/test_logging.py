@@ -2,7 +2,7 @@ from io import StringIO
 from logging import ERROR
 from unittest import TestCase
 
-from .logging import LoggingConfiguration, get_logger
+from nix_prefetch_github.logging import LoggingConfiguration, get_logger
 
 
 class GetLoggerTests(TestCase):

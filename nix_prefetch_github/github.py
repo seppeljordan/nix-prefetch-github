@@ -3,7 +3,7 @@ from typing import Optional
 from urllib.error import HTTPError
 from urllib.request import urlopen
 
-from .interfaces import GithubRepository
+from nix_prefetch_github.interfaces import GithubRepository
 
 
 class GithubAPIImpl:

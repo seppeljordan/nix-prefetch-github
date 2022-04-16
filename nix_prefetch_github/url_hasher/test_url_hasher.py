@@ -1,10 +1,10 @@
 from logging import getLogger
 from unittest import TestCase
 
-from ..command.command_runner import CommandRunnerImpl
-from ..interfaces import GithubRepository
-from ..tests import network, requires_nix_build
-from .nix_build import (
+from nix_prefetch_github.command.command_runner import CommandRunnerImpl
+from nix_prefetch_github.interfaces import GithubRepository
+from nix_prefetch_github.tests import network, requires_nix_build
+from nix_prefetch_github.url_hasher.nix_build import (
     NixBuildUrlHasherImpl,
     PrefetchOptions,
     detect_actual_hash_from_nix_output,

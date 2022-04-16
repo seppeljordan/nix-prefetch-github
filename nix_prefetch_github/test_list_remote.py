@@ -1,6 +1,6 @@
 from unittest import TestCase
 
-from .list_remote import ListRemote
+from nix_prefetch_github.list_remote import ListRemote
 
 
 class ListRemoteTests(TestCase):

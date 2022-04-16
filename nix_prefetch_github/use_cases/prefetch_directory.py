@@ -2,7 +2,7 @@ from dataclasses import dataclass
 from logging import Logger
 from sys import exit
 
-from ..interfaces import (
+from nix_prefetch_github.interfaces import (
     Prefetcher,
     PrefetchOptions,
     Presenter,

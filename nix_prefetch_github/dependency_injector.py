@@ -2,30 +2,40 @@ import sys
 from functools import lru_cache
 from logging import Logger
 
-from .command.command_availability_checker import CommandAvailabilityCheckerImpl
-from .command.command_runner import CommandRunnerImpl
-from .github import GithubAPIImpl
-from .interfaces import (
+from nix_prefetch_github.command.command_availability_checker import (
+    CommandAvailabilityCheckerImpl,
+)
+from nix_prefetch_github.command.command_runner import CommandRunnerImpl
+from nix_prefetch_github.github import GithubAPIImpl
+from nix_prefetch_github.interfaces import (
     GithubAPI,
     RenderingFormat,
     RepositoryDetector,
     RevisionIndexFactory,
 )
-from .list_remote_factory import ListRemoteFactoryImpl
-from .logging import LoggingConfiguration, get_logger
-from .prefetch import PrefetcherImpl
-from .presenter import JsonRepositoryRenderer, NixRepositoryRenderer, PresenterImpl
-from .repository_detector import RepositoryDetectorImpl
-from .revision_index_factory import RevisionIndexFactoryImpl
-from .url_hasher.nix_build import NixBuildUrlHasherImpl
-from .url_hasher.nix_prefetch import NixPrefetchUrlHasherImpl
-from .url_hasher.url_hasher_selector import (
+from nix_prefetch_github.list_remote_factory import ListRemoteFactoryImpl
+from nix_prefetch_github.logging import LoggingConfiguration, get_logger
+from nix_prefetch_github.prefetch import PrefetcherImpl
+from nix_prefetch_github.presenter import (
+    JsonRepositoryRenderer,
+    NixRepositoryRenderer,
+    PresenterImpl,
+)
+from nix_prefetch_github.repository_detector import RepositoryDetectorImpl
+from nix_prefetch_github.revision_index_factory import RevisionIndexFactoryImpl
+from nix_prefetch_github.url_hasher.nix_build import NixBuildUrlHasherImpl
+from nix_prefetch_github.url_hasher.nix_prefetch import NixPrefetchUrlHasherImpl
+from nix_prefetch_github.url_hasher.url_hasher_selector import (
     CommandAvailabilityChecker,
     UrlHasherSelector,
 )
-from .use_cases.prefetch_directory import PrefetchDirectoryUseCase
-from .use_cases.prefetch_github_repository import PrefetchGithubRepositoryUseCase
-from .use_cases.prefetch_latest_release import PrefetchLatestReleaseUseCase
+from nix_prefetch_github.use_cases.prefetch_directory import PrefetchDirectoryUseCase
+from nix_prefetch_github.use_cases.prefetch_github_repository import (
+    PrefetchGithubRepositoryUseCase,
+)
+from nix_prefetch_github.use_cases.prefetch_latest_release import (
+    PrefetchLatestReleaseUseCase,
+)
 
 
 class DependencyInjector:

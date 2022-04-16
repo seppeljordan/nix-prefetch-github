@@ -1,16 +1,16 @@
 from typing import Callable, Optional, cast
 from unittest import TestCase
 
-from .interfaces import GithubRepository, PrefetchOptions
-from .list_remote import ListRemote
-from .prefetch import (
+from nix_prefetch_github.interfaces import GithubRepository, PrefetchOptions
+from nix_prefetch_github.list_remote import ListRemote
+from nix_prefetch_github.prefetch import (
     PrefetchedRepository,
     PrefetcherImpl,
     PrefetchFailure,
     PrefetchResult,
 )
-from .revision_index import RevisionIndexImpl
-from .tests import FakeRevisionIndexFactory, FakeUrlHasher
+from nix_prefetch_github.revision_index import RevisionIndexImpl
+from nix_prefetch_github.tests import FakeRevisionIndexFactory, FakeUrlHasher
 
 
 class PrefetcherTests(TestCase):

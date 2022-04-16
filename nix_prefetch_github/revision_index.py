@@ -1,7 +1,7 @@
 from dataclasses import dataclass
 from typing import Optional
 
-from .list_remote import ListRemote
+from nix_prefetch_github.list_remote import ListRemote
 
 
 @dataclass(frozen=True)

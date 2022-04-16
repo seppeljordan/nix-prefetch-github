@@ -1,8 +1,8 @@
 from logging import INFO, WARNING
 from unittest import TestCase
 
-from ..interfaces import PrefetchOptions, RenderingFormat
-from .arguments import get_options_argument_parser
+from nix_prefetch_github.cli.arguments import get_options_argument_parser
+from nix_prefetch_github.interfaces import PrefetchOptions, RenderingFormat
 
 
 class TestGetOptionsArgumentParser(TestCase):

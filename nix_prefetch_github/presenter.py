@@ -2,9 +2,13 @@ import json
 from dataclasses import dataclass
 from typing import TextIO
 
-from .interfaces import PrefetchFailure, PrefetchResult, RepositoryRenderer
-from .prefetch import PrefetchedRepository
-from .templates import output_template
+from nix_prefetch_github.interfaces import (
+    PrefetchFailure,
+    PrefetchResult,
+    RepositoryRenderer,
+)
+from nix_prefetch_github.prefetch import PrefetchedRepository
+from nix_prefetch_github.templates import output_template
 
 
 class NixRepositoryRenderer:

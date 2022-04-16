@@ -3,9 +3,9 @@ import sys
 from logging import INFO, WARNING
 from typing import Any, Optional, Type
 
-from ..interfaces import PrefetchOptions, RenderingFormat
-from ..logging import LoggingConfiguration
-from ..version import VERSION_STRING
+from nix_prefetch_github.interfaces import PrefetchOptions, RenderingFormat
+from nix_prefetch_github.logging import LoggingConfiguration
+from nix_prefetch_github.version import VERSION_STRING
 
 
 def set_argument(name: str, value: Any) -> Type[argparse.Action]:

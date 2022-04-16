@@ -1,7 +1,7 @@
 from unittest import TestCase
 
-from .list_remote import ListRemote
-from .revision_index import RevisionIndexImpl
+from nix_prefetch_github.list_remote import ListRemote
+from nix_prefetch_github.revision_index import RevisionIndexImpl
 
 
 class RevisionIndexTests(TestCase):

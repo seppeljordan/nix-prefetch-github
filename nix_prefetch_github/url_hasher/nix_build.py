@@ -4,9 +4,12 @@ from logging import Logger
 from tempfile import TemporaryDirectory
 from typing import List, Optional, Tuple
 
+from nix_prefetch_github.interfaces import (
+    CommandRunner,
+    GithubRepository,
+    PrefetchOptions,
+)
 from nix_prefetch_github.templates import output_template
-
-from ..interfaces import CommandRunner, GithubRepository, PrefetchOptions
 
 trash_sha256 = ""
 

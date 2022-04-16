@@ -1,7 +1,7 @@
 from dataclasses import dataclass
 from typing import Optional
 
-from ..interfaces import (
+from nix_prefetch_github.interfaces import (
     CommandAvailabilityChecker,
     GithubRepository,
     PrefetchOptions,

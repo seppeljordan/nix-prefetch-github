@@ -3,7 +3,11 @@ from dataclasses import dataclass
 from logging import Logger
 from typing import List, Optional
 
-from ..interfaces import CommandRunner, GithubRepository, PrefetchOptions
+from nix_prefetch_github.interfaces import (
+    CommandRunner,
+    GithubRepository,
+    PrefetchOptions,
+)
 
 
 @dataclass(frozen=True)

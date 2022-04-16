@@ -1,11 +1,10 @@
 import argparse
 from typing import List, Optional
 
+from nix_prefetch_github.cli.arguments import get_options_argument_parser
+from nix_prefetch_github.dependency_injector import DependencyInjector
 from nix_prefetch_github.interfaces import GithubRepository
-
-from ..dependency_injector import DependencyInjector
-from ..use_cases.prefetch_latest_release import Request
-from .arguments import get_options_argument_parser
+from nix_prefetch_github.use_cases.prefetch_latest_release import Request
 
 
 def main(args: Optional[List[str]] = None) -> None:

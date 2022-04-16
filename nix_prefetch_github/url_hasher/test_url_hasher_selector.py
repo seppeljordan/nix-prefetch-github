@@ -1,9 +1,9 @@
 from typing import Set
 from unittest import TestCase
 
-from ..interfaces import GithubRepository, PrefetchOptions
-from ..tests import FakeUrlHasher
-from .url_hasher_selector import UrlHasherSelector
+from nix_prefetch_github.interfaces import GithubRepository, PrefetchOptions
+from nix_prefetch_github.tests import FakeUrlHasher
+from nix_prefetch_github.url_hasher.url_hasher_selector import UrlHasherSelector
 
 
 class NixPrefetchUrlAndGitAvailableTests(TestCase):

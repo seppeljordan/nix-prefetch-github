@@ -1,10 +1,10 @@
 from logging import getLogger
 from unittest import TestCase
 
-from .command.command_runner import CommandRunnerImpl
-from .interfaces import GithubRepository
-from .list_remote_factory import ListRemoteFactoryImpl
-from .tests import network
+from nix_prefetch_github.command.command_runner import CommandRunnerImpl
+from nix_prefetch_github.interfaces import GithubRepository
+from nix_prefetch_github.list_remote_factory import ListRemoteFactoryImpl
+from nix_prefetch_github.tests import network
 
 
 @network

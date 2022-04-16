@@ -2,9 +2,9 @@ import argparse
 import os
 from typing import List, Optional
 
-from ..dependency_injector import DependencyInjector
-from ..use_cases.prefetch_directory import Request
-from .arguments import get_options_argument_parser
+from nix_prefetch_github.cli.arguments import get_options_argument_parser
+from nix_prefetch_github.dependency_injector import DependencyInjector
+from nix_prefetch_github.use_cases.prefetch_directory import Request
 
 
 def main(args: Optional[List[str]] = None) -> None:

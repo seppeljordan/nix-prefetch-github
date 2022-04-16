@@ -1,10 +1,10 @@
 from dataclasses import dataclass
 from typing import Optional, Protocol
 
-from .functor import map_or_none
-from .interfaces import GithubRepository
-from .list_remote import ListRemote
-from .revision_index import RevisionIndexImpl
+from nix_prefetch_github.functor import map_or_none
+from nix_prefetch_github.interfaces import GithubRepository
+from nix_prefetch_github.list_remote import ListRemote
+from nix_prefetch_github.revision_index import RevisionIndexImpl
 
 
 class ListRemoteFactory(Protocol):

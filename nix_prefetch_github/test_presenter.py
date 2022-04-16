@@ -2,13 +2,13 @@ from io import StringIO
 from typing import List
 from unittest import TestCase
 
-from .interfaces import (
+from nix_prefetch_github.interfaces import (
     GithubRepository,
     PrefetchedRepository,
     PrefetchFailure,
     PrefetchOptions,
 )
-from .presenter import (
+from nix_prefetch_github.presenter import (
     JsonRepositoryRenderer,
     NixRepositoryRenderer,
     PresenterImpl,

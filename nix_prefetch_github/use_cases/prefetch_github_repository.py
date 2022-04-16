@@ -2,7 +2,7 @@ from dataclasses import dataclass
 from sys import exit
 from typing import Optional
 
-from ..interfaces import (
+from nix_prefetch_github.interfaces import (
     GithubRepository,
     Prefetcher,
     PrefetchOptions,
