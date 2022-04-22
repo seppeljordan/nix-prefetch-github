@@ -9,7 +9,6 @@ from nix_prefetch_github.command.command_runner import CommandRunnerImpl
 from nix_prefetch_github.github import GithubAPIImpl
 from nix_prefetch_github.interfaces import (
     GithubAPI,
-    RenderingFormat,
     RepositoryDetector,
     RevisionIndexFactory,
 )
@@ -31,7 +30,7 @@ from nix_prefetch_github.url_hasher.url_hasher_selector import (
 )
 from nix_prefetch_github.use_cases.prefetch_directory import PrefetchDirectoryUseCase
 from nix_prefetch_github.use_cases.prefetch_github_repository import (
-    PrefetchGithubRepositoryUseCase,
+    PrefetchGithubRepositoryUseCaseImpl,
 )
 from nix_prefetch_github.use_cases.prefetch_latest_release import (
     PrefetchLatestReleaseUseCase,
@@ -42,10 +41,8 @@ class DependencyInjector:
     def __init__(
         self,
         logging_configuration: LoggingConfiguration,
-        rendering_format: RenderingFormat,
     ) -> None:
         self._logging_configuration = logging_configuration
-        self._rendering_format = rendering_format
 
     def get_revision_index_factory(self) -> RevisionIndexFactory:
         return RevisionIndexFactoryImpl(self.get_remote_list_factory())
@@ -124,8 +121,8 @@ class DependencyInjector:
 
     def get_prefetch_github_repository_use_case(
         self,
-    ) -> PrefetchGithubRepositoryUseCase:
-        return PrefetchGithubRepositoryUseCase(
+    ) -> PrefetchGithubRepositoryUseCaseImpl:
+        return PrefetchGithubRepositoryUseCaseImpl(
             nix_presenter=self.get_nix_presenter(),
             json_presenter=self.get_json_presenter(),
             prefetcher=self.get_prefetcher(),

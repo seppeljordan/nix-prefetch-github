@@ -11,7 +11,6 @@ def main(args: Optional[List[str]] = None) -> None:
     arguments = parse_arguments(args)
     injector = DependencyInjector(
         logging_configuration=arguments.logging_configuration,
-        rendering_format=arguments.rendering_format,
     )
     use_case = injector.get_prefetch_latest_release_use_case()
     use_case.prefetch_latest_release(

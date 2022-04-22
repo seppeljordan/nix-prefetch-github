@@ -16,7 +16,6 @@ def main(argv: Optional[List[str]] = None) -> None:
     arguments = parse_arguments(argv)
     injector = DependencyInjector(
         logging_configuration=arguments.logging_configuration,
-        rendering_format=arguments.rendering_format,
     )
     use_case = injector.get_prefetch_github_repository_use_case()
     prefetch_options = arguments.prefetch_options
