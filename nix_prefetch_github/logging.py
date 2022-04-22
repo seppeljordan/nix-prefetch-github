@@ -2,7 +2,7 @@ from __future__ import annotations
 
 from dataclasses import dataclass
 from logging import WARNING, Logger, StreamHandler, getLogger
-from typing import Optional, Protocol, TextIO
+from typing import Protocol, TextIO
 
 
 @dataclass
@@ -18,15 +18,18 @@ class LoggerManager(Protocol):
 
 class LoggerFactoryImpl:
     def __init__(self) -> None:
-        self.default_configuration: Optional[LoggingConfiguration] = None
+        self._logger = getLogger("")
 
     def get_logger(self) -> Logger:
-        configuration = self.default_configuration
-        logger = getLogger("")
-        if configuration:
-            logger.addHandler(StreamHandler(configuration.output_file))
-            logger.setLevel(configuration.log_level)
-        return logger
+        return self._logger
 
     def set_logging_configuration(self, configuration: LoggingConfiguration) -> None:
-        self.default_configuration = configuration
+        self._apply_configuration_to_logger(self._logger, configuration)
+
+    def _apply_configuration_to_logger(
+        self, logger: Logger, configuration: LoggingConfiguration
+    ) -> None:
+        for handler in logger.handlers:
+            logger.removeHandler(handler)
+        logger.addHandler(StreamHandler(configuration.output_file))
+        logger.setLevel(configuration.log_level)

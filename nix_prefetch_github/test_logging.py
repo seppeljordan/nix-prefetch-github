@@ -1,5 +1,5 @@
 from io import StringIO
-from logging import ERROR, WARNING
+from logging import ERROR, INFO, WARNING
 from unittest import TestCase
 
 from nix_prefetch_github.logging import LoggerFactoryImpl, LoggingConfiguration
@@ -37,7 +37,7 @@ class LoggerFactoryTests(TestCase):
     def test_can_get_logger_without_specifying_configuration(self) -> None:
         self.factory.get_logger()
 
-    def test_default_logging_configuration_is_respected_for_newly_constructed_loggers(
+    def test_setting_logging_configuration_is_respected_for_newly_constructed_loggers(
         self,
     ) -> None:
         self.factory.set_logging_configuration(
@@ -48,6 +48,16 @@ class LoggerFactoryTests(TestCase):
         )
         logger = self.factory.get_logger()
         logger.warning("test message")
+        self.assertLogged("test message")
+
+    def test_setting_logging_configuration_propagates_to_already_created_loggers(
+        self,
+    ) -> None:
+        logger = self.factory.get_logger()
+        self.factory.set_logging_configuration(
+            LoggingConfiguration(output_file=self.output_handle, log_level=INFO)
+        )
+        logger.info("test message")
         self.assertLogged("test message")
 
     def assertLogged(self, message: str) -> None:
