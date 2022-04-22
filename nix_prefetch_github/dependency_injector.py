@@ -6,6 +6,9 @@ from nix_prefetch_github.command.command_availability_checker import (
     CommandAvailabilityCheckerImpl,
 )
 from nix_prefetch_github.command.command_runner import CommandRunnerImpl
+from nix_prefetch_github.controller.nix_prefetch_github_controller import (
+    NixPrefetchGithubController,
+)
 from nix_prefetch_github.github import GithubAPIImpl
 from nix_prefetch_github.interfaces import (
     GithubAPI,
@@ -13,7 +16,7 @@ from nix_prefetch_github.interfaces import (
     RevisionIndexFactory,
 )
 from nix_prefetch_github.list_remote_factory import ListRemoteFactoryImpl
-from nix_prefetch_github.logging import LoggingConfiguration, get_logger
+from nix_prefetch_github.logging import LoggerFactoryImpl
 from nix_prefetch_github.prefetch import PrefetcherImpl
 from nix_prefetch_github.presenter import (
     JsonRepositoryRenderer,
@@ -38,12 +41,6 @@ from nix_prefetch_github.use_cases.prefetch_latest_release import (
 
 
 class DependencyInjector:
-    def __init__(
-        self,
-        logging_configuration: LoggingConfiguration,
-    ) -> None:
-        self._logging_configuration = logging_configuration
-
     def get_revision_index_factory(self) -> RevisionIndexFactory:
         return RevisionIndexFactoryImpl(self.get_remote_list_factory())
 
@@ -91,11 +88,12 @@ class DependencyInjector:
         return CommandRunnerImpl(logger=self.get_logger())
 
     @lru_cache()
-    def get_logger(self) -> Logger:
-        return get_logger(self.get_logging_configuration())
+    def get_logger_factory(self) -> LoggerFactoryImpl:
+        return LoggerFactoryImpl()
 
-    def get_logging_configuration(self) -> LoggingConfiguration:
-        return self._logging_configuration
+    def get_logger(self) -> Logger:
+        factory = self.get_logger_factory()
+        return factory.get_logger()
 
     def get_nix_presenter(self) -> PresenterImpl:
         return PresenterImpl(
@@ -135,4 +133,10 @@ class DependencyInjector:
             prefetcher=self.get_prefetcher(),
             repository_detector=self.get_repository_detector(),
             logger=self.get_logger(),
+        )
+
+    def get_prefetch_github_repository_controller(self) -> NixPrefetchGithubController:
+        return NixPrefetchGithubController(
+            use_case=self.get_prefetch_github_repository_use_case(),
+            logger_manager=self.get_logger_factory(),
         )

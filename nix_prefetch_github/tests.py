@@ -1,8 +1,9 @@
 from os import getenv
-from typing import Optional
+from typing import Callable, Optional
 from unittest import skipIf
 
 from nix_prefetch_github.interfaces import GithubRepository, PrefetchOptions
+from nix_prefetch_github.logging import LoggingConfiguration
 from nix_prefetch_github.revision_index import RevisionIndexImpl
 
 _disabled_tests = set(filter(bool, getenv("DISABLED_TESTS", "").split(" ")))
@@ -33,3 +34,20 @@ class FakeRevisionIndexFactory:
         self, repository: GithubRepository
     ) -> Optional[RevisionIndexImpl]:
         return self.revision_index
+
+
+class FakeLoggerManager:
+    def __init__(self) -> None:
+        self.configuration: Optional[LoggingConfiguration] = None
+
+    def set_logging_configuration(self, configuration: LoggingConfiguration) -> None:
+        self.configuration = configuration
+
+    def assertLoggingConfiguration(
+        self,
+        condition: Optional[Callable[[LoggingConfiguration], bool]] = None,
+        message: str = "",
+    ) -> None:
+        assert self.configuration
+        if condition:
+            assert condition(self.configuration), message

@@ -3,6 +3,7 @@ from typing import List
 
 from nix_prefetch_github.cli.arguments import get_options_argument_parser
 from nix_prefetch_github.interfaces import GithubRepository
+from nix_prefetch_github.logging import LoggerManager
 from nix_prefetch_github.use_cases.prefetch_github_repository import (
     PrefetchGithubRepositoryUseCase,
     Request,
@@ -10,8 +11,11 @@ from nix_prefetch_github.use_cases.prefetch_github_repository import (
 
 
 class NixPrefetchGithubController:
-    def __init__(self, use_case: PrefetchGithubRepositoryUseCase) -> None:
+    def __init__(
+        self, use_case: PrefetchGithubRepositoryUseCase, logger_manager: LoggerManager
+    ) -> None:
         self._use_case = use_case
+        self._logger_manager = logger_manager
 
     def process_arguments(self, arguments: List[str]) -> None:
         parser = argparse.ArgumentParser(
@@ -21,6 +25,7 @@ class NixPrefetchGithubController:
         parser.add_argument("repo")
         parser.add_argument("--rev", default=None)
         args = parser.parse_args(arguments)
+        self._logger_manager.set_logging_configuration(args.logging_configuration)
         self._use_case.prefetch_github_repository(
             request=Request(
                 repository=GithubRepository(owner=args.owner, name=args.repo),

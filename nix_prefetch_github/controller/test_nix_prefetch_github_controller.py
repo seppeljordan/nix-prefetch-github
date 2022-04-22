@@ -1,3 +1,4 @@
+from logging import INFO
 from typing import Optional
 from unittest import TestCase
 
@@ -9,13 +10,17 @@ from nix_prefetch_github.interfaces import (
     PrefetchOptions,
     RenderingFormat,
 )
+from nix_prefetch_github.tests import FakeLoggerManager
 from nix_prefetch_github.use_cases.prefetch_github_repository import Request
 
 
 class ControllerTests(TestCase):
     def setUp(self) -> None:
+        self.logger_manager = FakeLoggerManager()
         self.use_case_mock = UseCaseImpl()
-        self.controller = NixPrefetchGithubController(use_case=self.use_case_mock)
+        self.controller = NixPrefetchGithubController(
+            use_case=self.use_case_mock, logger_manager=self.logger_manager
+        )
 
     def test_controller_extracts_example_owner_and_repo_from_arguments(self) -> None:
         expected_owner = "owner"
@@ -96,6 +101,10 @@ class ControllerTests(TestCase):
     def test_extract_no_fetch_submodules_from_arguments(self) -> None:
         self.controller.process_arguments(["owner", "repo", "--no-fetch-submodules"])
         self.assertPrefetchOptions(PrefetchOptions(fetch_submodules=False))
+
+    def test_can_set_log_level_with_arguments(self) -> None:
+        self.controller.process_arguments(["owner", "repo", "-v"])
+        self.logger_manager.assertLoggingConfiguration(lambda c: c.log_level == INFO)
 
     def assertPrefetchOptions(self, prefetch_options: PrefetchOptions) -> None:
         assert self.use_case_mock.request

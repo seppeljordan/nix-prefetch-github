@@ -8,10 +8,10 @@ from nix_prefetch_github.use_cases.prefetch_latest_release import Request
 
 
 def main(args: Optional[List[str]] = None) -> None:
+    injector = DependencyInjector()
     arguments = parse_arguments(args)
-    injector = DependencyInjector(
-        logging_configuration=arguments.logging_configuration,
-    )
+    logging_factory = injector.get_logger_factory()
+    logging_factory.set_logging_configuration(arguments.logging_configuration)
     use_case = injector.get_prefetch_latest_release_use_case()
     use_case.prefetch_latest_release(
         request=Request(
