@@ -4,3 +4,8 @@ omit =
      nix_prefetch_github/tests.py
 source =
     nix_prefetch_github
+
+[report]
+exclude_lines =
+    pragma: no cover
+    class .*\bProtocol\):

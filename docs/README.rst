@@ -19,8 +19,8 @@ Command Line Example
    {
        "owner": "seppeljordan",
        "repo": "nix-prefetch-github",
-       "rev": "34ba1d4f7bf6420f896cf30dc919af112369ec84",
-       "sha256": "zd+tFmh2sH/9H6XD6YNCAYN+ZkOxBbIbJbBuf7jduQM=",
+       "rev": "cb0a1aeb3125d0dc02fd569d5e641de7fb54f9dc",
+       "sha256": "toqRLn7fEreshe0eQs9ogP5x5+vWFfHa7vqKs/zq/jk=",
        "fetchSubmodules": false,
        "leaveDotGit": false,
        "deepClone": false
@@ -148,6 +148,12 @@ that make sense with this environment variable.
 
 You can visualize the dependency graph of the individual python modules
 via the ``./generate-dependency-graph`` program.
+
+You can generate a coverage report for the tests via
+
+::
+
+   coverage run -m unittest discover && coverage html
 
 changes
 =======
