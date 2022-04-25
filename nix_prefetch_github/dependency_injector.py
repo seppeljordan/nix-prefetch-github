@@ -9,6 +9,9 @@ from nix_prefetch_github.command.command_runner import CommandRunnerImpl
 from nix_prefetch_github.controller.nix_prefetch_github_controller import (
     NixPrefetchGithubController,
 )
+from nix_prefetch_github.controller.prefetch_latest_release_controller import (
+    PrefetchLatestReleaseController,
+)
 from nix_prefetch_github.github import GithubAPIImpl
 from nix_prefetch_github.interfaces import (
     GithubAPI,
@@ -36,7 +39,7 @@ from nix_prefetch_github.use_cases.prefetch_github_repository import (
     PrefetchGithubRepositoryUseCaseImpl,
 )
 from nix_prefetch_github.use_cases.prefetch_latest_release import (
-    PrefetchLatestReleaseUseCase,
+    PrefetchLatestReleaseUseCaseImpl,
 )
 
 
@@ -109,8 +112,8 @@ class DependencyInjector:
             repository_renderer=self.get_json_repository_renderer(),
         )
 
-    def get_prefetch_latest_release_use_case(self) -> PrefetchLatestReleaseUseCase:
-        return PrefetchLatestReleaseUseCase(
+    def get_prefetch_latest_release_use_case(self) -> PrefetchLatestReleaseUseCaseImpl:
+        return PrefetchLatestReleaseUseCaseImpl(
             nix_presenter=self.get_nix_presenter(),
             json_presenter=self.get_json_presenter(),
             prefetcher=self.get_prefetcher(),
@@ -138,5 +141,11 @@ class DependencyInjector:
     def get_prefetch_github_repository_controller(self) -> NixPrefetchGithubController:
         return NixPrefetchGithubController(
             use_case=self.get_prefetch_github_repository_use_case(),
+            logger_manager=self.get_logger_factory(),
+        )
+
+    def get_prefetch_latest_release_controller(self) -> PrefetchLatestReleaseController:
+        return PrefetchLatestReleaseController(
+            use_case=self.get_prefetch_latest_release_use_case(),
             logger_manager=self.get_logger_factory(),
         )

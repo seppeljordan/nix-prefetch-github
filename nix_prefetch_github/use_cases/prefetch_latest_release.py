@@ -1,5 +1,8 @@
+from __future__ import annotations
+
 from dataclasses import dataclass
 from sys import exit
+from typing import Protocol
 
 from nix_prefetch_github.interfaces import (
     GithubAPI,
@@ -11,6 +14,11 @@ from nix_prefetch_github.interfaces import (
 )
 
 
+class PrefetchLatestReleaseUseCase(Protocol):
+    def prefetch_latest_release(self, request: Request) -> None:
+        ...
+
+
 @dataclass
 class Request:
     repository: GithubRepository
@@ -19,7 +27,7 @@ class Request:
 
 
 @dataclass
-class PrefetchLatestReleaseUseCase:
+class PrefetchLatestReleaseUseCaseImpl:
     nix_presenter: Presenter
     json_presenter: Presenter
     prefetcher: Prefetcher
