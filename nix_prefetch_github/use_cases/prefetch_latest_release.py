@@ -40,7 +40,10 @@ class PrefetchLatestReleaseUseCaseImpl:
             rev=revision,
             prefetch_options=request.prefetch_options,
         )
+        exit(self._select_presenter(request).present(prefetch_result))
+
+    def _select_presenter(self, request: Request) -> Presenter:
         if request.rendering_format == RenderingFormat.json:
-            exit(self.json_presenter.present(prefetch_result))
+            return self.json_presenter
         else:
-            exit(self.nix_presenter.present(prefetch_result))
+            return self.nix_presenter

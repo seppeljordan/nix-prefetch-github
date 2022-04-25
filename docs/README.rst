@@ -19,8 +19,8 @@ Command Line Example
    {
        "owner": "seppeljordan",
        "repo": "nix-prefetch-github",
-       "rev": "cb0a1aeb3125d0dc02fd569d5e641de7fb54f9dc",
-       "sha256": "toqRLn7fEreshe0eQs9ogP5x5+vWFfHa7vqKs/zq/jk=",
+       "rev": "40e9e0600f310608be5846e2da8d2c4874d464ee",
+       "sha256": "Be64IX/Lhjq2EzAN9wdAdl4CTIKw6vqKyCSEEKn6JyY=",
        "fetchSubmodules": false,
        "leaveDotGit": false,
        "deepClone": false
