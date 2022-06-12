@@ -8,21 +8,23 @@
 
   outputs = { self, nixpkgs, flake-utils, ... }:
     let
-      systemDependent = flake-utils.lib.eachDefaultSystem (system:
+      # pyopenssl does not build on aarch64-darwin
+      supportedSystems = builtins.filter (s: s != "aarch64-darwin")
+        flake-utils.lib.defaultSystems;
+      systemDependent = flake-utils.lib.eachSystem supportedSystems (system:
         let
           pkgs = import nixpkgs {
             inherit system;
-            overlays = [ self.overlay ];
+            overlays = [ self.overlays.default ];
           };
           python = pkgs.python3;
         in {
-          defaultPackage = with python.pkgs;
-            toPythonApplication nix-prefetch-github;
           packages = {
             inherit python;
-            nix-prefetch-github = self.defaultPackage."${system}";
+            default = with python.pkgs; toPythonApplication nix-prefetch-github;
+            nix-prefetch-github = self.packages."${system}".default;
           };
-          devShell = pkgs.mkShell {
+          devShells.default = pkgs.mkShell {
             packages = (with pkgs; [ git nixfmt nix-prefetch-scripts pandoc ])
               ++ (with python.pkgs; [
                 black
@@ -37,7 +39,7 @@
             inputsFrom = [ python.pkgs.nix-prefetch-github ];
           };
           checks = {
-            defaultPackage = self.defaultPackage.${system};
+            defaultPackage = self.packages.${system}.default;
             black-check = pkgs.runCommand "black-nix-prefetch-github" { } ''
               cd ${self}
               ${python.pkgs.black}/bin/black --check .
@@ -70,7 +72,7 @@
           };
         });
       systemIndependent = {
-        overlay = final: prev: {
+        overlays.default = final: prev: {
           python3 = prev.python3.override {
             packageOverrides = import nix/package-overrides.nix;
           };
