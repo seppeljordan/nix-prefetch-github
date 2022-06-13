@@ -1,6 +1,9 @@
+from __future__ import annotations
+
 from dataclasses import dataclass
 from logging import Logger
 from sys import exit
+from typing import Protocol
 
 from nix_prefetch_github.interfaces import (
     Prefetcher,
@@ -9,6 +12,11 @@ from nix_prefetch_github.interfaces import (
     RenderingFormat,
     RepositoryDetector,
 )
+
+
+class PrefetchDirectoryUseCase(Protocol):
+    def prefetch_directory(self, request: Request) -> None:
+        ...
 
 
 @dataclass
@@ -20,7 +28,7 @@ class Request:
 
 
 @dataclass
-class PrefetchDirectoryUseCase:
+class PrefetchDirectoryUseCaseImpl:
     nix_presenter: Presenter
     json_presenter: Presenter
     prefetcher: Prefetcher

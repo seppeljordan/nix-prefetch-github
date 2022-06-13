@@ -9,6 +9,9 @@ from nix_prefetch_github.command.command_runner import CommandRunnerImpl
 from nix_prefetch_github.controller.nix_prefetch_github_controller import (
     NixPrefetchGithubController,
 )
+from nix_prefetch_github.controller.prefetch_directory_controller import (
+    PrefetchDirectoryController,
+)
 from nix_prefetch_github.controller.prefetch_latest_release_controller import (
     PrefetchLatestReleaseController,
 )
@@ -26,6 +29,7 @@ from nix_prefetch_github.presenter import (
     NixRepositoryRenderer,
     PresenterImpl,
 )
+from nix_prefetch_github.process_environment import ProcessEnvironmentImpl
 from nix_prefetch_github.repository_detector import RepositoryDetectorImpl
 from nix_prefetch_github.revision_index_factory import RevisionIndexFactoryImpl
 from nix_prefetch_github.url_hasher.nix_build import NixBuildUrlHasherImpl
@@ -34,7 +38,9 @@ from nix_prefetch_github.url_hasher.url_hasher_selector import (
     CommandAvailabilityChecker,
     UrlHasherSelector,
 )
-from nix_prefetch_github.use_cases.prefetch_directory import PrefetchDirectoryUseCase
+from nix_prefetch_github.use_cases.prefetch_directory import (
+    PrefetchDirectoryUseCaseImpl,
+)
 from nix_prefetch_github.use_cases.prefetch_github_repository import (
     PrefetchGithubRepositoryUseCaseImpl,
 )
@@ -46,6 +52,9 @@ from nix_prefetch_github.use_cases.prefetch_latest_release import (
 class DependencyInjector:
     def get_revision_index_factory(self) -> RevisionIndexFactory:
         return RevisionIndexFactoryImpl(self.get_remote_list_factory())
+
+    def get_process_environment(self) -> ProcessEnvironmentImpl:
+        return ProcessEnvironmentImpl()
 
     def get_remote_list_factory(self) -> ListRemoteFactoryImpl:
         return ListRemoteFactoryImpl(command_runner=self.get_command_runner())
@@ -129,8 +138,8 @@ class DependencyInjector:
             prefetcher=self.get_prefetcher(),
         )
 
-    def get_prefetch_directory_use_case(self) -> PrefetchDirectoryUseCase:
-        return PrefetchDirectoryUseCase(
+    def get_prefetch_directory_use_case(self) -> PrefetchDirectoryUseCaseImpl:
+        return PrefetchDirectoryUseCaseImpl(
             nix_presenter=self.get_nix_presenter(),
             json_presenter=self.get_json_presenter(),
             prefetcher=self.get_prefetcher(),
@@ -148,4 +157,11 @@ class DependencyInjector:
         return PrefetchLatestReleaseController(
             use_case=self.get_prefetch_latest_release_use_case(),
             logger_manager=self.get_logger_factory(),
+        )
+
+    def get_prefetch_directory_controller(self) -> PrefetchDirectoryController:
+        return PrefetchDirectoryController(
+            logger_manager=self.get_logger_factory(),
+            use_case=self.get_prefetch_directory_use_case(),
+            environment=self.get_process_environment(),
         )
