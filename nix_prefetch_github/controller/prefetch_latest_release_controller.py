@@ -2,7 +2,7 @@ import argparse
 from dataclasses import dataclass
 from typing import List
 
-from nix_prefetch_github.cli.arguments import get_options_argument_parser
+from nix_prefetch_github.controller.arguments import get_options_argument_parser
 from nix_prefetch_github.interfaces import GithubRepository
 from nix_prefetch_github.logging import LoggerManager
 from nix_prefetch_github.use_cases.prefetch_latest_release import (

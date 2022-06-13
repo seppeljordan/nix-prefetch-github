@@ -1,7 +1,7 @@
 from logging import INFO, WARNING
 from unittest import TestCase
 
-from nix_prefetch_github.cli.arguments import get_options_argument_parser
+from nix_prefetch_github.controller.arguments import get_options_argument_parser
 from nix_prefetch_github.interfaces import PrefetchOptions, RenderingFormat
 
 
