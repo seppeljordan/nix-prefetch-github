@@ -56,31 +56,37 @@ def get_options_argument_parser() -> argparse.ArgumentParser:
         dest="prefetch_options",
         default=PrefetchOptions(),
         action=set_argument("fetch_submodules", True),
+        help="Include git submodules in the output derivation",
     )
     parser.add_argument(
         "--no-fetch-submodules",
         dest="prefetch_options",
         action=set_argument("fetch_submodules", False),
+        help="Don't include git submodules in output derivation",
     )
     parser.add_argument(
         "--leave-dot-git",
         dest="prefetch_options",
         action=set_argument("leave_dot_git", True),
+        help="Include .git folder in output derivation. Use this if you need repository data, e.g. current commit hash, for the build process.",
     )
     parser.add_argument(
         "--no-leave-dot-git",
         dest="prefetch_options",
         action=set_argument("leave_dot_git", False),
+        help="Don't include .git folder in output derivation.",
     )
     parser.add_argument(
         "--deep-clone",
         dest="prefetch_options",
         action=set_argument("deep_clone", True),
+        help="Include all of the repository history in the output derivation. This option implies --leave-dot-git.",
     )
     parser.add_argument(
         "--no-deep-clone",
         dest="prefetch_options",
         action=set_argument("deep_clone", False),
+        help="Don't include the repository history in the output derivation.",
     )
     parser.add_argument(
         "--verbose",
@@ -88,6 +94,7 @@ def get_options_argument_parser() -> argparse.ArgumentParser:
         dest="logging_configuration",
         default=LoggingConfiguration(output_file=sys.stderr, log_level=WARNING),
         action=set_argument("log_level", INFO),
+        help="Print additional information about the programs execution. This is useful if you want to issue a bug report.",
     )
     parser.add_argument(
         "--nix",
