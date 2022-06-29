@@ -19,8 +19,8 @@ Command Line Example
    {
        "owner": "seppeljordan",
        "repo": "nix-prefetch-github",
-       "rev": "af0817546505b2cd6a2deef4e7d37e9024d3543b",
-       "sha256": "1MTfgOgnQOjMdFrJ5GFV55xhBcGFKWF6H4wrJu1iYMU=",
+       "rev": "90566741dcd0f01368bfdb47912c2336d4dfcf96",
+       "sha256": "EejLrLuyYrWNl0MrMcmxqv8lk7EVBud7BqXrMOnOuRQ=",
        "fetchSubmodules": false,
        "leaveDotGit": false,
        "deepClone": false
@@ -50,15 +50,22 @@ into the local nix store. It also prints the function arguments to
      owner
      repo
 
-   optional arguments:
+   options:
      -h, --help            show this help message and exit
-     --fetch-submodules
+     --fetch-submodules    Include git submodules in the output derivation
      --no-fetch-submodules
-     --leave-dot-git
-     --no-leave-dot-git
-     --deep-clone
-     --no-deep-clone
-     --verbose, -v
+               Don't include git submodules in output derivation
+     --leave-dot-git       Include .git folder in output derivation. Use this if
+               you need repository data, e.g. current commit hash,
+               for the build process.
+     --no-leave-dot-git    Don't include .git folder in output derivation.
+     --deep-clone          Include all of the repository history in the output
+               derivation. This option implies --leave-dot-git.
+     --no-deep-clone       Don't include the repository history in the output
+               derivation.
+     --verbose, -v         Print additional information about the programs
+               execution. This is useful if you want to issue a bug
+               report.
      --nix
      --json
      --version             show program's version number and exit
@@ -82,15 +89,22 @@ the ``origin`` remote repository similar to the command
                     [--json] [--version]
                     [--directory DIRECTORY] [--remote REMOTE]
 
-   optional arguments:
+   options:
      -h, --help            show this help message and exit
-     --fetch-submodules
+     --fetch-submodules    Include git submodules in the output derivation
      --no-fetch-submodules
-     --leave-dot-git
-     --no-leave-dot-git
-     --deep-clone
-     --no-deep-clone
-     --verbose, -v
+               Don't include git submodules in output derivation
+     --leave-dot-git       Include .git folder in output derivation. Use this if
+               you need repository data, e.g. current commit hash,
+               for the build process.
+     --no-leave-dot-git    Don't include .git folder in output derivation.
+     --deep-clone          Include all of the repository history in the output
+               derivation. This option implies --leave-dot-git.
+     --no-deep-clone       Don't include the repository history in the output
+               derivation.
+     --verbose, -v         Print additional information about the programs
+               execution. This is useful if you want to issue a bug
+               report.
      --nix
      --json
      --version             show program's version number and exit
@@ -117,15 +131,22 @@ repository.
      owner
      repo
 
-   optional arguments:
+   options:
      -h, --help            show this help message and exit
-     --fetch-submodules
+     --fetch-submodules    Include git submodules in the output derivation
      --no-fetch-submodules
-     --leave-dot-git
-     --no-leave-dot-git
-     --deep-clone
-     --no-deep-clone
-     --verbose, -v
+               Don't include git submodules in output derivation
+     --leave-dot-git       Include .git folder in output derivation. Use this if
+               you need repository data, e.g. current commit hash,
+               for the build process.
+     --no-leave-dot-git    Don't include .git folder in output derivation.
+     --deep-clone          Include all of the repository history in the output
+               derivation. This option implies --leave-dot-git.
+     --no-deep-clone       Don't include the repository history in the output
+               derivation.
+     --verbose, -v         Print additional information about the programs
+               execution. This is useful if you want to issue a bug
+               report.
      --nix
      --json
      --version             show program's version number and exit
