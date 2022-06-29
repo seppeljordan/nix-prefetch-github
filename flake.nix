@@ -20,9 +20,7 @@
           python = pkgs.python3;
         in {
           packages = {
-            inherit python;
             default = with python.pkgs; toPythonApplication nix-prefetch-github;
-            nix-prefetch-github = self.packages."${system}".default;
           };
           devShells.default = pkgs.mkShell {
             packages = (with pkgs; [ git nixfmt nix-prefetch-scripts pandoc ])
@@ -40,6 +38,12 @@
           };
           checks = {
             defaultPackage = self.packages.${system}.default;
+            nix-prefetch-github-python38 =
+              pkgs.python38.pkgs.nix-prefetch-github;
+            nix-prefetch-github-python39 =
+              pkgs.python39.pkgs.nix-prefetch-github;
+            nix-prefetch-github-python310 =
+              pkgs.python310.pkgs.nix-prefetch-github;
             black-check = pkgs.runCommand "black-nix-prefetch-github" { } ''
               cd ${self}
               ${python.pkgs.black}/bin/black --check .
@@ -73,7 +77,16 @@
         });
       systemIndependent = {
         overlays.default = final: prev: {
-          python3 = prev.python3.override {
+          python38 = prev.python38.override {
+            packageOverrides = import nix/package-overrides.nix;
+          };
+          python39 = prev.python39.override {
+            packageOverrides = import nix/package-overrides.nix;
+          };
+          python310 = prev.python310.override {
+            packageOverrides = import nix/package-overrides.nix;
+          };
+          python311 = prev.python311.override {
             packageOverrides = import nix/package-overrides.nix;
           };
           nix-prefetch-github = with final.python3.pkgs;
