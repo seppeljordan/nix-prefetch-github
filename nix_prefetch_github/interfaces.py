@@ -117,7 +117,7 @@ class RepositoryRenderer(Protocol):
 
 
 class Presenter(Protocol):
-    def present(self, prefetch_result: PrefetchResult) -> int:
+    def present(self, prefetch_result: PrefetchResult) -> None:
         ...
 
 

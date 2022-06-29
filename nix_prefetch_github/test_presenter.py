@@ -1,5 +1,4 @@
-from io import StringIO
-from typing import List
+from typing import List, Optional
 from unittest import TestCase
 
 from nix_prefetch_github.interfaces import (
@@ -13,17 +12,16 @@ from nix_prefetch_github.presenter import (
     NixRepositoryRenderer,
     PresenterImpl,
     RepositoryRenderer,
+    ViewModel,
 )
 
 
 class PresenterTests(TestCase):
     def setUp(self) -> None:
-        self.result_output = StringIO()
-        self.error_output = StringIO()
         self.renderer = TestingRepositoryRenderer()
+        self.view = FakeView()
         self.presenter = PresenterImpl(
-            result_output=self.result_output,
-            error_output=self.error_output,
+            view=self.view,
             repository_renderer=self.renderer,
         )
         self.repo = PrefetchedRepository(
@@ -65,22 +63,26 @@ class PresenterTests(TestCase):
         )
 
     def test_that_exit_0_is_returned_when_repository_is_rendered(self) -> None:
-        return_code = self.presenter.present(self.repo)
-        self.assertEqual(return_code, 0)
+        self.presenter.present(self.repo)
+        self.assertExitCode(0)
 
     def test_that_exit_1_is_returned_when_failure_is_rendered(self) -> None:
-        return_code = self.presenter.present(
+        self.presenter.present(
             PrefetchFailure(reason=PrefetchFailure.Reason.unable_to_calculate_sha256)
         )
-        self.assertEqual(return_code, 1)
+        self.assertExitCode(1)
+
+    def assertExitCode(self, code: int) -> None:
+        self.assertEqual(
+            self.view.exit_code,
+            code,
+        )
 
     def read_error_output(self) -> str:
-        self.error_output.seek(0)
-        return self.error_output.read()
+        return "\n".join(self.view.stderr)
 
     def read_result_output(self) -> str:
-        self.result_output.seek(0)
-        return self.result_output.read()
+        return "\n".join(self.view.stdout)
 
 
 class TestingRepositoryRenderer:
@@ -132,3 +134,17 @@ class GeneralRepositoryRendererTests(TestCase):
             sha256="test",
             options=PrefetchOptions(leave_dot_git=leave_dot_git, deep_clone=deep_clone),
         )
+
+
+class FakeView:
+    def __init__(self) -> None:
+        self.stdout: List[str] = []
+        self.stderr: List[str] = []
+        self.exit_code: Optional[int] = None
+
+    def render_view_model(self, model: ViewModel) -> None:
+        for line in model.stderr_lines:
+            self.stderr.append(line)
+        for line in model.stdout_lines:
+            self.stdout.append(line)
+        self.exit_code = model.exit_code

@@ -1,6 +1,6 @@
 import json
 from dataclasses import dataclass
-from typing import TextIO
+from typing import List, Protocol
 
 from nix_prefetch_github.interfaces import (
     PrefetchFailure,
@@ -9,6 +9,18 @@ from nix_prefetch_github.interfaces import (
 )
 from nix_prefetch_github.prefetch import PrefetchedRepository
 from nix_prefetch_github.templates import output_template
+
+
+@dataclass
+class ViewModel:
+    exit_code: int
+    stderr_lines: List[str]
+    stdout_lines: List[str]
+
+
+class CommandLineView(Protocol):
+    def render_view_model(self, model: ViewModel) -> None:
+        ...
 
 
 class NixRepositoryRenderer:
@@ -42,21 +54,28 @@ class JsonRepositoryRenderer:
 
 @dataclass
 class PresenterImpl:
-    result_output: TextIO
-    error_output: TextIO
+    view: CommandLineView
     repository_renderer: RepositoryRenderer
 
-    def present(self, prefetch_result: PrefetchResult) -> int:
+    def present(self, prefetch_result: PrefetchResult) -> None:
+        stdout_lines: List[str] = []
+        stderr_lines: List[str] = []
+        return_code: int = 0
         if isinstance(prefetch_result, PrefetchedRepository):
-            self.result_output.write(
+            stdout_lines.append(
                 self.repository_renderer.render_prefetched_repository(prefetch_result)
             )
-            return 0
         elif isinstance(prefetch_result, PrefetchFailure):
-            self.error_output.write(self.render_prefetch_failure(prefetch_result))
-            return 1
+            stderr_lines.append(self.render_prefetch_failure(prefetch_result))
+            return_code = 1
         else:
             raise Exception(f"Renderer received unexpected value {prefetch_result}")
+        model = ViewModel(
+            exit_code=return_code,
+            stderr_lines=stderr_lines,
+            stdout_lines=stdout_lines,
+        )
+        self.view.render_view_model(model)
 
     def render_prefetch_failure(self, failure: PrefetchFailure) -> str:
         return "Prefetch failed: " + str(failure.reason)

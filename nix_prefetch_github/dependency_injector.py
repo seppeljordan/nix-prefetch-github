@@ -1,4 +1,3 @@
-import sys
 from functools import lru_cache
 from logging import Logger
 
@@ -47,6 +46,7 @@ from nix_prefetch_github.use_cases.prefetch_github_repository import (
 from nix_prefetch_github.use_cases.prefetch_latest_release import (
     PrefetchLatestReleaseUseCaseImpl,
 )
+from nix_prefetch_github.views import CommandLineViewImpl
 
 
 class DependencyInjector:
@@ -58,6 +58,9 @@ class DependencyInjector:
 
     def get_remote_list_factory(self) -> ListRemoteFactoryImpl:
         return ListRemoteFactoryImpl(command_runner=self.get_command_runner())
+
+    def get_view(self) -> CommandLineViewImpl:
+        return CommandLineViewImpl()
 
     def get_url_hasher_selector(self) -> UrlHasherSelector:
         return UrlHasherSelector(
@@ -109,15 +112,13 @@ class DependencyInjector:
 
     def get_nix_presenter(self) -> PresenterImpl:
         return PresenterImpl(
-            result_output=sys.stdout,
-            error_output=sys.stderr,
+            view=self.get_view(),
             repository_renderer=self.get_nix_repository_renderer(),
         )
 
     def get_json_presenter(self) -> PresenterImpl:
         return PresenterImpl(
-            result_output=sys.stdout,
-            error_output=sys.stderr,
+            view=self.get_view(),
             repository_renderer=self.get_json_repository_renderer(),
         )
 

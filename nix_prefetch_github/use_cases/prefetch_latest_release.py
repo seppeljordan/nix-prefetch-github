@@ -1,7 +1,6 @@
 from __future__ import annotations
 
 from dataclasses import dataclass
-from sys import exit
 from typing import Protocol
 
 from nix_prefetch_github.interfaces import (
@@ -40,7 +39,7 @@ class PrefetchLatestReleaseUseCaseImpl:
             rev=revision,
             prefetch_options=request.prefetch_options,
         )
-        exit(self._select_presenter(request).present(prefetch_result))
+        self._select_presenter(request).present(prefetch_result)
 
     def _select_presenter(self, request: Request) -> Presenter:
         if request.rendering_format == RenderingFormat.json:

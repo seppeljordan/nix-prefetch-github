@@ -2,7 +2,6 @@ from __future__ import annotations
 
 from dataclasses import dataclass
 from logging import Logger
-from sys import exit
 from typing import Protocol
 
 from nix_prefetch_github.interfaces import (
@@ -51,6 +50,6 @@ class PrefetchDirectoryUseCaseImpl:
             prefetch_options=request.prefetch_options,
         )
         if request.rendering_format == RenderingFormat.json:
-            exit(self.json_presenter.present(prefetch_result))
+            self.json_presenter.present(prefetch_result)
         else:
-            exit(self.nix_presenter.present(prefetch_result))
+            self.nix_presenter.present(prefetch_result)
