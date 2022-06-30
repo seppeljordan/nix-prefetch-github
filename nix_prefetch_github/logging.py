@@ -1,7 +1,7 @@
 from __future__ import annotations
 
 from dataclasses import dataclass
-from logging import WARNING, Logger, StreamHandler, getLogger
+from logging import WARNING, Formatter, Logger, StreamHandler, getLogger
 from typing import Protocol, TextIO
 
 
@@ -31,5 +31,7 @@ class LoggerFactoryImpl:
     ) -> None:
         for handler in logger.handlers:
             logger.removeHandler(handler)
-        logger.addHandler(StreamHandler(configuration.output_file))
+        handler = StreamHandler(configuration.output_file)
+        handler.setFormatter(Formatter("%(levelname)s: %(message)s"))
+        logger.addHandler(handler)
         logger.setLevel(configuration.log_level)

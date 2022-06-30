@@ -12,6 +12,13 @@ from nix_prefetch_github.interfaces import (
 )
 
 
+class Alerter(Protocol):
+    def alert_user_about_unsafe_prefetch_options(
+        self, prefetch_options: PrefetchOptions
+    ) -> None:
+        ...
+
+
 class PrefetchGithubRepositoryUseCase(Protocol):
     def prefetch_github_repository(self, request: Request) -> None:
         ...
@@ -30,8 +37,16 @@ class PrefetchGithubRepositoryUseCaseImpl:
     nix_presenter: Presenter
     json_presenter: Presenter
     prefetcher: Prefetcher
+    alerter: Alerter
 
     def prefetch_github_repository(self, request: Request) -> None:
+        if (
+            request.prefetch_options.leave_dot_git
+            or request.prefetch_options.deep_clone
+        ):
+            self.alerter.alert_user_about_unsafe_prefetch_options(
+                request.prefetch_options
+            )
         prefetch_result = self.prefetcher.prefetch_github(
             repository=request.repository,
             rev=request.revision,

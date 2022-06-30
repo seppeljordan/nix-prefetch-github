@@ -1,6 +1,7 @@
 from functools import lru_cache
 from logging import Logger
 
+from nix_prefetch_github.alerter import CliAlerterImpl
 from nix_prefetch_github.command.command_availability_checker import (
     CommandAvailabilityCheckerImpl,
 )
@@ -50,6 +51,11 @@ from nix_prefetch_github.views import CommandLineViewImpl
 
 
 class DependencyInjector:
+    def get_alerter(self) -> CliAlerterImpl:
+        return CliAlerterImpl(
+            logger=self.get_logger(),
+        )
+
     def get_revision_index_factory(self) -> RevisionIndexFactory:
         return RevisionIndexFactoryImpl(self.get_remote_list_factory())
 
@@ -137,6 +143,7 @@ class DependencyInjector:
             nix_presenter=self.get_nix_presenter(),
             json_presenter=self.get_json_presenter(),
             prefetcher=self.get_prefetcher(),
+            alerter=self.get_alerter(),
         )
 
     def get_prefetch_directory_use_case(self) -> PrefetchDirectoryUseCaseImpl:

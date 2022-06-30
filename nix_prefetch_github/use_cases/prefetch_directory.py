@@ -36,9 +36,7 @@ class PrefetchDirectoryUseCaseImpl:
 
     def prefetch_directory(self, request: Request) -> None:
         if self.repository_detector.is_repository_dirty(request.directory):
-            self.logger.warning(
-                f"Warning: Git repository at `{request.directory}` is dirty"
-            )
+            self.logger.warning(f"Git repository at `{request.directory}` is dirty")
         repository = self.repository_detector.detect_github_repository(
             request.directory, remote_name=request.remote
         )
