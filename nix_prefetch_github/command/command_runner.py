@@ -32,7 +32,11 @@ class CommandRunnerImpl:
         )
         process_stdout, process_stderr = process.communicate()
         if merge_stderr:
-            self.logger.info(process_stdout)
+            self._log_process_output(process_stdout)
         else:
-            self.logger.info(process_stderr)
+            self._log_process_output(process_stderr)
         return process.returncode, process_stdout
+
+    def _log_process_output(self, process_output: str) -> None:
+        if process_output:
+            self.logger.info(process_output)
