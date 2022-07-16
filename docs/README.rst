@@ -19,8 +19,8 @@ Command Line Example
    {
        "owner": "seppeljordan",
        "repo": "nix-prefetch-github",
-       "rev": "d786bedf892160b4391a219fc0bfa5cbb0c98f65",
-       "sha256": "LtFf5s3X0lqc7Kd5zsp6wEYzNz3h/7T4XytLODHq5wE=",
+       "rev": "b19662b874d3649a0b38047d2a8892f0592200e2",
+       "sha256": "MX1M7JsscLJxeCrkGN9aw6ocJ6idKwf8pzEi6rb6YBw=",
        "fetchSubmodules": false,
        "leaveDotGit": false,
        "deepClone": false
@@ -185,6 +185,7 @@ v5.2.0 (in progress)
 -  Emit warning if unsafe options –deep-clone and –leave-dot-git are
    used.
 -  Improve –help output slightly
+-  Declutter verbose logging output
 
 v5.1.2
 ------
