@@ -19,8 +19,8 @@ Command Line Example
    {
        "owner": "seppeljordan",
        "repo": "nix-prefetch-github",
-       "rev": "b19662b874d3649a0b38047d2a8892f0592200e2",
-       "sha256": "MX1M7JsscLJxeCrkGN9aw6ocJ6idKwf8pzEi6rb6YBw=",
+       "rev": "8288b286ea263f343e3eb9f1b9d9380f669a6496",
+       "sha256": "+7DE3Bjn5aEn6ajHJceCcpRVZ3+oB3XRUZ+g1xO4oLA=",
        "fetchSubmodules": false,
        "leaveDotGit": false,
        "deepClone": false
@@ -179,8 +179,8 @@ You can generate a coverage report for the tests via
 changes
 =======
 
-v5.2.0 (in progress)
---------------------
+v5.2.0
+------
 
 -  Emit warning if unsafe options –deep-clone and –leave-dot-git are
    used.
