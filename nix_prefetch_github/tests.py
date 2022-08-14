@@ -1,8 +1,12 @@
 from os import getenv
-from typing import Callable, Optional
+from typing import Callable, Dict, List, Optional, Tuple
 from unittest import skipIf
 
-from nix_prefetch_github.interfaces import GithubRepository, PrefetchOptions
+from nix_prefetch_github.interfaces import (
+    CommandRunner,
+    GithubRepository,
+    PrefetchOptions,
+)
 from nix_prefetch_github.logging import LoggingConfiguration
 from nix_prefetch_github.revision_index import RevisionIndexImpl
 
@@ -51,3 +55,21 @@ class FakeLoggerManager:
         assert self.configuration
         if condition:
             assert condition(self.configuration), message
+
+
+class CommandRunnerTestImpl:
+    def __init__(self, command_runner: CommandRunner):
+        self.command_runner = command_runner
+        self.commands_issued: List[List[str]] = list()
+
+    def run_command(
+        self,
+        command: List[str],
+        cwd: Optional[str] = None,
+        environment_variables: Optional[Dict[str, str]] = None,
+        merge_stderr: bool = False,
+    ) -> Tuple[int, str]:
+        self.commands_issued.append(list(command))
+        return self.command_runner.run_command(
+            command, cwd, environment_variables, merge_stderr
+        )

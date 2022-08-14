@@ -3,7 +3,7 @@ from unittest import TestCase
 
 from nix_prefetch_github.command.command_runner import CommandRunnerImpl
 from nix_prefetch_github.interfaces import GithubRepository, PrefetchOptions
-from nix_prefetch_github.tests import network, requires_nix_build
+from nix_prefetch_github.tests import CommandRunnerTestImpl, network, requires_nix_build
 from nix_prefetch_github.url_hasher.nix_prefetch import NixPrefetchUrlHasherImpl
 
 
@@ -11,8 +11,11 @@ from nix_prefetch_github.url_hasher.nix_prefetch import NixPrefetchUrlHasherImpl
 @network
 class UrlHasherTests(TestCase):
     def setUp(self) -> None:
+        self.command_runner = CommandRunnerTestImpl(
+            command_runner=CommandRunnerImpl(getLogger(__name__))
+        )
         self.hasher = NixPrefetchUrlHasherImpl(
-            command_runner=CommandRunnerImpl(getLogger(__name__)), logger=getLogger()
+            command_runner=self.command_runner, logger=getLogger()
         )
         self.repository = GithubRepository(
             owner="git-up",
@@ -28,6 +31,25 @@ class UrlHasherTests(TestCase):
             prefetch_options=prefetch_options,
         )
         self.assertEqual(hash_sum, "B5AlNwg6kbcaqUiQEC6jslCRKVpErXLMsKC+b9aPlrM=")
+
+    def test_that_experimental_feature_nix_command_is_enabled(self) -> None:
+        self.hasher.calculate_sha256_sum(
+            repository=self.repository,
+            revision=self.revision,
+            prefetch_options=PrefetchOptions(),
+        )
+        issued_nix_commands = list(
+            filter(lambda c: c[0] == "nix", self.command_runner.commands_issued)
+        )
+        self.assertTrue(
+            all(
+                command[1] == "--extra-experimental-features"
+                and command[2] == "nix-command"
+                for command in issued_nix_commands
+            ),
+            msg="Not all commands in  %s do include '--extra-experimental-features nix-command'"
+            % issued_nix_commands,
+        )
 
     def test_with_fetching_submodules(self) -> None:
         prefetch_options = PrefetchOptions(fetch_submodules=True)

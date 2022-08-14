@@ -54,7 +54,14 @@ class NixPrefetchUrlHasherImpl:
 
     def calculate_sri_representation(self, sha256: str) -> str:
         _, output = self.command_runner.run_command(
-            ["nix", "hash", "to-sri", f"sha256:{sha256}"],
+            [
+                "nix",
+                "--extra-experimental-features",
+                "nix-command",
+                "hash",
+                "to-sri",
+                f"sha256:{sha256}",
+            ],
         )
         return output.strip().removeprefix("sha256-")
 
