@@ -18,8 +18,8 @@
   {
       "owner": "seppeljordan",
       "repo": "nix-prefetch-github",
-      "rev": "8288b286ea263f343e3eb9f1b9d9380f669a6496",
-      "sha256": "+7DE3Bjn5aEn6ajHJceCcpRVZ3+oB3XRUZ+g1xO4oLA=",
+      "rev": "2e6600fbe1d020412a704f65e55411e791e2b9f1",
+      "sha256": "MDyoO1mJaTh+y9XDfhRcKHQcSJcsdKB9g1d+ede4znU=",
       "fetchSubmodules": false,
       "leaveDotGit": false,
       "deepClone": false
@@ -182,6 +182,10 @@
   
 
 * changes
+** v5.2.1
+   - Fixed a bug that broke the program for users without the
+     experimental `nix-command` feature
+
 ** v5.2.0
    - Emit warning if unsafe options --deep-clone and --leave-dot-git
      are used.
