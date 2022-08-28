@@ -78,4 +78,13 @@ class PresenterImpl:
         self.view.render_view_model(model)
 
     def render_prefetch_failure(self, failure: PrefetchFailure) -> str:
-        return "Prefetch failed: " + str(failure.reason)
+        message = (
+            f"Prefetch failed: {failure.reason}. {self._explain_error(failure.reason)}"
+        )
+        return message
+
+    def _explain_error(self, reason: PrefetchFailure.Reason) -> str:
+        if reason == PrefetchFailure.Reason.unable_to_locate_revision:
+            return "nix-prefetch-github failed to find a matching revision to download from github. Have you spelled the repository owner, repository name and revision name correctly?"
+        else:
+            return "nix-prefetch-github failed to calculate a sha256 hash for the requested github repository. Do you have nix-prefetch-git, nix-prefetch-url and nix-build in your PATH?"
