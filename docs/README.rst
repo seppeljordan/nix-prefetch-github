@@ -19,8 +19,8 @@ Command Line Example
    {
        "owner": "seppeljordan",
        "repo": "nix-prefetch-github",
-       "rev": "2e6600fbe1d020412a704f65e55411e791e2b9f1",
-       "sha256": "MDyoO1mJaTh+y9XDfhRcKHQcSJcsdKB9g1d+ede4znU=",
+       "rev": "d4ae455945f8373049654fb55c5e0b6a1dc90c72",
+       "sha256": "FVqOdvsfGxOknJ4xI3z9Kq+BXyIVAC8HNGYJRIN+zCI=",
        "fetchSubmodules": false,
        "leaveDotGit": false,
        "deepClone": false
@@ -178,6 +178,11 @@ You can generate a coverage report for the tests via
 
 changes
 =======
+
+v5.2.2 (in development)
+-----------------------
+
+-  Add more info to error messages
 
 v5.2.1
 ------
