@@ -1,6 +1,15 @@
+from __future__ import annotations
+
 import enum
 from dataclasses import dataclass
 from typing import Dict, List, Optional, Protocol, Tuple, Union
+
+
+class Alerter(Protocol):
+    def alert_user_about_unsafe_prefetch_options(
+        self, prefetch_options: PrefetchOptions
+    ) -> None:
+        ...
 
 
 class RevisionIndex(Protocol):
@@ -23,6 +32,9 @@ class PrefetchOptions:
     deep_clone: bool = False
     leave_dot_git: bool = False
 
+    def is_safe(self) -> bool:
+        return not self.deep_clone and not self.leave_dot_git
+
 
 class UrlHasher(Protocol):
     def calculate_sha256_sum(
@@ -31,7 +43,7 @@ class UrlHasher(Protocol):
         revision: str,
         prefetch_options: PrefetchOptions,
     ) -> Optional[str]:
-        pass
+        ...
 
 
 class GithubAPI(Protocol):

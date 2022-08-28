@@ -21,6 +21,7 @@ class FlakeCheckTest(TestCase):
         self.assertEqual(finished_process.returncode, 0)
 
 
+@network
 @requires_nix_build
 class VersionFlagTests(TestCase):
     def setUp(self) -> None:

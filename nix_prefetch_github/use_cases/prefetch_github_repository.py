@@ -4,19 +4,13 @@ from dataclasses import dataclass
 from typing import Optional, Protocol
 
 from nix_prefetch_github.interfaces import (
+    Alerter,
     GithubRepository,
     Prefetcher,
     PrefetchOptions,
     Presenter,
     RenderingFormat,
 )
-
-
-class Alerter(Protocol):
-    def alert_user_about_unsafe_prefetch_options(
-        self, prefetch_options: PrefetchOptions
-    ) -> None:
-        ...
 
 
 class PrefetchGithubRepositoryUseCase(Protocol):
@@ -40,10 +34,7 @@ class PrefetchGithubRepositoryUseCaseImpl:
     alerter: Alerter
 
     def prefetch_github_repository(self, request: Request) -> None:
-        if (
-            request.prefetch_options.leave_dot_git
-            or request.prefetch_options.deep_clone
-        ):
+        if not request.prefetch_options.is_safe():
             self.alerter.alert_user_about_unsafe_prefetch_options(
                 request.prefetch_options
             )
