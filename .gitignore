@@ -12,3 +12,4 @@ __pycache__
 /.mypy_cache
 /.envrc
 /nix_prefetch_github.svg
+/.dmypy.json

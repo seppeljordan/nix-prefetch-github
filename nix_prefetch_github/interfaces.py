@@ -137,3 +137,15 @@ class Presenter(Protocol):
 class RenderingFormat(enum.Enum):
     nix = enum.auto()
     json = enum.auto()
+
+
+@dataclass
+class ViewModel:
+    exit_code: int
+    stderr_lines: List[str]
+    stdout_lines: List[str]
+
+
+class CommandLineView(Protocol):
+    def render_view_model(self, model: ViewModel) -> None:
+        ...

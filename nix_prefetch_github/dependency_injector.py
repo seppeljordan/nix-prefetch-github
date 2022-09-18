@@ -24,10 +24,10 @@ from nix_prefetch_github.interfaces import (
 from nix_prefetch_github.list_remote_factory import ListRemoteFactoryImpl
 from nix_prefetch_github.logging import LoggerFactoryImpl
 from nix_prefetch_github.prefetch import PrefetcherImpl
-from nix_prefetch_github.presenter import (
+from nix_prefetch_github.presenter import PresenterImpl
+from nix_prefetch_github.presenter.repository_renderer import (
     JsonRepositoryRenderer,
     NixRepositoryRenderer,
-    PresenterImpl,
 )
 from nix_prefetch_github.process_environment import ProcessEnvironmentImpl
 from nix_prefetch_github.repository_detector import RepositoryDetectorImpl
