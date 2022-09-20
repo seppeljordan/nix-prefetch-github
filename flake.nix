@@ -44,6 +44,8 @@
               pkgs.python39.pkgs.nix-prefetch-github;
             nix-prefetch-github-python310 =
               pkgs.python310.pkgs.nix-prefetch-github;
+            nix-prefetch-github-python311 =
+              pkgs.python311.pkgs.nix-prefetch-github;
             black-check = pkgs.runCommand "black-nix-prefetch-github" { } ''
               cd ${self}
               ${python.pkgs.black}/bin/black --check .
