@@ -2,7 +2,7 @@ from logging import INFO, WARNING
 from typing import Callable, Optional, cast
 from unittest import TestCase
 
-from nix_prefetch_github.controller.prefetch_latest_release_controller import (
+from nix_prefetch_github.controller.nix_prefetch_github_latest_release_controller import (
     PrefetchLatestReleaseController,
 )
 from nix_prefetch_github.tests import FakeLoggerManager

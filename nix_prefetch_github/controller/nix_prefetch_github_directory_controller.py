@@ -22,9 +22,7 @@ class PrefetchDirectoryController:
     environment: ProcessEnvironment
 
     def process_arguments(self, arguments: List[str]) -> None:
-        parser = argparse.ArgumentParser(parents=[get_options_argument_parser()])
-        parser.add_argument("--directory", default=None)
-        parser.add_argument("--remote", default="origin")
+        parser = get_argument_parser()
         args = parser.parse_args(arguments)
         self.logger_manager.set_logging_configuration(
             configuration=args.logging_configuration
@@ -39,3 +37,12 @@ class PrefetchDirectoryController:
                 remote=args.remote,
             )
         )
+
+
+# Unfortunately this needs to be a free standing function so that
+# sphinx-argparse can generate documentation for it.
+def get_argument_parser() -> argparse.ArgumentParser:
+    parser = argparse.ArgumentParser(parents=[get_options_argument_parser()])
+    parser.add_argument("--directory", default=None)
+    parser.add_argument("--remote", default="origin")
+    return parser

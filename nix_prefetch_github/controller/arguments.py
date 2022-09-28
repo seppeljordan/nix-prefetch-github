@@ -102,12 +102,14 @@ def get_options_argument_parser() -> argparse.ArgumentParser:
         default=RenderingFormat.json,
         action="store_const",
         const=RenderingFormat.nix,
+        help="Output the results as valid nix code.",
     )
     parser.add_argument(
         "--json",
         dest="rendering_format",
         action="store_const",
         const=RenderingFormat.json,
+        help="Output the results in the JSON format",
     )
     parser.add_argument(
         "--version", action="version", version="%(prog)s " + VERSION_STRING

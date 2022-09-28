@@ -18,12 +18,7 @@ class NixPrefetchGithubController:
         self._logger_manager = logger_manager
 
     def process_arguments(self, arguments: List[str]) -> None:
-        parser = argparse.ArgumentParser(
-            "nix-prefetch-github", parents=[get_options_argument_parser()]
-        )
-        parser.add_argument("owner")
-        parser.add_argument("repo")
-        parser.add_argument("--rev", default=None)
+        parser = get_argument_parser()
         args = parser.parse_args(arguments)
         self._logger_manager.set_logging_configuration(args.logging_configuration)
         self._use_case.prefetch_github_repository(
@@ -34,3 +29,15 @@ class NixPrefetchGithubController:
                 rendering_format=args.rendering_format,
             )
         )
+
+
+# Unfortunately this needs to be a free standing function so that
+# sphinx-argparse can generate documentation for it.
+def get_argument_parser() -> argparse.ArgumentParser:
+    parser = argparse.ArgumentParser(
+        "nix-prefetch-github", parents=[get_options_argument_parser()]
+    )
+    parser.add_argument("owner")
+    parser.add_argument("repo")
+    parser.add_argument("--rev", default=None)
+    return parser

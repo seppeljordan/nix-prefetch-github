@@ -9,10 +9,10 @@ from nix_prefetch_github.command.command_runner import CommandRunnerImpl
 from nix_prefetch_github.controller.nix_prefetch_github_controller import (
     NixPrefetchGithubController,
 )
-from nix_prefetch_github.controller.prefetch_directory_controller import (
+from nix_prefetch_github.controller.nix_prefetch_github_directory_controller import (
     PrefetchDirectoryController,
 )
-from nix_prefetch_github.controller.prefetch_latest_release_controller import (
+from nix_prefetch_github.controller.nix_prefetch_github_latest_release_controller import (
     PrefetchLatestReleaseController,
 )
 from nix_prefetch_github.github import GithubAPIImpl

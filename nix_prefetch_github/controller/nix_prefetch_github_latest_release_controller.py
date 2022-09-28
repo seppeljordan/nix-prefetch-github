@@ -17,12 +17,7 @@ class PrefetchLatestReleaseController:
     logger_manager: LoggerManager
 
     def process_arguments(self, arguments: List[str]) -> None:
-        parser = argparse.ArgumentParser(
-            "nix-prefetch-github-latest-release",
-            parents=[get_options_argument_parser()],
-        )
-        parser.add_argument("owner")
-        parser.add_argument("repo")
+        parser = get_argument_parser()
         args = parser.parse_args(arguments)
         self.logger_manager.set_logging_configuration(args.logging_configuration)
         self.use_case.prefetch_latest_release(
@@ -32,3 +27,15 @@ class PrefetchLatestReleaseController:
                 rendering_format=args.rendering_format,
             )
         )
+
+
+# Unfortunately this needs to be a free standing function so that
+# sphinx-argparse can generate documentation for it.
+def get_argument_parser() -> argparse.ArgumentParser:
+    parser = argparse.ArgumentParser(
+        "nix-prefetch-github-latest-release",
+        parents=[get_options_argument_parser()],
+    )
+    parser.add_argument("owner")
+    parser.add_argument("repo")
+    return parser

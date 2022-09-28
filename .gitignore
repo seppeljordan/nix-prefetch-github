@@ -8,8 +8,10 @@ __pycache__
 /testenv
 *.egg-info
 /result
+/result-*
 /test.nix
 /.mypy_cache
 /.envrc
 /nix_prefetch_github.svg
 /.dmypy.json
+/build

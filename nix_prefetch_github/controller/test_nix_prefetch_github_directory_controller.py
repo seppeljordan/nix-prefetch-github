@@ -6,7 +6,7 @@ from nix_prefetch_github.interfaces import RenderingFormat
 from nix_prefetch_github.tests import FakeLoggerManager
 from nix_prefetch_github.use_cases.prefetch_directory import Request
 
-from .prefetch_directory_controller import PrefetchDirectoryController
+from .nix_prefetch_github_directory_controller import PrefetchDirectoryController
 
 
 class ControllerTests(TestCase):
