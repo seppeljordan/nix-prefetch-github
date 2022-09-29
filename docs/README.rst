@@ -19,8 +19,8 @@ Command Line Example
    {
        "owner": "seppeljordan",
        "repo": "nix-prefetch-github",
-       "rev": "d4ae455945f8373049654fb55c5e0b6a1dc90c72",
-       "sha256": "FVqOdvsfGxOknJ4xI3z9Kq+BXyIVAC8HNGYJRIN+zCI=",
+       "rev": "0539cf9048594d92343a6bced203dfdc6cc21ad6",
+       "sha256": "R22jV6WDtc/wLFCNLBmJNCqGUWqUmnkZMUE6eqmpPto=",
        "fetchSubmodules": false,
        "leaveDotGit": false,
        "deepClone": false
@@ -66,8 +66,8 @@ into the local nix store. It also prints the function arguments to
      --verbose, -v         Print additional information about the programs
                execution. This is useful if you want to issue a bug
                report.
-     --nix
-     --json
+     --nix                 Output the results as valid nix code.
+     --json                Output the results in the JSON format
      --version             show program's version number and exit
      --rev REV
 
@@ -105,8 +105,8 @@ the ``origin`` remote repository similar to the command
      --verbose, -v         Print additional information about the programs
                execution. This is useful if you want to issue a bug
                report.
-     --nix
-     --json
+     --nix                 Output the results as valid nix code.
+     --json                Output the results in the JSON format
      --version             show program's version number and exit
      --directory DIRECTORY
      --remote REMOTE
@@ -147,8 +147,8 @@ repository.
      --verbose, -v         Print additional information about the programs
                execution. This is useful if you want to issue a bug
                report.
-     --nix
-     --json
+     --nix                 Output the results as valid nix code.
+     --json                Output the results in the JSON format
      --version             show program's version number and exit
 
 development environment
