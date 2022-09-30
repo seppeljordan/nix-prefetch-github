@@ -18,8 +18,8 @@
   {
       "owner": "seppeljordan",
       "repo": "nix-prefetch-github",
-      "rev": "0539cf9048594d92343a6bced203dfdc6cc21ad6",
-      "sha256": "R22jV6WDtc/wLFCNLBmJNCqGUWqUmnkZMUE6eqmpPto=",
+      "rev": "6af0861a94993d61d1f10a7b6d3bafc9b7a60174",
+      "sha256": "G4O96PvSnQXxu/aTqoOvhRIu9FPX3pD4kOnHrkfk8GU=",
       "fetchSubmodules": false,
       "leaveDotGit": false,
       "deepClone": false
@@ -182,7 +182,7 @@
   
 
 * changes
-** v5.2.2 (in development)
+** v5.2.2
    - Add more info to error messages
 
 ** v5.2.1
