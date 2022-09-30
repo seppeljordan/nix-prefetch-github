@@ -16,13 +16,36 @@ class TestCase(unittest.TestCase):
     def assertReturncode(
         self, command: List[str], expected_code: int, message: Optional[str] = None
     ) -> None:
-        finished_process = subprocess.run(command)
+        finished_process = subprocess.run(
+            command,
+            stdout=subprocess.PIPE,
+            stderr=subprocess.PIPE,
+            universal_newlines=True,
+        )
         self.assertEqual(
             finished_process.returncode,
             expected_code,
-            msg=f"Expected return code {expected_code} when running {command}, but got {finished_process.returncode}"
-            + (f", {message}" if message else ""),
+            msg=self._prepare_failed_command_message(
+                command=command,
+                expected_code=expected_code,
+                process=finished_process,
+                msg=message,
+            ),
         )
+
+    def _prepare_failed_command_message(
+        self,
+        command: List[str],
+        expected_code: int,
+        process: subprocess.CompletedProcess,
+        msg: Optional[str],
+    ) -> str:
+        result = f"Expected return code {expected_code} when running {command}, but got {process.returncode}"
+        if msg is not None:
+            result += ", " + msg
+        result += f"\nstdout: {process.stdout}"
+        result += f"\nstderr: {process.stderr}"
+        return result
 
 
 @network
@@ -38,7 +61,7 @@ class VersionFlagTests(TestCase):
     def setUp(self) -> None:
         self.directory = tempfile.mkdtemp()
         self.output = path.join(self.directory, "result")
-        subprocess.run(["nix", "build", "--out-link", self.output])
+        subprocess.run(["nix", "build", "--out-link", self.output], capture_output=True)
 
     def test_can_specify_version_flag(self) -> None:
         commands = [
@@ -57,7 +80,7 @@ class NixEvaluationTests(TestCase):
     def setUp(self) -> None:
         self.directory = tempfile.mkdtemp()
         self.output = path.join(self.directory, "result")
-        subprocess.run(["nix", "build", "--out-link", self.output])
+        subprocess.run(["nix", "build", "--out-link", self.output], capture_output=True)
 
     def test_can_build_nix_expressions(self) -> None:
         expressions = [
@@ -96,7 +119,7 @@ class JsonIntegrityTests(TestCase):
     def setUp(self) -> None:
         self.directory = tempfile.mkdtemp()
         self.output = path.join(self.directory, "result")
-        subprocess.run(["nix", "build", "--out-link", self.output])
+        subprocess.run(["nix", "build", "--out-link", self.output], capture_output=True)
 
     def test_can_load_json_output_as_json(self) -> None:
         expressions = [
