@@ -1,0 +1,15 @@
+name: nix-prefetch-github tests
+
+on:
+  push:
+    branches: [ master ]
+  pull_request:
+    branches: [ master ]
+
+jobs:
+  build-nix:
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v2
+    - uses: cachix/install-nix-action@v16
+    - run: nix develop --command python -m unittest discover
