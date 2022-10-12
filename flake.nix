@@ -8,9 +8,6 @@
 
   outputs = { self, nixpkgs, flake-utils, ... }:
     let
-      # pyopenssl does not build on aarch64-darwin
-      supportedSystems = builtins.filter (s: s != "aarch64-darwin")
-        flake-utils.lib.defaultSystems;
       systemDependent = flake-utils.lib.eachSystem supportedSystems (system:
         let
           pkgs = import nixpkgs {
@@ -77,21 +74,22 @@
         });
       systemIndependent = {
         overlays.default = final: prev: {
-          python38 = prev.python38.override {
-            packageOverrides = import nix/package-overrides.nix;
-          };
-          python39 = prev.python39.override {
-            packageOverrides = import nix/package-overrides.nix;
-          };
-          python310 = prev.python310.override {
-            packageOverrides = import nix/package-overrides.nix;
-          };
-          python311 = prev.python311.override {
-            packageOverrides = import nix/package-overrides.nix;
-          };
+          python38 =
+            overridePython prev.python38 (import nix/package-overrides.nix);
+          python39 =
+            overridePython prev.python39 (import nix/package-overrides.nix);
+          python310 =
+            overridePython prev.python310 (import nix/package-overrides.nix);
+          python311 =
+            overridePython prev.python311 (import nix/package-overrides.nix);
           nix-prefetch-github = with final.python3.pkgs;
             toPythonApplication nix-prefetch-github;
         };
       };
+      overridePython = pythonSelf: overrides:
+        pythonSelf // {
+          pkgs = pythonSelf.pkgs.overrideScope overrides;
+        };
+      supportedSystems = flake-utils.lib.defaultSystems;
     in systemDependent // systemIndependent;
 }
