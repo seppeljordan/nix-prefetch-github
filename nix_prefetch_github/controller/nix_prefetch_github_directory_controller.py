@@ -3,6 +3,7 @@ from dataclasses import dataclass
 from typing import List, Protocol
 
 from nix_prefetch_github.controller.arguments import get_options_argument_parser
+from nix_prefetch_github.interfaces import RenderingFormatSelector
 from nix_prefetch_github.logging import LoggerManager
 from nix_prefetch_github.use_cases.prefetch_directory import (
     PrefetchDirectoryUseCase,
@@ -20,6 +21,7 @@ class PrefetchDirectoryController:
     logger_manager: LoggerManager
     use_case: PrefetchDirectoryUseCase
     environment: ProcessEnvironment
+    rendering_format_selector: RenderingFormatSelector
 
     def process_arguments(self, arguments: List[str]) -> None:
         parser = get_argument_parser()
@@ -27,10 +29,10 @@ class PrefetchDirectoryController:
         self.logger_manager.set_logging_configuration(
             configuration=args.logging_configuration
         )
+        self.rendering_format_selector.set_rendering_format(args.rendering_format)
         self.use_case.prefetch_directory(
             request=Request(
                 prefetch_options=args.prefetch_options,
-                rendering_format=args.rendering_format,
                 directory=args.directory
                 if args.directory
                 else self.environment.get_cwd(),

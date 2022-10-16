@@ -10,16 +10,19 @@ from nix_prefetch_github.interfaces import (
     PrefetchOptions,
     RenderingFormat,
 )
-from nix_prefetch_github.tests import FakeLoggerManager
+from nix_prefetch_github.tests import FakeLoggerManager, RenderingFormatSelectorImpl
 from nix_prefetch_github.use_cases.prefetch_github_repository import Request
 
 
 class ControllerTests(TestCase):
     def setUp(self) -> None:
         self.logger_manager = FakeLoggerManager()
+        self.rendering_format_selector = RenderingFormatSelectorImpl()
         self.use_case_mock = UseCaseImpl()
         self.controller = NixPrefetchGithubController(
-            use_case=self.use_case_mock, logger_manager=self.logger_manager
+            use_case=self.use_case_mock,
+            logger_manager=self.logger_manager,
+            rendering_format_selector=self.rendering_format_selector,
         )
 
     def test_controller_extracts_example_owner_and_repo_from_arguments(self) -> None:
@@ -128,10 +131,8 @@ class ControllerTests(TestCase):
         )
 
     def assertRenderingFormat(self, rendering_format: RenderingFormat) -> None:
-        assert self.use_case_mock.request
         self.assertEqual(
-            self.use_case_mock.request.rendering_format,
-            rendering_format,
+            self.rendering_format_selector.selected_output_format, rendering_format
         )
 
 

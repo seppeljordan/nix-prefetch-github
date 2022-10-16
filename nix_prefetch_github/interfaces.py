@@ -139,6 +139,11 @@ class RenderingFormat(enum.Enum):
     json = enum.auto()
 
 
+class RenderingFormatSelector(Protocol):
+    def set_rendering_format(self, rendering_format: RenderingFormat) -> None:
+        ...
+
+
 @dataclass
 class ViewModel:
     exit_code: int

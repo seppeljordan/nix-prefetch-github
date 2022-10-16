@@ -1,6 +1,12 @@
 import json
+from dataclasses import dataclass
+from typing import Optional
 
-from nix_prefetch_github.interfaces import PrefetchedRepository
+from nix_prefetch_github.interfaces import (
+    PrefetchedRepository,
+    RenderingFormat,
+    RepositoryRenderer,
+)
 from nix_prefetch_github.templates import output_template
 
 
@@ -31,3 +37,19 @@ class JsonRepositoryRenderer:
             },
             indent=4,
         )
+
+
+@dataclass
+class RenderingSelectorImpl:
+    nix_renderer: RepositoryRenderer
+    json_renderer: RepositoryRenderer
+    selected_output_format: Optional[RenderingFormat] = None
+
+    def set_rendering_format(self, rendering_format: RenderingFormat) -> None:
+        self.selected_output_format = rendering_format
+
+    def render_prefetched_repository(self, repository: PrefetchedRepository) -> str:
+        if self.selected_output_format == RenderingFormat.nix:
+            return self.nix_renderer.render_prefetched_repository(repository)
+        else:
+            return self.json_renderer.render_prefetched_repository(repository)

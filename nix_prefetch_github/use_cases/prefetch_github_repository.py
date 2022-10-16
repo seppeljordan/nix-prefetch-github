@@ -9,7 +9,6 @@ from nix_prefetch_github.interfaces import (
     Prefetcher,
     PrefetchOptions,
     Presenter,
-    RenderingFormat,
 )
 
 
@@ -23,13 +22,11 @@ class Request:
     repository: GithubRepository
     revision: Optional[str]
     prefetch_options: PrefetchOptions
-    rendering_format: RenderingFormat
 
 
 @dataclass
 class PrefetchGithubRepositoryUseCaseImpl:
-    nix_presenter: Presenter
-    json_presenter: Presenter
+    presenter: Presenter
     prefetcher: Prefetcher
     alerter: Alerter
 
@@ -43,7 +40,4 @@ class PrefetchGithubRepositoryUseCaseImpl:
             rev=request.revision,
             prefetch_options=request.prefetch_options,
         )
-        if request.rendering_format == RenderingFormat.json:
-            self.json_presenter.present(prefetch_result)
-        else:
-            self.nix_presenter.present(prefetch_result)
+        self.presenter.present(prefetch_result)

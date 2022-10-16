@@ -6,7 +6,6 @@ from nix_prefetch_github.interfaces import (
     PrefetchedRepository,
     PrefetchOptions,
     PrefetchResult,
-    RenderingFormat,
 )
 from nix_prefetch_github.use_cases.prefetch_github_repository import (
     PrefetchGithubRepositoryUseCaseImpl,
@@ -17,12 +16,10 @@ from nix_prefetch_github.use_cases.prefetch_github_repository import (
 class UseCaseTests(TestCase):
     def setUp(self) -> None:
         self.prefetcher = FakePrefetcher()
-        self.nix_presenter = FakePresenter()
-        self.json_presenter = FakePresenter()
+        self.presenter = FakePresenter()
         self.alerter = FakeAlerter()
         self.use_case = PrefetchGithubRepositoryUseCaseImpl(
-            nix_presenter=self.nix_presenter,
-            json_presenter=self.json_presenter,
+            presenter=self.presenter,
             prefetcher=self.prefetcher,
             alerter=self.alerter,
         )
@@ -33,16 +30,6 @@ class UseCaseTests(TestCase):
         request = self.make_request()
         self.use_case.prefetch_github_repository(request)
         self.assert_is_success()
-
-    def test_that_json_result_is_presented_if_json_rendering_is_requested(self) -> None:
-        request = self.make_request(rendering_format=RenderingFormat.json)
-        self.use_case.prefetch_github_repository(request)
-        self.assert_json_result()
-
-    def test_that_nix_result_is_presented_if_nix_rendering_is_requested(self) -> None:
-        request = self.make_request(rendering_format=RenderingFormat.nix)
-        self.use_case.prefetch_github_repository(request)
-        self.assert_nix_result()
 
     def test_that_user_is_alerted_if_leave_dot_git_option_is_requested(self) -> None:
         request = self.make_request(
@@ -75,14 +62,12 @@ class UseCaseTests(TestCase):
 
     def make_request(
         self,
-        rendering_format: RenderingFormat = RenderingFormat.json,
         prefetch_options: PrefetchOptions = PrefetchOptions(),
     ) -> Request:
         return Request(
             repository=GithubRepository(owner="owner", name="name"),
             revision=None,
             prefetch_options=prefetch_options,
-            rendering_format=rendering_format,
         )
 
     def assert_alerted_user(self) -> None:
@@ -110,20 +95,12 @@ class UseCaseTests(TestCase):
         )
 
     def assert_is_success(self) -> None:
-        results = self.nix_presenter.results + self.json_presenter.results
+        results = self.presenter.results
         self.assertTrue(results)
         self.assertIsInstance(
             results[-1],
             PrefetchedRepository,
         )
-
-    def assert_json_result(self) -> None:
-        self.assertFalse(self.nix_presenter.results)
-        self.assertTrue(self.json_presenter)
-
-    def assert_nix_result(self) -> None:
-        self.assertTrue(self.nix_presenter.results)
-        self.assertFalse(self.json_presenter.results)
 
 
 class FakeAlerter:

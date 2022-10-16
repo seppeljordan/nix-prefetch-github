@@ -28,6 +28,7 @@ from nix_prefetch_github.presenter import PresenterImpl
 from nix_prefetch_github.presenter.repository_renderer import (
     JsonRepositoryRenderer,
     NixRepositoryRenderer,
+    RenderingSelectorImpl,
 )
 from nix_prefetch_github.process_environment import ProcessEnvironmentImpl
 from nix_prefetch_github.repository_detector import RepositoryDetectorImpl
@@ -99,6 +100,13 @@ class DependencyInjector:
     def get_json_repository_renderer(self) -> JsonRepositoryRenderer:
         return JsonRepositoryRenderer()
 
+    @lru_cache
+    def get_rendering_format_selector(self) -> RenderingSelectorImpl:
+        return RenderingSelectorImpl(
+            nix_renderer=self.get_nix_repository_renderer(),
+            json_renderer=self.get_json_repository_renderer(),
+        )
+
     def get_github_api(self) -> GithubAPI:
         return GithubAPIImpl()
 
@@ -116,22 +124,15 @@ class DependencyInjector:
         factory = self.get_logger_factory()
         return factory.get_logger()
 
-    def get_nix_presenter(self) -> PresenterImpl:
+    def get_presenter_impl(self) -> PresenterImpl:
         return PresenterImpl(
             view=self.get_view(),
-            repository_renderer=self.get_nix_repository_renderer(),
-        )
-
-    def get_json_presenter(self) -> PresenterImpl:
-        return PresenterImpl(
-            view=self.get_view(),
-            repository_renderer=self.get_json_repository_renderer(),
+            repository_renderer=self.get_rendering_format_selector(),
         )
 
     def get_prefetch_latest_release_use_case(self) -> PrefetchLatestReleaseUseCaseImpl:
         return PrefetchLatestReleaseUseCaseImpl(
-            nix_presenter=self.get_nix_presenter(),
-            json_presenter=self.get_json_presenter(),
+            presenter=self.get_presenter_impl(),
             prefetcher=self.get_prefetcher(),
             github_api=self.get_github_api(),
         )
@@ -140,16 +141,14 @@ class DependencyInjector:
         self,
     ) -> PrefetchGithubRepositoryUseCaseImpl:
         return PrefetchGithubRepositoryUseCaseImpl(
-            nix_presenter=self.get_nix_presenter(),
-            json_presenter=self.get_json_presenter(),
+            presenter=self.get_presenter_impl(),
             prefetcher=self.get_prefetcher(),
             alerter=self.get_alerter(),
         )
 
     def get_prefetch_directory_use_case(self) -> PrefetchDirectoryUseCaseImpl:
         return PrefetchDirectoryUseCaseImpl(
-            nix_presenter=self.get_nix_presenter(),
-            json_presenter=self.get_json_presenter(),
+            presenter=self.get_presenter_impl(),
             prefetcher=self.get_prefetcher(),
             repository_detector=self.get_repository_detector(),
             logger=self.get_logger(),
@@ -159,12 +158,14 @@ class DependencyInjector:
         return NixPrefetchGithubController(
             use_case=self.get_prefetch_github_repository_use_case(),
             logger_manager=self.get_logger_factory(),
+            rendering_format_selector=self.get_rendering_format_selector(),
         )
 
     def get_prefetch_latest_release_controller(self) -> PrefetchLatestReleaseController:
         return PrefetchLatestReleaseController(
             use_case=self.get_prefetch_latest_release_use_case(),
             logger_manager=self.get_logger_factory(),
+            rendering_format_selector=self.get_rendering_format_selector(),
         )
 
     def get_prefetch_directory_controller(self) -> PrefetchDirectoryController:
@@ -172,4 +173,5 @@ class DependencyInjector:
             logger_manager=self.get_logger_factory(),
             use_case=self.get_prefetch_directory_use_case(),
             environment=self.get_process_environment(),
+            rendering_format_selector=self.get_rendering_format_selector(),
         )

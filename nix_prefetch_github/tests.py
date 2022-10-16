@@ -1,11 +1,12 @@
 from os import getenv
 from typing import Callable, Dict, List, Optional, Tuple
-from unittest import skipIf
+from unittest import TestCase, skipIf
 
 from nix_prefetch_github.interfaces import (
     CommandRunner,
     GithubRepository,
     PrefetchOptions,
+    RenderingFormat,
 )
 from nix_prefetch_github.logging import LoggingConfiguration
 from nix_prefetch_github.revision_index import RevisionIndexImpl
@@ -15,6 +16,10 @@ network = skipIf("network" in _disabled_tests, "networking tests are disabled")
 requires_nix_build = skipIf(
     "requires_nix_build" in _disabled_tests, "tests requiring nix build are disabled"
 )
+
+
+class BaseTestCase(TestCase):
+    pass
 
 
 class FakeUrlHasher:
@@ -73,3 +78,11 @@ class CommandRunnerTestImpl:
         return self.command_runner.run_command(
             command, cwd, environment_variables, merge_stderr
         )
+
+
+class RenderingFormatSelectorImpl:
+    def __init__(self) -> None:
+        self.selected_output_format: Optional[RenderingFormat] = None
+
+    def set_rendering_format(self, rendering_format: RenderingFormat) -> None:
+        self.selected_output_format = rendering_format
