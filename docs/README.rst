@@ -19,8 +19,8 @@ Command Line Example
    {
        "owner": "seppeljordan",
        "repo": "nix-prefetch-github",
-       "rev": "bbb7000fc1ea46544c7c7ae7cee7d2d56aec7d4f",
-       "sha256": "SYSdVfqlZwG60P8vObE6bUCe+EvdFZxa3DuwyYbFpUI=",
+       "rev": "5297b13bada0792d3d2572804dbc50de8f03acfd",
+       "sha256": "bioA9wJM6MUghLTI0sP3GWZ11UHczV16bL3EY67TeU4=",
        "fetchSubmodules": false,
        "leaveDotGit": false,
        "deepClone": false
@@ -156,8 +156,8 @@ development environment
 
 Use ``nix develop`` with flake support enabled. Development without nix
 flake support is not officially supported. Run the provided tests via
-``python -m unittest discover``. You can control what kind of tests are
-run via the variable ``DISABLED_TESTS``:
+``python run-tests``. You can control what kind of tests are run via the
+variable ``DISABLED_TESTS``:
 
 ::
 
@@ -174,7 +174,7 @@ You can generate a coverage report for the tests via
 
 ::
 
-   coverage run -m unittest discover && coverage html
+   coverage run run-tests && coverage html
 
 changes
 =======
