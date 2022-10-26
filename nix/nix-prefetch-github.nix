@@ -8,7 +8,7 @@ in buildPythonPackage {
   nativeBuildInputs = [ sphinxHook sphinx-argparse ];
   checkInputs = [ git which ];
   checkPhase = ''
-    python -m unittest discover
+    python run-tests
   '';
   sphinxBuilders = [ "singlehtml" "man" ];
   sphinxRoot = "docs";

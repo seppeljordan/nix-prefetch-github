@@ -1,0 +1,329 @@
+#!/usr/bin/env python
+
+from __future__ import annotations
+
+import functools
+import sys
+import time
+import traceback
+import types
+import typing
+import unittest
+from dataclasses import dataclass
+
+singleton = functools.lru_cache
+
+Error = typing.Union[
+    tuple[typing.Type[BaseException], BaseException, types.TracebackType],
+    tuple[None, None, None],
+]
+
+
+class DependencyInjector:
+    def get_test_coordinator(self) -> TestCoordinator:
+        return TestCoordinator(
+            test_collector=self.get_test_collector(),
+            report_generator=self.get_report_generator(),
+            runner=self.get_test_runner(),
+            display=self.get_display(),
+        )
+
+    def get_test_collector(self) -> TestCollector:
+        return TestCollector()
+
+    def get_report_generator(self) -> ReportGeneratorImpl:
+        return ReportGeneratorImpl(timer=self.get_test_run_timer())
+
+    def get_test_runner(self) -> TestRunner:
+        return TestRunnerImpl(
+            results=self.get_result_factory().construct_result(),
+        )
+
+    def get_result_factory(self) -> ResultFactory:
+        return ResultFactory(
+            display=self.get_display(),
+            result_formatter=self.get_result_formatter(),
+            timer=self.get_test_run_timer(),
+        )
+
+    @singleton
+    def get_display(self) -> Display:
+        return Display()
+
+    @singleton
+    def get_test_run_timer(self) -> TestRunTimerImpl:
+        return TestRunTimerImpl()
+
+    def get_result_formatter(self) -> TerseResultFormatter:
+        return TerseResultFormatter()
+
+
+def ansi(*code: int) -> str:
+    return f"\033[{';'.join(map(str, code))}m"
+
+
+RED = ansi(1, 31)
+WHITE = ansi(0)
+
+
+class TestRunner(typing.Protocol):
+    def run_test(self, test: unittest.TestCase) -> None:
+        ...
+
+    def get_results(self) -> unittest.TestResult:
+        ...
+
+
+class TestRunnerImpl:
+    def __init__(self, results: unittest.TestResult):
+        self.results = results
+
+    def run_test(self, test: unittest.TestCase) -> None:
+        test.run(self.results)
+
+    def get_results(self) -> unittest.TestResult:
+        return self.results
+
+
+class Display:
+    def __init__(self) -> None:
+        self.last_flush = time.monotonic()
+
+    def print(self, text: str) -> None:
+        print(text, end="")
+        if (current := time.monotonic()) - self.last_flush > 0.01:
+            sys.stdout.flush()
+            self.last_flush = current
+
+
+@dataclass
+class ResultFactory:
+    display: Display
+    result_formatter: ResultFormatter
+    timer: TestRunTimer
+
+    def construct_result(self) -> unittest.TestResult:
+        return CustomTestResult(
+            error_display=self.display,
+            result_formatter=self.result_formatter,
+            timer=self.timer,
+        )
+
+
+class TestCollector:
+    def collect_tests(self) -> typing.Iterable[unittest.TestCase]:
+        loader = unittest.TestLoader()
+        suite = loader.discover(start_dir=".")
+        remaining_suites = [iter(suite)]
+        while remaining_suites:
+            current_suite = remaining_suites.pop()
+            try:
+                for candidate in current_suite:
+                    if isinstance(candidate, unittest.TestSuite):
+                        remaining_suites.append(current_suite)
+                        remaining_suites.append(iter(candidate))
+                        break
+                    elif isinstance(candidate, unittest.TestCase):
+                        yield candidate
+            except StopIteration:
+                pass
+
+
+@dataclass
+class TestCoordinator:
+    test_collector: TestCollector
+    report_generator: ReportGenerator
+    runner: TestRunner
+    display: Display
+
+    def run_tests(self) -> None:
+        for test in self.test_collector.collect_tests():
+            self.runner.run_test(test)
+        self.display.print("\n")
+        results = self.runner.get_results()
+        report = self.report_generator.generate_report(results)
+        report.display_results(self.display)
+        self.display.print("\n")
+        if not report.is_success():
+            sys.exit(1)
+
+
+class ResultFormatter(typing.Protocol):
+    def format_success(self, test: unittest.TestCase) -> str:
+        ...
+
+    def format_failure(self, test: unittest.TestCase, err: Error) -> str:
+        ...
+
+    def format_error(self, test: unittest.TestCase, err: Error) -> str:
+        ...
+
+    def format_skip(self, test: unittest.TestCase, reason: str) -> str:
+        ...
+
+    def format_expected_failure(self, test: unittest.TestCase, err: Error) -> str:
+        ...
+
+    def format_unexpected_success(self, test: unittest.TestCase) -> str:
+        ...
+
+
+class TestRunTimerImpl:
+    def __init__(self) -> None:
+        self._start_times: dict[str, int] = dict()
+        self._stop_times: dict[str, int] = dict()
+
+    def start_test(self, id: str) -> None:
+        self._start_times[id] = time.monotonic_ns()
+
+    def stop_test(self, id: str) -> None:
+        self._stop_times[id] = time.monotonic_ns()
+
+    def get_test_timing(self, id: str) -> typing.Optional[int]:
+        if id not in self._start_times:
+            return None
+        if id not in self._stop_times:
+            return None
+        return self._stop_times[id] - self._start_times[id]
+
+    def timed_tests(self) -> typing.Iterable[str]:
+        for test_id in self._start_times.keys():
+            if test_id in self._stop_times:
+                yield test_id
+
+
+class TerseResultFormatter:
+    def format_success(self, test: unittest.TestCase) -> str:
+        return "."
+
+    def format_failure(self, test: unittest.TestCase, err: Error) -> str:
+        return f"{RED}F{WHITE}\n" + f"{test} failed\n" + self._format_errors(err)
+
+    def format_error(self, test: unittest.TestCase, err: Error) -> str:
+        return (
+            f"{RED}E{WHITE}\n" + f"{test} raise an error\n" + self._format_errors(err)
+        )
+
+    def format_skip(self, test: unittest.TestCase, reason: str) -> str:
+        return "s"
+
+    def format_expected_failure(self, test: unittest.TestCase, err: Error) -> str:
+        return "."
+
+    def format_unexpected_success(self, test: unittest.TestCase) -> str:
+        return f"{RED}F{WHITE}"
+
+    def _format_errors(self, err: Error) -> str:
+        traceback_exception = traceback.TracebackException(*err)
+        return "".join(traceback_exception.format())
+
+
+class ReportGenerator(typing.Protocol):
+    def generate_report(self, results: unittest.TestResult) -> Report:
+        ...
+
+
+class Report(typing.Protocol):
+    def is_success(self) -> bool:
+        ...
+
+    def display_results(self, display: Display) -> None:
+        ...
+
+
+@dataclass
+class ReportGeneratorImpl:
+    timer: TestRunTimer
+
+    def generate_report(self, results: unittest.TestResult) -> Report:
+        return ReportImpl(result=results, timer=self.timer)
+
+
+@dataclass
+class ReportImpl:
+    result: unittest.TestResult
+    timer: TestRunTimer
+
+    def is_success(self) -> bool:
+        return self.result.wasSuccessful()
+
+    def display_results(self, display: Display) -> None:
+        display.print("report:")
+        if self.result.failures:
+            display.print(f" failure: {len(self.result.failures)}")
+        if self.result.errors:
+            display.print(f" errors: {len(self.result.errors)}")
+        if self.result.unexpectedSuccesses:
+            display.print(
+                f" unexpected successes: {len(self.result.unexpectedSuccesses)}"
+            )
+        if self.result.skipped:
+            display.print(f" skipped: {len(self.result.skipped)}")
+        display.print("\n")
+
+
+class TestRunTimer(typing.Protocol):
+    def start_test(self, id: str) -> None:
+        ...
+
+    def stop_test(self, id: str) -> None:
+        ...
+
+    def get_test_timing(self, id: str) -> typing.Optional[int]:
+        ...
+
+    def timed_tests(self) -> typing.Iterable[str]:
+        ...
+
+
+class CustomTestResult(unittest.TestResult):
+    def __init__(
+        self,
+        *args: typing.Any,
+        error_display: Display,
+        result_formatter: ResultFormatter,
+        timer: TestRunTimer,
+        **kwargs: typing.Any,
+    ) -> None:
+        super().__init__(*args, **kwargs)
+        self._display = error_display
+        self._formatter = result_formatter
+        self._timer = timer
+
+    def startTest(self, test: unittest.TestCase) -> None:
+        super().startTest(test)
+        self._timer.start_test(test.id())
+
+    def stopTest(self, test: unittest.TestCase) -> None:
+        self._timer.stop_test(test.id())
+        super().startTest(test)
+
+    def addSuccess(self, test: unittest.TestCase) -> None:
+        super().addSuccess(test)
+        self._display.print(self._formatter.format_success(test))
+
+    def addError(self, test: unittest.TestCase, err: Error) -> None:
+        super().addError(test, err)
+        self._display.print(self._formatter.format_error(test, err))
+
+    def addFailure(self, test: unittest.TestCase, err: Error) -> None:
+        super().addFailure(test, err)
+        self._display.print(self._formatter.format_failure(test, err))
+
+    def addSkip(self, test: unittest.TestCase, reason: str) -> None:
+        super().addSkip(test, reason)
+        self._display.print(self._formatter.format_skip(test, reason))
+
+    def addExpectedFailure(self, test: unittest.TestCase, err: Error) -> None:
+        super().addExpectedFailure(test, err)
+        self._display.print(self._formatter.format_expected_failure(test, err))
+
+    def addUnexpectedSuccess(self, test: unittest.TestCase) -> None:
+        super().addUnexpectedSuccess(test)
+        self._display.print(self._formatter.format_unexpected_success(test))
+
+
+if __name__ == "__main__":
+    injector = DependencyInjector()
+    coordinator = injector.get_test_coordinator()
+    coordinator.run_tests()

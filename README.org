@@ -159,7 +159,7 @@
 * development environment
   Use =nix develop= with flake support enabled. Development without
   nix flake support is not officially supported. Run the provided
-  tests via =python -m unittest discover=. You can control what kind
+  tests via =python run-tests=. You can control what kind
   of tests are run via the variable =DISABLED_TESTS=:
 
   #+begin_example
@@ -176,7 +176,7 @@
   You can generate a coverage report for the tests via
 
   #+begin_example
-    coverage run -m unittest discover && coverage html
+    coverage run run-tests && coverage html
   #+end_example
 
   
