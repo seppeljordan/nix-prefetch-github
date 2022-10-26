@@ -2,24 +2,33 @@
 
 from __future__ import annotations
 
+import argparse
 import functools
+import os
 import sys
 import time
 import traceback
 import types
 import typing
 import unittest
-from dataclasses import dataclass
+from dataclasses import dataclass, field
 
 singleton = functools.lru_cache
 
 Error = typing.Union[
-    tuple[typing.Type[BaseException], BaseException, types.TracebackType],
-    tuple[None, None, None],
+    typing.Tuple[typing.Type[BaseException], BaseException, types.TracebackType],
+    typing.Tuple[None, None, None],
 ]
 
 
 class DependencyInjector:
+    @singleton
+    def get_configuration(self) -> Configuration:
+        return Configuration()
+
+    def get_controller(self) -> Controller:
+        return Controller(configuration=self.get_configuration())
+
     def get_test_coordinator(self) -> TestCoordinator:
         return TestCoordinator(
             test_collector=self.get_test_collector(),
@@ -29,7 +38,7 @@ class DependencyInjector:
         )
 
     def get_test_collector(self) -> TestCollector:
-        return TestCollector()
+        return TestCollector(configuration=self.get_configuration())
 
     def get_report_generator(self) -> ReportGeneratorImpl:
         return ReportGeneratorImpl(timer=self.get_test_run_timer())
@@ -44,6 +53,7 @@ class DependencyInjector:
             display=self.get_display(),
             result_formatter=self.get_result_formatter(),
             timer=self.get_test_run_timer(),
+            configuration=self.get_configuration(),
         )
 
     @singleton
@@ -54,8 +64,8 @@ class DependencyInjector:
     def get_test_run_timer(self) -> TestRunTimerImpl:
         return TestRunTimerImpl()
 
-    def get_result_formatter(self) -> TerseResultFormatter:
-        return TerseResultFormatter()
+    def get_result_formatter(self) -> ResultFormatterImpl:
+        return ResultFormatterImpl()
 
 
 def ansi(*code: int) -> str:
@@ -100,6 +110,7 @@ class Display:
 class ResultFactory:
     display: Display
     result_formatter: ResultFormatter
+    configuration: Configuration
     timer: TestRunTimer
 
     def construct_result(self) -> unittest.TestResult:
@@ -107,10 +118,14 @@ class ResultFactory:
             error_display=self.display,
             result_formatter=self.result_formatter,
             timer=self.timer,
+            configuration=self.configuration,
         )
 
 
+@dataclass
 class TestCollector:
+    configuration: Configuration
+
     def collect_tests(self) -> typing.Iterable[unittest.TestCase]:
         loader = unittest.TestLoader()
         suite = loader.discover(start_dir=".")
@@ -123,10 +138,17 @@ class TestCollector:
                         remaining_suites.append(current_suite)
                         remaining_suites.append(iter(candidate))
                         break
-                    elif isinstance(candidate, unittest.TestCase):
+                    elif isinstance(
+                        candidate, unittest.TestCase
+                    ) and self._is_pattern_match(candidate):
                         yield candidate
             except StopIteration:
                 pass
+
+    def _is_pattern_match(self, test: unittest.TestCase) -> bool:
+        if not self.configuration.test_patterns:
+            return True
+        return any(pattern in test.id() for pattern in self.configuration.test_patterns)
 
 
 @dataclass
@@ -192,7 +214,7 @@ class TestRunTimerImpl:
                 yield test_id
 
 
-class TerseResultFormatter:
+class ResultFormatterImpl:
     def format_success(self, test: unittest.TestCase) -> str:
         return "."
 
@@ -283,15 +305,19 @@ class CustomTestResult(unittest.TestResult):
         error_display: Display,
         result_formatter: ResultFormatter,
         timer: TestRunTimer,
+        configuration: Configuration,
         **kwargs: typing.Any,
     ) -> None:
         super().__init__(*args, **kwargs)
         self._display = error_display
         self._formatter = result_formatter
         self._timer = timer
+        self._configuration = configuration
 
     def startTest(self, test: unittest.TestCase) -> None:
         super().startTest(test)
+        if self._configuration.is_verbose:
+            self._display.print(f"\n{test.id()} ")
         self._timer.start_test(test.id())
 
     def stopTest(self, test: unittest.TestCase) -> None:
@@ -323,7 +349,35 @@ class CustomTestResult(unittest.TestResult):
         self._display.print(self._formatter.format_unexpected_success(test))
 
 
+@dataclass
+class Configuration:
+    test_patterns: list[str] = field(default_factory=list)
+    is_verbose: bool = False
+
+
+@dataclass
+class Controller:
+    configuration: Configuration
+
+    def parse_arguments(
+        self, arguments: list[str], environment_variables: dict[str, str]
+    ) -> None:
+        parser = argparse.ArgumentParser()
+        parser.add_argument(
+            "pattern",
+            nargs="*",
+            help="Tests that don't contain one of the specified patterns are ignored. Default: All possible tests are executed.",
+        )
+        parser.add_argument("--verbose", "-v", action="store_true", default=False)
+        parsed_args = parser.parse_args(arguments)
+        self.configuration.test_patterns = parsed_args.pattern
+        self.configuration.is_verbose = parsed_args.verbose
+
+
 if __name__ == "__main__":
     injector = DependencyInjector()
+    controller = injector.get_controller()
     coordinator = injector.get_test_coordinator()
+
+    controller.parse_arguments(sys.argv[1:], dict(os.environ))
     coordinator.run_tests()
