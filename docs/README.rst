@@ -19,8 +19,8 @@ Command Line Example
    {
        "owner": "seppeljordan",
        "repo": "nix-prefetch-github",
-       "rev": "5297b13bada0792d3d2572804dbc50de8f03acfd",
-       "sha256": "bioA9wJM6MUghLTI0sP3GWZ11UHczV16bL3EY67TeU4=",
+       "rev": "406100edf8f01d02c675b45d05fe32bc3f2f92a9",
+       "sha256": "SzWPIN7aBQ2tvFVxasdD3Kc3PejZJyJoMrLE+cchN90=",
        "fetchSubmodules": false,
        "leaveDotGit": false,
        "deepClone": false
@@ -156,13 +156,13 @@ development environment
 
 Use ``nix develop`` with flake support enabled. Development without nix
 flake support is not officially supported. Run the provided tests via
-``python run-tests``. You can control what kind of tests are run via the
-variable ``DISABLED_TESTS``:
+``python -m nix_prefetch_github.run_tests``. You can control what kind
+of tests are run via the variable ``DISABLED_TESTS``:
 
 ::
 
    # Only run tests that don't hit network and don't use nix
-   DISABLED_TESTS="network requires_nix_build" python -m unittest discover
+   DISABLED_TESTS="network requires_nix_build" python -m nix_prefetch_github.run_tests
 
 Currently ``network`` and ``requires_nix_build`` are the only values
 that make sense with this environment variable.
@@ -174,7 +174,7 @@ You can generate a coverage report for the tests via
 
 ::
 
-   coverage run run-tests && coverage html
+   coverage run -m nix_prefetch_github.run_tests && coverage html
 
 changes
 =======

@@ -7,8 +7,8 @@ from os import path
 
 def main():
     format_nix_files()
-    subprocess.run("black . test-pypi-install format-code run-tests", shell=True)
-    subprocess.run("isort . test-pypi-install format-code run-tests", shell=True)
+    subprocess.run("black . test-pypi-install format-code", shell=True)
+    subprocess.run("isort . test-pypi-install format-code", shell=True)
 
 
 def format_nix_files():

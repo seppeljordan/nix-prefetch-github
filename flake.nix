@@ -20,6 +20,7 @@
             default = with python.pkgs; toPythonApplication nix-prefetch-github;
           };
           devShells.default = pkgs.mkShell {
+            USE_MYPYC = "False";
             packages = (with pkgs; [ git nixfmt nix-prefetch-scripts pandoc ])
               ++ (with python.pkgs; [
                 black
