@@ -1,5 +1,6 @@
 import os
 import os.path
+from typing import Any, Iterable
 
 from mypyc.build import mypycify
 from setuptools import setup
@@ -44,7 +45,7 @@ paths = [
 ]
 
 
-def files_to_compile(paths):
+def files_to_compile(paths: Any) -> Iterable[str]:
     for path in paths:
         if isinstance(path, dict):
             for key, value in path.items():
