@@ -19,8 +19,8 @@ Command Line Example
    {
        "owner": "seppeljordan",
        "repo": "nix-prefetch-github",
-       "rev": "406100edf8f01d02c675b45d05fe32bc3f2f92a9",
-       "sha256": "SzWPIN7aBQ2tvFVxasdD3Kc3PejZJyJoMrLE+cchN90=",
+       "rev": "a9277392c20dd2fc77e3c9e276a63d07bb9b8cce",
+       "sha256": "8EBpgn5zx+3MkO3hf2acbbFHmp9EfS0VJXxmbXmOA0M=",
        "fetchSubmodules": false,
        "leaveDotGit": false,
        "deepClone": false
@@ -178,6 +178,11 @@ You can generate a coverage report for the tests via
 
 changes
 =======
+
+v6.0.0 (unreleased)
+-------------------
+
+-  Drop support for python3.8
 
 v5.2.2
 ------

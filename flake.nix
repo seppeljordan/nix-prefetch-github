@@ -36,8 +36,6 @@
           };
           checks = {
             defaultPackage = self.packages.${system}.default;
-            nix-prefetch-github-python38 =
-              pkgs.python38.pkgs.nix-prefetch-github;
             nix-prefetch-github-python39 =
               pkgs.python39.pkgs.nix-prefetch-github;
             nix-prefetch-github-python310 =
@@ -75,8 +73,6 @@
         });
       systemIndependent = {
         overlays.default = final: prev: {
-          python38 =
-            overridePython prev.python38 (import nix/package-overrides.nix);
           python39 =
             overridePython prev.python39 (import nix/package-overrides.nix);
           python310 =
