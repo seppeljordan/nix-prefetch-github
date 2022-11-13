@@ -71,8 +71,6 @@
         overlays.default = final: prev: {
           pythonPackagesExtensions = prev.pythonPackagesExtensions
             ++ [ (import nix/package-overrides.nix) ];
-          nix-prefetch-github-dev = with final.python3Packages;
-            toPythonApplication nix-prefetch-github;
         };
       };
       supportedSystems = flake-utils.lib.defaultSystems;
