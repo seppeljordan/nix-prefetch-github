@@ -16,7 +16,7 @@ jobs:
         nix_path: nixpkgs=channel:nixos-unstable
     - uses: cachix/cachix-action@v11
       with:
-        name: arbeitszeit
+        name: nix-prefetch-github
         authToken: '${{ secrets.CACHIX_AUTH_TOKEN }}'
     - run: nix flake check --print-build-logs
     - run: nix develop --command pytest -v
