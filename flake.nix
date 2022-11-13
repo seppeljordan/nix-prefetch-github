@@ -27,7 +27,6 @@
                 virtualenv
                 isort
                 coverage
-                pydeps
               ]);
             inputsFrom = [ python.pkgs.nix-prefetch-github ];
           };
@@ -72,7 +71,7 @@
         overlays.default = final: prev: {
           pythonPackagesExtensions = prev.pythonPackagesExtensions
             ++ [ (import nix/package-overrides.nix) ];
-          nix-prefetch-github = with final.python3Packages;
+          nix-prefetch-github-dev = with final.python3Packages;
             toPythonApplication nix-prefetch-github;
         };
       };
