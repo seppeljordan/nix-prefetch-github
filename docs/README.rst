@@ -19,8 +19,8 @@ Command Line Example
    {
        "owner": "seppeljordan",
        "repo": "nix-prefetch-github",
-       "rev": "a9277392c20dd2fc77e3c9e276a63d07bb9b8cce",
-       "sha256": "8EBpgn5zx+3MkO3hf2acbbFHmp9EfS0VJXxmbXmOA0M=",
+       "rev": "441b25477515329cd3363c4b0c473b92038f1b95",
+       "sha256": "TRraSyJF/n8U6nnCvY3ZwUOAI+YqS+0xLpN6RUk+gl4=",
        "fetchSubmodules": false,
        "leaveDotGit": false,
        "deepClone": false
@@ -156,13 +156,13 @@ development environment
 
 Use ``nix develop`` with flake support enabled. Development without nix
 flake support is not officially supported. Run the provided tests via
-``python -m nix_prefetch_github.run_tests``. You can control what kind
-of tests are run via the variable ``DISABLED_TESTS``:
+``pytest``. You can control what kind of tests are run via the variable
+``DISABLED_TESTS``:
 
 ::
 
    # Only run tests that don't hit network and don't use nix
-   DISABLED_TESTS="network requires_nix_build" python -m nix_prefetch_github.run_tests
+   DISABLED_TESTS="network requires_nix_build" pytest
 
 Currently ``network`` and ``requires_nix_build`` are the only values
 that make sense with this environment variable.

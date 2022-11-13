@@ -20,7 +20,6 @@
             default = with python.pkgs; toPythonApplication nix-prefetch-github;
           };
           devShells.default = pkgs.mkShell {
-            USE_MYPYC = "False";
             packages = (with pkgs; [ git nixfmt nix-prefetch-scripts pandoc ])
               ++ (with python.pkgs; [
                 black
@@ -73,20 +72,10 @@
         });
       systemIndependent = {
         overlays.default = final: prev: {
-          python39 =
-            overridePython prev.python39 (import nix/package-overrides.nix);
-          python310 =
-            overridePython prev.python310 (import nix/package-overrides.nix);
-          python311 =
-            overridePython prev.python311 (import nix/package-overrides.nix);
-          nix-prefetch-github = with final.python3.pkgs;
-            toPythonApplication nix-prefetch-github;
+          pythonPackagesExtensions = prev.pythonPackagesExtensions
+            ++ [ (import nix/package-overrides.nix) ];
         };
       };
-      overridePython = pythonSelf: overrides:
-        pythonSelf // {
-          pkgs = pythonSelf.pkgs.overrideScope overrides;
-        };
       supportedSystems = flake-utils.lib.defaultSystems;
     in systemDependent // systemIndependent;
 }
