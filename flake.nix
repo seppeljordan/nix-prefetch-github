@@ -16,9 +16,7 @@
           };
           python = pkgs.python3;
         in {
-          packages = {
-            default = with python.pkgs; toPythonApplication nix-prefetch-github;
-          };
+          packages = { default = pkgs.nix-prefetch-github; };
           devShells.default = pkgs.mkShell {
             packages = (with pkgs; [ git nixfmt nix-prefetch-scripts pandoc ])
               ++ (with python.pkgs; [
@@ -74,6 +72,8 @@
         overlays.default = final: prev: {
           pythonPackagesExtensions = prev.pythonPackagesExtensions
             ++ [ (import nix/package-overrides.nix) ];
+          nix-prefetch-github = with final.python3Packages;
+            toPythonApplication nix-prefetch-github;
         };
       };
       supportedSystems = flake-utils.lib.defaultSystems;
