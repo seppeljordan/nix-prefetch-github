@@ -14,4 +14,4 @@ jobs:
     - uses: cachix/install-nix-action@v16
       with:
         nix_path: nixpkgs=channel:nixos-unstable
-    - run: nix develop --command python -m nix_prefetch_github.run_tests
+    - run: nix develop --command pytest -v
