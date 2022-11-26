@@ -19,11 +19,8 @@ Command Line Example
    {
        "owner": "seppeljordan",
        "repo": "nix-prefetch-github",
-       "rev": "441b25477515329cd3363c4b0c473b92038f1b95",
-       "sha256": "TRraSyJF/n8U6nnCvY3ZwUOAI+YqS+0xLpN6RUk+gl4=",
-       "fetchSubmodules": false,
-       "leaveDotGit": false,
-       "deepClone": false
+       "rev": "8bf5fc6d0e5724805354b53b6545ac5b3957e648",
+       "sha256": "QMV92xc8j1iHh1LR6wTFwh+YZbM3K3VijW9A48fNNo8="
    }
 
 Available Commands
@@ -183,6 +180,9 @@ v6.0.0 (unreleased)
 -------------------
 
 -  Drop support for python3.8
+-  Drop default arguments to fetchFromGitHub from json output (e.g.
+   ``leaveDotGit = false;``, ``fetchSubmodule = false;``,
+   ``deepClone = false;``)
 
 v5.2.2
 ------
