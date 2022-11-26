@@ -184,6 +184,9 @@
 * changes
 ** v6.0.0 (unreleased)
    - Drop support for python3.8
+   - Drop default arguments to fetchFromGitHub from json output
+     (e.g. =leaveDotGit = false;=, =fetchSubmodule = false;=,
+     =deepClone = false;=)
 
 ** v5.2.2
    - Add more info to error messages
