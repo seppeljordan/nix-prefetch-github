@@ -7,6 +7,7 @@ import subprocess
 import tempfile
 import unittest
 from os import path
+from pathlib import Path
 from typing import List, Optional
 
 from nix_prefetch_github.tests import network, requires_nix_build
@@ -145,6 +146,29 @@ class JsonIntegrityTests(TestCase):
                 finished_process = subprocess.run(expression, capture_output=True)
                 self.assertEqual(finished_process.returncode, 0)
                 json.loads(finished_process.stdout)
+
+    def test_can_use_json_output_as_input_for_fetch_from_github(self) -> None:
+        expression = [
+            f"{self.output}/bin/nix-prefetch-github",
+            "seppeljordan",
+            "nix-prefetch-github",
+        ]
+        finished_process = subprocess.run(
+            expression, capture_output=True, check=True, universal_newlines=True
+        )
+        with open(Path(self.directory) / "output.json", "w") as handle:
+            handle.write(finished_process.stdout)
+        subprocess.run(
+            [
+                "nix",
+                "build",
+                "--impure",
+                "--expr",
+                "with import <nixpkgs> {}; with builtins; fetchFromGitHub (fromJSON (readFile ./output.json))",
+            ],
+            check=True,
+            cwd=self.directory,
+        )
 
     def tearDown(self) -> None:
         shutil.rmtree(self.directory)

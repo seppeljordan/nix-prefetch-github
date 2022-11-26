@@ -1,6 +1,6 @@
 import json
 from dataclasses import dataclass
-from typing import Optional
+from typing import Any, Dict, Optional
 
 from nix_prefetch_github.interfaces import (
     PrefetchedRepository,
@@ -24,17 +24,27 @@ class NixRepositoryRenderer:
 
 
 class JsonRepositoryRenderer:
+    DEFAULTS = {
+        "fetchSubmodules": False,
+        "leaveDotGit": False,
+        "deepClone": False,
+    }
+
     def render_prefetched_repository(self, repository: PrefetchedRepository) -> str:
+        output: Dict[str, Any] = {
+            "owner": repository.repository.owner,
+            "repo": repository.repository.name,
+            "rev": repository.rev,
+            "sha256": repository.sha256,
+        }
+        if repository.options.deep_clone != self.DEFAULTS["deepClone"]:
+            output["deepClone"] = repository.options.deep_clone
+        if repository.options.fetch_submodules != self.DEFAULTS["fetchSubmodules"]:
+            output["fetchSubmodules"] = repository.options.fetch_submodules
+        if repository.options.leave_dot_git != self.DEFAULTS["leaveDotGit"]:
+            output["leaveDotGit"] = repository.options.leave_dot_git
         return json.dumps(
-            {
-                "owner": repository.repository.owner,
-                "repo": repository.repository.name,
-                "rev": repository.rev,
-                "sha256": repository.sha256,
-                "fetchSubmodules": repository.options.fetch_submodules,
-                "leaveDotGit": repository.options.leave_dot_git,
-                "deepClone": repository.options.deep_clone,
-            },
+            output,
             indent=4,
         )
 
