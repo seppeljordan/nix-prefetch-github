@@ -7,6 +7,11 @@ in buildPythonPackage {
   outputs = [ "out" "doc" "man" ];
   src = ../.;
   nativeBuildInputs = [ sphinxHook sphinx-argparse ];
+  postInstall = ''
+    for f in $out/bin/* ; do
+        wrapProgram "$f" --prefix PATH : "${git}/bin"
+    done
+  '';
   checkInputs = [ git which pytestCheckHook ];
   sphinxBuilders = [ "singlehtml" "man" ];
   sphinxRoot = "docs";
