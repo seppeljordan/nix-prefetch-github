@@ -9,7 +9,7 @@ in buildPythonPackage {
   nativeBuildInputs = [ sphinxHook sphinx-argparse ];
   postInstall = ''
     for f in $out/bin/* ; do
-        wrapProgram "$f" --prefix PATH : "${git}/bin"
+        wrapProgram "$f" --suffix PATH : "${git}/bin"
     done
   '';
   checkInputs = [ git which pytestCheckHook ];
