@@ -19,8 +19,8 @@ Command Line Example
    {
        "owner": "seppeljordan",
        "repo": "nix-prefetch-github",
-       "rev": "8bf5fc6d0e5724805354b53b6545ac5b3957e648",
-       "sha256": "QMV92xc8j1iHh1LR6wTFwh+YZbM3K3VijW9A48fNNo8="
+       "rev": "2fff3d7b837d102be6b915e4de23127bdb5730e4",
+       "sha256": "krABZJ8Kyxr8FHdQ6s3ODmFhh0SB6tPv/PC+pXYVo18="
    }
 
 Available Commands
@@ -79,12 +79,15 @@ the ``origin`` remote repository similar to the command
 
 ::
 
-   usage: nix-prefetch-github-directory [-h] [--fetch-submodules]
-                    [--no-fetch-submodules] [--leave-dot-git]
-                    [--no-leave-dot-git] [--deep-clone]
-                    [--no-deep-clone] [--verbose] [--nix]
-                    [--json] [--version]
-                    [--directory DIRECTORY] [--remote REMOTE]
+   usage: .nix-prefetch-github-directory-wrapped [-h] [--fetch-submodules]
+                         [--no-fetch-submodules]
+                         [--leave-dot-git]
+                         [--no-leave-dot-git]
+                         [--deep-clone] [--no-deep-clone]
+                         [--verbose] [--nix] [--json]
+                         [--version]
+                         [--directory DIRECTORY]
+                         [--remote REMOTE]
 
    options:
      -h, --help            show this help message and exit
@@ -176,8 +179,8 @@ You can generate a coverage report for the tests via
 changes
 =======
 
-v6.0.0 (unreleased)
--------------------
+v6.0.0
+------
 
 -  Drop support for python3.8
 -  Drop default arguments to fetchFromGitHub from json output (e.g.
