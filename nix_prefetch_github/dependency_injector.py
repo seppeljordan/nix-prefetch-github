@@ -108,7 +108,7 @@ class DependencyInjector:
         )
 
     def get_github_api(self) -> GithubAPI:
-        return GithubAPIImpl()
+        return GithubAPIImpl(logger=self.get_logger())
 
     def get_repository_detector(self) -> RepositoryDetector:
         return RepositoryDetectorImpl(command_runner=self.get_command_runner())
