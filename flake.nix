@@ -4,13 +4,18 @@
   inputs = {
     flake-utils.url = "github:numtide/flake-utils";
     nixpkgs.url = "github:NixOS/nixpkgs/nixos-unstable";
+    nixpkgs-stable.url = "github:NixOS/nixpkgs/nixos-22.11";
   };
 
-  outputs = { self, nixpkgs, flake-utils, ... }:
+  outputs = { self, nixpkgs, flake-utils, nixpkgs-stable, ... }:
     let
       systemDependent = flake-utils.lib.eachSystem supportedSystems (system:
         let
           pkgs = import nixpkgs {
+            inherit system;
+            overlays = [ self.overlays.default ];
+          };
+          pkgsStable = import nixpkgs-stable {
             inherit system;
             overlays = [ self.overlays.default ];
           };
@@ -32,6 +37,7 @@
           };
           checks = {
             defaultPackage = self.packages.${system}.default;
+            nixosStablePackage = pkgsStable.nix-prefetch-github;
             nix-prefetch-github-python39 =
               pkgs.python39.pkgs.nix-prefetch-github;
             nix-prefetch-github-python310 =
