@@ -18,8 +18,8 @@
   {
       "owner": "seppeljordan",
       "repo": "nix-prefetch-github",
-      "rev": "2fff3d7b837d102be6b915e4de23127bdb5730e4",
-      "sha256": "krABZJ8Kyxr8FHdQ6s3ODmFhh0SB6tPv/PC+pXYVo18="
+      "rev": "95af167d8d6f692a194f29cacf80363cc02480a5",
+      "sha256": "AMfB9kQ+XnECxEv6NOt5zyRM9AkLLLfaQp8q0ktvUzc="
   }
   #+end_example
 
