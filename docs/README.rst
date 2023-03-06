@@ -19,8 +19,8 @@ Command Line Example
    {
        "owner": "seppeljordan",
        "repo": "nix-prefetch-github",
-       "rev": "8f3b5e43c8eb6dc0105615f84c2d8682e72515cf",
-       "sha256": "OOwd0rTk8Xk6wncWFMoFKSocUlZ6xHqQ67jkW8uZZhI="
+       "rev": "cb34ad2ff76174bd44c29eb8e413ed4d45f66170",
+       "sha256": "tvdL6AfM7+11ptycaTXKngcF+ys0483sjSpjGi8NR5Q="
    }
 
 Available Commands
@@ -178,6 +178,11 @@ You can generate a coverage report for the tests via
 
 changes
 =======
+
+v6.0.1 (unreleased)
+-------------------
+
+-  Fix bug in repository detection for ``nix-prefetch-github-directory``
 
 v6.0.0
 ------
