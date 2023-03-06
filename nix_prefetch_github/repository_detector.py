@@ -42,12 +42,15 @@ class RepositoryDetectorImpl:
 
 
 def detect_github_repository_from_remote_url(url: str) -> Optional[GithubRepository]:
-    match = re.match("(git@github.com:|https://github.com/)(.+)/(.+).git", url)
+    match = re.match(
+        r"(git@github.com:|https://github.com/)(?P<owner>.+)/((?P<repo>.+)\.git|(?P<repo_with_prefix>.+))$",
+        url,
+    )
     if not match:
         return None
     else:
-        owner = match.group(2)
-        name = match.group(3)
+        owner = match.group("owner")
+        name = match.group("repo") or match.group("repo_with_prefix")
         return GithubRepository(
             name=name,
             owner=owner,
