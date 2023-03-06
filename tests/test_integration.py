@@ -142,9 +142,22 @@ class JsonIntegrityTests(TestCase):
             ],
         ]
         for expression in expressions:
-            with self.subTest(msg=shlex.join(expression)):
-                finished_process = subprocess.run(expression, capture_output=True)
-                self.assertEqual(finished_process.returncode, 0)
+            expression_shell_command = shlex.join(expression)
+            with self.subTest(msg=expression_shell_command):
+                finished_process = subprocess.run(
+                    expression, capture_output=True, universal_newlines=True
+                )
+                self.assertEqual(
+                    finished_process.returncode,
+                    0,
+                    msg="\n".join(
+                        [
+                            f"Failed to execute {expression_shell_command}.",
+                            f"stdout: {finished_process.stdout}",
+                            f"stderr: {finished_process.stderr}",
+                        ]
+                    ),
+                )
                 json.loads(finished_process.stdout)
 
     def test_can_use_json_output_as_input_for_fetch_from_github(self) -> None:
