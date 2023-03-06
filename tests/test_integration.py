@@ -74,6 +74,9 @@ class VersionFlagTests(TestCase):
             with self.subTest(msg=command):
                 self.assertReturncode([f"{self.output}/bin/{command}", "--version"], 0)
 
+    def tearDown(self) -> None:
+        shutil.rmtree(self.directory)
+
 
 @network
 @requires_nix_build
@@ -121,6 +124,9 @@ class JsonIntegrityTests(TestCase):
         self.directory = tempfile.mkdtemp()
         self.output = path.join(self.directory, "result")
         subprocess.run(["nix", "build", "--out-link", self.output], capture_output=True)
+
+    def tearDown(self) -> None:
+        shutil.rmtree(self.directory)
 
     def test_can_load_json_output_as_json(self) -> None:
         expressions = [
@@ -182,9 +188,6 @@ class JsonIntegrityTests(TestCase):
             check=True,
             cwd=self.directory,
         )
-
-    def tearDown(self) -> None:
-        shutil.rmtree(self.directory)
 
 
 if __name__ == "__main__":
