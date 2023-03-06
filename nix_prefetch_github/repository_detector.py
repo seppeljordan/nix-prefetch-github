@@ -1,5 +1,6 @@
 import re
 from dataclasses import dataclass
+from logging import Logger
 from typing import Optional
 
 from nix_prefetch_github.interfaces import CommandRunner, GithubRepository
@@ -8,6 +9,7 @@ from nix_prefetch_github.interfaces import CommandRunner, GithubRepository
 @dataclass
 class RepositoryDetectorImpl:
     command_runner: CommandRunner
+    logger: Logger
 
     def is_repository_dirty(self, directory: str) -> bool:
         returncode, _ = self.command_runner.run_command(
@@ -26,7 +28,9 @@ class RepositoryDetectorImpl:
         returncode, stdout = self.command_runner.run_command(
             command=["git", "remote", "get-url", remote], cwd=directory
         )
-        return detect_github_repository_from_remote_url(stdout)
+        detected_url = detect_github_repository_from_remote_url(stdout)
+        self.logger.info(f"Detected repository '{detected_url}' from '{remote}'")
+        return detected_url
 
     def get_current_revision(self, directory: str) -> Optional[str]:
         exitcode, stdout = self.command_runner.run_command(

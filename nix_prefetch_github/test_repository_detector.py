@@ -2,6 +2,7 @@ import shlex
 import shutil
 import subprocess
 import tempfile
+from io import StringIO
 from logging import getLogger
 from unittest import TestCase
 
@@ -19,7 +20,11 @@ class GitTestCase(TestCase):
         self.run_command("git init")
         self.run_command("git config user.name 'test user'")
         self.run_command("git config user.email test@email.test")
-        self.detector = RepositoryDetectorImpl(CommandRunnerImpl(getLogger(__name__)))
+        self.stream = StringIO()
+        self.logger = getLogger(__name__)
+        self.detector = RepositoryDetectorImpl(
+            command_runner=CommandRunnerImpl(logger=self.logger), logger=self.logger
+        )
 
     def tearDown(self) -> None:
         shutil.rmtree(self.tmpdir)
