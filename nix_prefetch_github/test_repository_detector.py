@@ -106,6 +106,13 @@ class DetectGithubRepositoryFromRemoteUrlTests(TestCase):
                 ),
             ),
             (
+                "https://github.com/seppeljordan/nix-prefetch-github",
+                GithubRepository(
+                    owner="seppeljordan",
+                    name="nix-prefetch-github",
+                ),
+            ),
+            (
                 "invalid",
                 None,
             ),
