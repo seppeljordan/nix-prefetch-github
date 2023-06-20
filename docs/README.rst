@@ -179,6 +179,11 @@ You can generate a coverage report for the tests via
 changes
 =======
 
+v6.0.2
+------
+
+-  Generated hashes now contain the "sha256-" prefix again to be complete SRI hashes
+
 v6.0.1
 ------
 
