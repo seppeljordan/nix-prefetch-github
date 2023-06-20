@@ -23,7 +23,6 @@ def output_template(
     leave_dot_git: bool,
     deep_clone: bool,
 ) -> str:
-
     return _OUTPUT_TEMPLATE.format(
         owner=owner,
         repo=repo,

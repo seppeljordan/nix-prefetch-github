@@ -49,7 +49,9 @@ class UrlHasherTests(TestCase):
             revision=self.revision,
             prefetch_options=prefetch_options,
         )
-        self.assertNotEqual(hash_sum, "B5AlNwg6kbcaqUiQEC6jslCRKVpErXLMsKC+b9aPlrM=")
+        self.assertNotEqual(
+            hash_sum, "sha256-B5AlNwg6kbcaqUiQEC6jslCRKVpErXLMsKC+b9aPlrM="
+        )
 
     def test_with_deep_clone(self) -> None:
         prefetch_options = PrefetchOptions(deep_clone=True)

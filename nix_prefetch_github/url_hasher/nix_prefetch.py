@@ -63,7 +63,7 @@ class NixPrefetchUrlHasherImpl:
                 f"sha256:{sha256}",
             ],
         )
-        return output.strip().removeprefix("sha256-")
+        return output.strip()
 
     def is_default_prefetch_options(self, options: PrefetchOptions) -> bool:
         return options == PrefetchOptions()

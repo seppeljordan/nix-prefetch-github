@@ -30,7 +30,9 @@ class UrlHasherTests(TestCase):
             revision=self.revision,
             prefetch_options=prefetch_options,
         )
-        self.assertEqual(hash_sum, "B5AlNwg6kbcaqUiQEC6jslCRKVpErXLMsKC+b9aPlrM=")
+        self.assertEqual(
+            hash_sum, "sha256-B5AlNwg6kbcaqUiQEC6jslCRKVpErXLMsKC+b9aPlrM="
+        )
 
     def test_that_experimental_feature_nix_command_is_enabled(self) -> None:
         self.hasher.calculate_sha256_sum(
@@ -58,7 +60,9 @@ class UrlHasherTests(TestCase):
             revision=self.revision,
             prefetch_options=prefetch_options,
         )
-        self.assertEqual(hash_sum, "wCo1YobyatxSOE85xQNSJw6jvufghFNHlZl4ToQjRHA=")
+        self.assertEqual(
+            hash_sum, "sha256-wCo1YobyatxSOE85xQNSJw6jvufghFNHlZl4ToQjRHA="
+        )
 
     def test_with_leaving_dotgit_dir(self) -> None:
         prefetch_options = PrefetchOptions(leave_dot_git=True)
@@ -67,7 +71,9 @@ class UrlHasherTests(TestCase):
             revision=self.revision,
             prefetch_options=prefetch_options,
         )
-        self.assertNotEqual(hash_sum, "B5AlNwg6kbcaqUiQEC6jslCRKVpErXLMsKC+b9aPlrM=")
+        self.assertNotEqual(
+            hash_sum, "sha256-B5AlNwg6kbcaqUiQEC6jslCRKVpErXLMsKC+b9aPlrM="
+        )
 
     def test_with_deep_clone(self) -> None:
         prefetch_options = PrefetchOptions(deep_clone=True)
@@ -76,4 +82,6 @@ class UrlHasherTests(TestCase):
             revision=self.revision,
             prefetch_options=prefetch_options,
         )
-        self.assertEqual(hash_sum, "gBAtCILDbqofa6+9/bXR9drxymCGrgwf0+5mDxwF9p0=")
+        self.assertEqual(
+            hash_sum, "sha256-gBAtCILDbqofa6+9/bXR9drxymCGrgwf0+5mDxwF9p0="
+        )
