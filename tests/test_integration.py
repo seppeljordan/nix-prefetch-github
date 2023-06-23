@@ -62,7 +62,9 @@ class VersionFlagTests(TestCase):
     def setUp(self) -> None:
         self.directory = tempfile.mkdtemp()
         self.output = path.join(self.directory, "result")
-        subprocess.run(["nix", "build", "--out-link", self.output], capture_output=True)
+        subprocess.run(
+            ["nix", "build", "--out-link", self.output], capture_output=True, check=True
+        )
 
     def test_can_specify_version_flag(self) -> None:
         commands = [
@@ -84,7 +86,9 @@ class NixEvaluationTests(TestCase):
     def setUp(self) -> None:
         self.directory = tempfile.mkdtemp()
         self.output = path.join(self.directory, "result")
-        subprocess.run(["nix", "build", "--out-link", self.output], capture_output=True)
+        subprocess.run(
+            ["nix", "build", "--out-link", self.output], capture_output=True, check=True
+        )
 
     def test_can_build_nix_expressions(self) -> None:
         expressions = [
@@ -123,7 +127,9 @@ class JsonIntegrityTests(TestCase):
     def setUp(self) -> None:
         self.directory = tempfile.mkdtemp()
         self.output = path.join(self.directory, "result")
-        subprocess.run(["nix", "build", "--out-link", self.output], capture_output=True)
+        subprocess.run(
+            ["nix", "build", "--out-link", self.output], capture_output=True, check=True
+        )
 
     def tearDown(self) -> None:
         shutil.rmtree(self.directory)

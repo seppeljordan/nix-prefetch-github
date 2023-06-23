@@ -7,6 +7,7 @@ from typing import List, Optional, Tuple
 from nix_prefetch_github.interfaces import (
     CommandRunner,
     GithubRepository,
+    HashConverter,
     PrefetchOptions,
 )
 from nix_prefetch_github.templates import output_template
@@ -18,6 +19,7 @@ trash_sha256 = ""
 class NixBuildUrlHasherImpl:
     command_runner: CommandRunner
     logger: Logger
+    hash_converter: HashConverter
 
     def calculate_sha256_sum(
         self,
@@ -31,7 +33,10 @@ class NixBuildUrlHasherImpl:
             trash_sha256,
             prefetch_options,
         )
-        return detect_actual_hash_from_nix_output(output.splitlines())
+        sha256 = detect_actual_hash_from_nix_output(output.splitlines())
+        if sha256 is None:
+            return None
+        return self.hash_converter.convert_sha256_to_sri(sha256)
 
     def run_fetch_command(
         self,

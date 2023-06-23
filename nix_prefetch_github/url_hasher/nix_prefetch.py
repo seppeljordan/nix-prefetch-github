@@ -6,6 +6,7 @@ from typing import List, Optional
 from nix_prefetch_github.interfaces import (
     CommandRunner,
     GithubRepository,
+    HashConverter,
     PrefetchOptions,
 )
 
@@ -14,6 +15,7 @@ from nix_prefetch_github.interfaces import (
 class NixPrefetchUrlHasherImpl:
     command_runner: CommandRunner
     logger: Logger
+    hash_converter: HashConverter
 
     def calculate_sha256_sum(
         self,
@@ -52,18 +54,8 @@ class NixPrefetchUrlHasherImpl:
         _, output = self.command_runner.run_command(command)
         return self.calculate_sri_representation(json.loads(output)["sha256"])
 
-    def calculate_sri_representation(self, sha256: str) -> str:
-        _, output = self.command_runner.run_command(
-            [
-                "nix",
-                "--extra-experimental-features",
-                "nix-command",
-                "hash",
-                "to-sri",
-                f"sha256:{sha256}",
-            ],
-        )
-        return output.strip()
+    def calculate_sri_representation(self, sha256: str) -> Optional[str]:
+        return self.hash_converter.convert_sha256_to_sri(sha256)
 
     def is_default_prefetch_options(self, options: PrefetchOptions) -> bool:
         return options == PrefetchOptions()
