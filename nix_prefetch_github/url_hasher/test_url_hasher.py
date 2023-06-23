@@ -2,6 +2,7 @@ from logging import getLogger
 from unittest import TestCase
 
 from nix_prefetch_github.command.command_runner import CommandRunnerImpl
+from nix_prefetch_github.hash_converter import HashConverterImpl
 from nix_prefetch_github.interfaces import GithubRepository
 from nix_prefetch_github.tests import network, requires_nix_build
 from nix_prefetch_github.url_hasher.nix_build import (
@@ -15,8 +16,11 @@ from nix_prefetch_github.url_hasher.nix_build import (
 @network
 class UrlHasherTests(TestCase):
     def setUp(self) -> None:
+        logger = getLogger(__name__)
+        command_runner = CommandRunnerImpl(logger)
+        hash_converter = HashConverterImpl(command_runner=command_runner)
         self.hasher = NixBuildUrlHasherImpl(
-            command_runner=CommandRunnerImpl(getLogger(__name__)), logger=getLogger()
+            command_runner=command_runner, logger=logger, hash_converter=hash_converter
         )
         self.repository = GithubRepository(
             owner="git-up",
@@ -31,7 +35,9 @@ class UrlHasherTests(TestCase):
             revision=self.revision,
             prefetch_options=prefetch_options,
         )
-        self.assertEqual(hash_sum, "B5AlNwg6kbcaqUiQEC6jslCRKVpErXLMsKC+b9aPlrM=")
+        self.assertEqual(
+            hash_sum, "sha256-B5AlNwg6kbcaqUiQEC6jslCRKVpErXLMsKC+b9aPlrM="
+        )
 
     def test_with_fetching_submodules(self) -> None:
         prefetch_options = PrefetchOptions(fetch_submodules=True)
@@ -40,7 +46,9 @@ class UrlHasherTests(TestCase):
             revision=self.revision,
             prefetch_options=prefetch_options,
         )
-        self.assertEqual(hash_sum, "wCo1YobyatxSOE85xQNSJw6jvufghFNHlZl4ToQjRHA=")
+        self.assertEqual(
+            hash_sum, "sha256-wCo1YobyatxSOE85xQNSJw6jvufghFNHlZl4ToQjRHA="
+        )
 
     def test_with_leaving_dotgit_dir(self) -> None:
         prefetch_options = PrefetchOptions(leave_dot_git=True)
@@ -60,7 +68,9 @@ class UrlHasherTests(TestCase):
             revision=self.revision,
             prefetch_options=prefetch_options,
         )
-        self.assertEqual(hash_sum, "gBAtCILDbqofa6+9/bXR9drxymCGrgwf0+5mDxwF9p0=")
+        self.assertEqual(
+            hash_sum, "sha256-gBAtCILDbqofa6+9/bXR9drxymCGrgwf0+5mDxwF9p0="
+        )
 
 
 class DetectActualHashFromNixOutputTests(TestCase):

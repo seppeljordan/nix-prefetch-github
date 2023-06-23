@@ -36,6 +36,11 @@ class PrefetchOptions:
         return not self.deep_clone and not self.leave_dot_git
 
 
+class HashConverter(Protocol):
+    def convert_sha256_to_sri(self, original: str) -> Optional[str]:
+        ...
+
+
 class UrlHasher(Protocol):
     def calculate_sha256_sum(
         self,

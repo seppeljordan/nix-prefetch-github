@@ -2,6 +2,7 @@ from logging import getLogger
 from unittest import TestCase
 
 from nix_prefetch_github.command.command_runner import CommandRunnerImpl
+from nix_prefetch_github.hash_converter import HashConverterImpl
 from nix_prefetch_github.interfaces import GithubRepository, PrefetchOptions
 from nix_prefetch_github.tests import CommandRunnerTestImpl, network, requires_nix_build
 from nix_prefetch_github.url_hasher.nix_prefetch import NixPrefetchUrlHasherImpl
@@ -14,8 +15,11 @@ class UrlHasherTests(TestCase):
         self.command_runner = CommandRunnerTestImpl(
             command_runner=CommandRunnerImpl(getLogger(__name__))
         )
+        hash_converter = HashConverterImpl(command_runner=self.command_runner)
         self.hasher = NixPrefetchUrlHasherImpl(
-            command_runner=self.command_runner, logger=getLogger()
+            command_runner=self.command_runner,
+            logger=getLogger(),
+            hash_converter=hash_converter,
         )
         self.repository = GithubRepository(
             owner="git-up",

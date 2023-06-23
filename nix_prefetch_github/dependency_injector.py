@@ -16,6 +16,7 @@ from nix_prefetch_github.controller.nix_prefetch_github_latest_release_controlle
     PrefetchLatestReleaseController,
 )
 from nix_prefetch_github.github import GithubAPIImpl
+from nix_prefetch_github.hash_converter import HashConverterImpl
 from nix_prefetch_github.interfaces import (
     GithubAPI,
     RepositoryDetector,
@@ -81,13 +82,20 @@ class DependencyInjector:
 
     def get_nix_build_url_hasher_impl(self) -> NixBuildUrlHasherImpl:
         return NixBuildUrlHasherImpl(
-            command_runner=self.get_command_runner(), logger=self.get_logger()
+            command_runner=self.get_command_runner(),
+            logger=self.get_logger(),
+            hash_converter=self.get_hash_converter(),
         )
 
     def get_nix_prefetch_url_hasher_impl(self) -> NixPrefetchUrlHasherImpl:
         return NixPrefetchUrlHasherImpl(
-            command_runner=self.get_command_runner(), logger=self.get_logger()
+            command_runner=self.get_command_runner(),
+            logger=self.get_logger(),
+            hash_converter=self.get_hash_converter(),
         )
+
+    def get_hash_converter(self) -> HashConverterImpl:
+        return HashConverterImpl(command_runner=self.get_command_runner())
 
     def get_prefetcher(self) -> PrefetcherImpl:
         return PrefetcherImpl(
