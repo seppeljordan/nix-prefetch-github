@@ -22,13 +22,13 @@ class PresenterTests(TestCase):
         self.repo = PrefetchedRepository(
             GithubRepository(owner="test", name="test"),
             rev="test",
-            sha256="test",
+            hash_sum="test",
             options=PrefetchOptions(),
         )
 
     def test_write_to_error_output_when_presenting_prefetch_failure(self) -> None:
         self.presenter.present(
-            PrefetchFailure(reason=PrefetchFailure.Reason.unable_to_calculate_sha256)
+            PrefetchFailure(reason=PrefetchFailure.Reason.unable_to_calculate_hash_sum)
         )
         self.assertTrue(self.read_error_output())
 
@@ -40,7 +40,7 @@ class PresenterTests(TestCase):
         self,
     ) -> None:
         self.presenter.present(
-            PrefetchFailure(reason=PrefetchFailure.Reason.unable_to_calculate_sha256)
+            PrefetchFailure(reason=PrefetchFailure.Reason.unable_to_calculate_hash_sum)
         )
         self.assertFalse(self.read_result_output())
 
@@ -63,7 +63,7 @@ class PresenterTests(TestCase):
 
     def test_that_exit_1_is_returned_when_failure_is_rendered(self) -> None:
         self.presenter.present(
-            PrefetchFailure(reason=PrefetchFailure.Reason.unable_to_calculate_sha256)
+            PrefetchFailure(reason=PrefetchFailure.Reason.unable_to_calculate_hash_sum)
         )
         self.assertExitCode(1)
 

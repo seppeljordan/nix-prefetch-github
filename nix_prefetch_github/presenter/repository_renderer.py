@@ -16,7 +16,7 @@ class NixRepositoryRenderer:
             owner=repository.repository.owner,
             repo=repository.repository.name,
             rev=repository.rev,
-            sha256=repository.sha256,
+            hash_sum=repository.hash_sum,
             fetch_submodules=repository.options.fetch_submodules,
             leave_dot_git=repository.options.leave_dot_git,
             deep_clone=repository.options.deep_clone,
@@ -35,7 +35,7 @@ class JsonRepositoryRenderer:
             "owner": repository.repository.owner,
             "repo": repository.repository.name,
             "rev": repository.rev,
-            "sha256": repository.sha256,
+            "hash": repository.hash_sum,
         }
         if repository.options.deep_clone != self.DEFAULTS["deepClone"]:
             output["deepClone"] = repository.options.deep_clone

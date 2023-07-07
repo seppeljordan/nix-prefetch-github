@@ -12,7 +12,7 @@ from nix_prefetch_github.interfaces import (
 )
 from nix_prefetch_github.templates import output_template
 
-trash_sha256 = ""
+trash_hash_sum = ""
 
 
 @dataclass(frozen=True)
@@ -30,7 +30,7 @@ class NixBuildUrlHasherImpl:
         status_code, output = self.run_fetch_command(
             repository,
             revision,
-            trash_sha256,
+            trash_hash_sum,
             prefetch_options,
         )
         sha256 = detect_actual_hash_from_nix_output(output.splitlines())
@@ -42,14 +42,14 @@ class NixBuildUrlHasherImpl:
         self,
         repository: GithubRepository,
         rev: str,
-        sha256: str,
+        hash_sum: str,
         prefetch_options: PrefetchOptions,
     ) -> Tuple[int, str]:
         nix_code_calculate_hash = output_template(
             owner=repository.owner,
             repo=repository.name,
             rev=rev,
-            sha256=sha256,
+            hash_sum=hash_sum,
             fetch_submodules=prefetch_options.fetch_submodules,
             leave_dot_git=prefetch_options.leave_dot_git,
             deep_clone=prefetch_options.deep_clone,

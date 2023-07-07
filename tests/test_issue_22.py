@@ -47,4 +47,4 @@ class Issue22Tests(TestCase):
         )
         assert isinstance(result, PrefetchedRepository)
         assert result.rev == "ad1a1d1d25870cc70cd7e708a73c874322064d96"
-        assert result.sha256 == "TEST_HASH_SUM"
+        assert result.hash_sum == "TEST_HASH_SUM"

@@ -48,11 +48,11 @@ class PrefetcherImpl:
         )
         if calculated_hash is None:
             return PrefetchFailure(
-                reason=PrefetchFailure.Reason.unable_to_calculate_sha256
+                reason=PrefetchFailure.Reason.unable_to_calculate_hash_sum
             )
         return PrefetchedRepository(
             repository=repository,
-            sha256=calculated_hash,
+            hash_sum=calculated_hash,
             rev=revision,
             options=prefetch_options,
         )

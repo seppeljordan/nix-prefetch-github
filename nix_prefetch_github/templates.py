@@ -5,7 +5,7 @@ in
     owner = "{owner}";
     repo = "{repo}";
     rev = "{rev}";
-    sha256 = "{sha256}";{fetch_submodules}{leave_dot_git}{deep_clone}
+    hash = "{hash_sum}";{fetch_submodules}{leave_dot_git}{deep_clone}
   }}
 """
 
@@ -18,7 +18,7 @@ def output_template(
     owner: str,
     repo: str,
     rev: str,
-    sha256: str,
+    hash_sum: str,
     fetch_submodules: bool,
     leave_dot_git: bool,
     deep_clone: bool,
@@ -27,7 +27,7 @@ def output_template(
         owner=owner,
         repo=repo,
         rev=rev,
-        sha256=sha256,
+        hash_sum=hash_sum,
         fetch_submodules=_render_line_if_enabled(
             "fetchSubmodules = true", fetch_submodules
         ),
