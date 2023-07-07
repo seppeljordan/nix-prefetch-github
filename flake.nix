@@ -4,7 +4,7 @@
   inputs = {
     flake-utils.url = "github:numtide/flake-utils";
     nixpkgs.url = "github:NixOS/nixpkgs/nixos-unstable";
-    nixpkgs-stable.url = "github:NixOS/nixpkgs/nixos-22.11";
+    nixpkgs-stable.url = "github:NixOS/nixpkgs/nixos-23.05";
   };
 
   outputs = { self, nixpkgs, flake-utils, nixpkgs-stable, ... }:
@@ -42,6 +42,8 @@
               pkgs.python39.pkgs.nix-prefetch-github;
             nix-prefetch-github-python310 =
               pkgs.python310.pkgs.nix-prefetch-github;
+            nix-prefetch-github-python311 =
+              pkgs.python311.pkgs.nix-prefetch-github;
             black-check = pkgs.runCommand "black-nix-prefetch-github" { } ''
               cd ${self}
               ${python.pkgs.black}/bin/black --check .
