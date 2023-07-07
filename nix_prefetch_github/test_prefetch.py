@@ -28,7 +28,7 @@ class PrefetcherTests(TestCase):
 
     def test_return_expected_hash_from_url_hasher(self) -> None:
         result = self.prefetch_repository()
-        self.assertSuccess(result, lambda r: r.sha256 == self.expected_hash)
+        self.assertSuccess(result, lambda r: r.hash_sum == self.expected_hash)
 
     def test_return_expected_revision_from_revision_index(self) -> None:
         result = self.prefetch_repository()
@@ -45,7 +45,7 @@ class PrefetcherTests(TestCase):
         self.url_hasher.hash_sum = None
         self.assertFailure(
             self.prefetch_repository(),
-            lambda f: f.reason == PrefetchFailure.Reason.unable_to_calculate_sha256,
+            lambda f: f.reason == PrefetchFailure.Reason.unable_to_calculate_hash_sum,
         )
 
     def test_can_prefetch_revision_by_its_sha1_id(self) -> None:

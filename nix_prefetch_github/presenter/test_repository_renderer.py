@@ -54,6 +54,6 @@ class GeneralRepositoryRendererTests(TestCase):
         return PrefetchedRepository(
             repository=GithubRepository(owner="test", name="test"),
             rev="test",
-            sha256="test",
+            hash_sum="test",
             options=PrefetchOptions(leave_dot_git=leave_dot_git, deep_clone=deep_clone),
         )

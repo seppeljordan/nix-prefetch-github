@@ -19,8 +19,8 @@ Command Line Example
    {
        "owner": "seppeljordan",
        "repo": "nix-prefetch-github",
-       "rev": "cc412f7b8dedd002c764083d7d9013564c44bfdc",
-       "sha256": "sha256-pm1xuGhxIIxQHxmjcTVMubxzKsP6Rr7Nj44Euv+OnRI="
+       "rev": "0c02df713fefcbb4ce562943bf59ef969bf60008",
+       "hash": "sha256-pBMrnTsOWedLjIJuWYK+aShgD0JGbVKnHs2KzZoo99c="
    }
 
 Available Commands
@@ -179,11 +179,12 @@ You can generate a coverage report for the tests via
 changes
 =======
 
-v6.0.2
-------
+v7.0.0 (unreleased)
+-------------------
 
--  Generated hashes now contain the "sha256-" prefix again to be
-   complete SRI hashes
+-  The output format changed. In previous versions the json and nix
+   output included ``sha256`` as a field. This field was removed in
+   favour of a ``hash`` field. The value of this field is an SRI hash.
 
 v6.0.1
 ------

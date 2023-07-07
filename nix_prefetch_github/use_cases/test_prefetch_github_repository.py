@@ -125,7 +125,7 @@ class FakePrefetcher:
         return PrefetchedRepository(
             repository=repository,
             rev="",
-            sha256="",
+            hash_sum="",
             options=prefetch_options,
         )
 

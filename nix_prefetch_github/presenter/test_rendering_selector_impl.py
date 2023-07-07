@@ -57,7 +57,7 @@ class RenderingSelectorImplTests(BaseTestCase):
     def get_repository(self) -> PrefetchedRepository:
         return PrefetchedRepository(
             repository=GithubRepository(owner="test", name="test"),
-            sha256="",
+            hash_sum="",
             options=PrefetchOptions(),
             rev="",
         )

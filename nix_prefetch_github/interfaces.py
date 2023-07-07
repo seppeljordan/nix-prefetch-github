@@ -80,7 +80,7 @@ class RepositoryDetector(Protocol):
 class PrefetchedRepository:
     repository: GithubRepository
     rev: str
-    sha256: str
+    hash_sum: str
     options: PrefetchOptions
 
 
@@ -88,11 +88,11 @@ class PrefetchedRepository:
 class PrefetchFailure:
     class Reason(enum.Enum):
         unable_to_locate_revision = enum.auto()
-        unable_to_calculate_sha256 = enum.auto()
+        unable_to_calculate_hash_sum = enum.auto()
 
         def __str__(self) -> str:
-            if self == self.unable_to_calculate_sha256:
-                return "Unable to calculate sha256 sum"
+            if self == self.unable_to_calculate_hash_sum:
+                return "Unable to calculate hash sum"
             else:
                 return "Unable to locate revision"
 
