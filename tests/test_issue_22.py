@@ -39,7 +39,7 @@ class Issue22Tests(TestCase):
         )
 
     def test_issue_22(self) -> None:
-        self.url_hasher.sha256_sum = "TEST_HASH_SUM"
+        self.url_hasher.hash_sum = "TEST_HASH_SUM"
         result = self.prefetcher.prefetch_github(
             repository=self.repository,
             rev="jrg/mvp",

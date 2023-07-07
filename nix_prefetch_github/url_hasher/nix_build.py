@@ -21,7 +21,7 @@ class NixBuildUrlHasherImpl:
     logger: Logger
     hash_converter: HashConverter
 
-    def calculate_sha256_sum(
+    def calculate_hash_sum(
         self,
         repository: GithubRepository,
         revision: str,

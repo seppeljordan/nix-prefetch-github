@@ -18,13 +18,13 @@ class NixPrefetchUrlAndGitAvailableTests(TestCase):
         )
         self.availability_checker.set_as_available("nix-prefetch-url")
         self.availability_checker.set_as_available("nix-prefetch-git")
-        self.nix_build_hasher.sha256_sum = "nix build hash"
-        self.nix_prefetch_hasher.sha256_sum = "nix prefetch hash"
+        self.nix_build_hasher.hash_sum = "nix build hash"
+        self.nix_prefetch_hasher.hash_sum = "nix prefetch hash"
         self.repository = GithubRepository(owner="test", name="test")
         self.revision = "test"
 
     def test_that_prefetch_hasher_is_used(self) -> None:
-        hash_sum = self.selector.calculate_sha256_sum(
+        hash_sum = self.selector.calculate_hash_sum(
             repository=self.repository,
             revision=self.revision,
             prefetch_options=PrefetchOptions(),
@@ -34,7 +34,7 @@ class NixPrefetchUrlAndGitAvailableTests(TestCase):
     def test_that_nix_build_hasher_is_used_with_deep_clone_and_not_leave_dot_git(
         self,
     ) -> None:
-        hash_sum = self.selector.calculate_sha256_sum(
+        hash_sum = self.selector.calculate_hash_sum(
             repository=self.repository,
             revision=self.revision,
             prefetch_options=PrefetchOptions(deep_clone=True, leave_dot_git=False),
@@ -54,13 +54,13 @@ class NixPrefetchUrlAndGitUnavailableTests(TestCase):
         )
         self.availability_checker.set_as_unavailable("nix-prefetch-url")
         self.availability_checker.set_as_unavailable("nix-prefetch-git")
-        self.nix_build_hasher.sha256_sum = "nix build hash"
-        self.nix_prefetch_hasher.sha256_sum = "nix prefetch hash"
+        self.nix_build_hasher.hash_sum = "nix build hash"
+        self.nix_prefetch_hasher.hash_sum = "nix prefetch hash"
         self.repository = GithubRepository(owner="test", name="test")
         self.revision = "test"
 
     def test_that_nix_build_hasher_is_used(self) -> None:
-        hash_sum = self.selector.calculate_sha256_sum(
+        hash_sum = self.selector.calculate_hash_sum(
             repository=self.repository,
             revision=self.revision,
             prefetch_options=PrefetchOptions(),
@@ -80,13 +80,13 @@ class NixPrefetchUrlIsAvailableAndNixPrefetchGitUnavailableTests(TestCase):
         )
         self.availability_checker.set_as_unavailable("nix-prefetch-url")
         self.availability_checker.set_as_available("nix-prefetch-git")
-        self.nix_build_hasher.sha256_sum = "nix build hash"
-        self.nix_prefetch_hasher.sha256_sum = "nix prefetch hash"
+        self.nix_build_hasher.hash_sum = "nix build hash"
+        self.nix_prefetch_hasher.hash_sum = "nix prefetch hash"
         self.repository = GithubRepository(owner="test", name="test")
         self.revision = "test"
 
     def test_that_nix_build_hasher_is_used(self) -> None:
-        hash_sum = self.selector.calculate_sha256_sum(
+        hash_sum = self.selector.calculate_hash_sum(
             repository=self.repository,
             revision=self.revision,
             prefetch_options=PrefetchOptions(),

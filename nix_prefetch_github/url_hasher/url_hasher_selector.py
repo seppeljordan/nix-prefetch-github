@@ -29,14 +29,14 @@ class UrlHasherSelector:
         else:
             return self.nix_build_implementation
 
-    def calculate_sha256_sum(
+    def calculate_hash_sum(
         self,
         repository: GithubRepository,
         revision: str,
         prefetch_options: PrefetchOptions,
     ) -> Optional[str]:
         hasher = self._get_url_hasher(prefetch_options)
-        return hasher.calculate_sha256_sum(
+        return hasher.calculate_hash_sum(
             repository=repository,
             revision=revision,
             prefetch_options=prefetch_options,

@@ -29,7 +29,7 @@ class UrlHasherTests(TestCase):
 
     def test_without_fetching_submodules(self) -> None:
         prefetch_options = PrefetchOptions(fetch_submodules=False)
-        hash_sum = self.hasher.calculate_sha256_sum(
+        hash_sum = self.hasher.calculate_hash_sum(
             repository=self.repository,
             revision=self.revision,
             prefetch_options=prefetch_options,
@@ -39,7 +39,7 @@ class UrlHasherTests(TestCase):
         )
 
     def test_that_experimental_feature_nix_command_is_enabled(self) -> None:
-        self.hasher.calculate_sha256_sum(
+        self.hasher.calculate_hash_sum(
             repository=self.repository,
             revision=self.revision,
             prefetch_options=PrefetchOptions(),
@@ -59,7 +59,7 @@ class UrlHasherTests(TestCase):
 
     def test_with_fetching_submodules(self) -> None:
         prefetch_options = PrefetchOptions(fetch_submodules=True)
-        hash_sum = self.hasher.calculate_sha256_sum(
+        hash_sum = self.hasher.calculate_hash_sum(
             repository=self.repository,
             revision=self.revision,
             prefetch_options=prefetch_options,
@@ -70,7 +70,7 @@ class UrlHasherTests(TestCase):
 
     def test_with_leaving_dotgit_dir(self) -> None:
         prefetch_options = PrefetchOptions(leave_dot_git=True)
-        hash_sum = self.hasher.calculate_sha256_sum(
+        hash_sum = self.hasher.calculate_hash_sum(
             repository=self.repository,
             revision=self.revision,
             prefetch_options=prefetch_options,
@@ -81,7 +81,7 @@ class UrlHasherTests(TestCase):
 
     def test_with_deep_clone(self) -> None:
         prefetch_options = PrefetchOptions(deep_clone=True)
-        hash_sum = self.hasher.calculate_sha256_sum(
+        hash_sum = self.hasher.calculate_hash_sum(
             repository=self.repository,
             revision=self.revision,
             prefetch_options=prefetch_options,
