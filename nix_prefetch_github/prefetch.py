@@ -43,7 +43,7 @@ class PrefetcherImpl:
         revision: str,
         prefetch_options: PrefetchOptions,
     ) -> PrefetchResult:
-        calculated_hash = self._calculate_sha256_sum(
+        calculated_hash = self._calculate_hash_sum(
             repository, revision, prefetch_options
         )
         if calculated_hash is None:
@@ -73,13 +73,13 @@ class PrefetcherImpl:
             actual_rev = revision_index.get_revision_by_name(revision)
         return actual_rev
 
-    def _calculate_sha256_sum(
+    def _calculate_hash_sum(
         self,
         repository: GithubRepository,
         revision: str,
         prefetch_options: PrefetchOptions,
     ) -> Optional[str]:
-        return self.url_hasher.calculate_sha256_sum(
+        return self.url_hasher.calculate_hash_sum(
             repository=repository,
             revision=revision,
             prefetch_options=prefetch_options,

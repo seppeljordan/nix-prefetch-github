@@ -31,7 +31,7 @@ class TestIssue21(TestCase):
         self.prefetcher = PrefetcherImpl(self.url_hasher, self.revision_index_factory)
 
     def test_prefetch_sensu_go_5_11(self) -> None:
-        self.url_hasher.sha256_sum = "TEST_HASH_SUM"
+        self.url_hasher.hash_sum = "TEST_HASH_SUM"
         self.revision_index_factory.revision_index = RevisionIndexImpl(
             self.sensu_go_ls_remote_output
         )

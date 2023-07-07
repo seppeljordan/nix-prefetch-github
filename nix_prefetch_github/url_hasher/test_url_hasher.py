@@ -30,7 +30,7 @@ class UrlHasherTests(TestCase):
 
     def test_without_fetching_submodules(self) -> None:
         prefetch_options = PrefetchOptions(fetch_submodules=False)
-        hash_sum = self.hasher.calculate_sha256_sum(
+        hash_sum = self.hasher.calculate_hash_sum(
             repository=self.repository,
             revision=self.revision,
             prefetch_options=prefetch_options,
@@ -41,7 +41,7 @@ class UrlHasherTests(TestCase):
 
     def test_with_fetching_submodules(self) -> None:
         prefetch_options = PrefetchOptions(fetch_submodules=True)
-        hash_sum = self.hasher.calculate_sha256_sum(
+        hash_sum = self.hasher.calculate_hash_sum(
             repository=self.repository,
             revision=self.revision,
             prefetch_options=prefetch_options,
@@ -52,7 +52,7 @@ class UrlHasherTests(TestCase):
 
     def test_with_leaving_dotgit_dir(self) -> None:
         prefetch_options = PrefetchOptions(leave_dot_git=True)
-        hash_sum = self.hasher.calculate_sha256_sum(
+        hash_sum = self.hasher.calculate_hash_sum(
             repository=self.repository,
             revision=self.revision,
             prefetch_options=prefetch_options,
@@ -63,7 +63,7 @@ class UrlHasherTests(TestCase):
 
     def test_that_with_deep_clone_option_we_at_least_get_some_hash_sum(self) -> None:
         prefetch_options = PrefetchOptions(deep_clone=True)
-        hash_sum = self.hasher.calculate_sha256_sum(
+        hash_sum = self.hasher.calculate_hash_sum(
             repository=self.repository,
             revision=self.revision,
             prefetch_options=prefetch_options,

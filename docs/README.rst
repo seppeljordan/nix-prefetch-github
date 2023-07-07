@@ -19,8 +19,8 @@ Command Line Example
    {
        "owner": "seppeljordan",
        "repo": "nix-prefetch-github",
-       "rev": "fdbb5182cac14e2dcecabcedcc1eab4e6b8405f0",
-       "sha256": "97mAbccmJzp3zxaBPCXQQkQrmFhfbKAwewYODMQVrn4="
+       "rev": "cc412f7b8dedd002c764083d7d9013564c44bfdc",
+       "sha256": "sha256-pm1xuGhxIIxQHxmjcTVMubxzKsP6Rr7Nj44Euv+OnRI="
    }
 
 Available Commands
@@ -182,7 +182,8 @@ changes
 v6.0.2
 ------
 
--  Generated hashes now contain the "sha256-" prefix again to be complete SRI hashes
+-  Generated hashes now contain the "sha256-" prefix again to be
+   complete SRI hashes
 
 v6.0.1
 ------

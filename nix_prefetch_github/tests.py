@@ -24,15 +24,15 @@ class BaseTestCase(TestCase):
 
 class FakeUrlHasher:
     def __init__(self) -> None:
-        self.sha256_sum: Optional[str] = None
+        self.hash_sum: Optional[str] = None
 
-    def calculate_sha256_sum(
+    def calculate_hash_sum(
         self,
         repository: GithubRepository,
         revision: str,
         prefetch_options: PrefetchOptions,
     ) -> Optional[str]:
-        return self.sha256_sum
+        return self.hash_sum
 
 
 class FakeRevisionIndexFactory:

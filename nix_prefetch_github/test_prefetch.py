@@ -17,7 +17,7 @@ class PrefetcherTests(TestCase):
     def test_when_url_hasher_and_revision_index_fail_then_prefetching_also_fails(
         self,
     ) -> None:
-        self.url_hasher.sha256_sum = None
+        self.url_hasher.hash_sum = None
         self.revision_index_factory.revision_index = None
         result = self.prefetch_repository()
         self.assertFailure(result)
@@ -42,7 +42,7 @@ class PrefetcherTests(TestCase):
         )
 
     def test_fail_with_correct_reason_when_hash_could_not_be_calculated(self) -> None:
-        self.url_hasher.sha256_sum = None
+        self.url_hasher.hash_sum = None
         self.assertFailure(
             self.prefetch_repository(),
             lambda f: f.reason == PrefetchFailure.Reason.unable_to_calculate_sha256,
@@ -76,7 +76,7 @@ class PrefetcherTests(TestCase):
         self.revision_index_factory = FakeRevisionIndexFactory()
         self.expected_hash = "test hash"
         self.expected_revision = "test ref"
-        self.url_hasher.sha256_sum = self.expected_hash
+        self.url_hasher.hash_sum = self.expected_hash
         self.revision_index_factory.revision_index = RevisionIndexImpl(
             ListRemote(
                 symrefs={"HEAD": "refs/heads/master"},

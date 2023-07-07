@@ -42,7 +42,7 @@ class HashConverter(Protocol):
 
 
 class UrlHasher(Protocol):
-    def calculate_sha256_sum(
+    def calculate_hash_sum(
         self,
         repository: GithubRepository,
         revision: str,
