@@ -32,6 +32,7 @@
                 virtualenv
                 isort
                 coverage
+                pydeps
               ]);
             inputsFrom = [ python.pkgs.nix-prefetch-github ];
           };
