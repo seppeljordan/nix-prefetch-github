@@ -19,8 +19,8 @@ Command Line Example
    {
        "owner": "seppeljordan",
        "repo": "nix-prefetch-github",
-       "rev": "ca223cf1a727e18ad5d94ac50c4928f0a163f621",
-       "hash": "sha256-VBMKrIwg4D8/8WD2NoDPWBYb4b8uURyFzjJRpiqOt+A="
+       "rev": "0b35faf8532781cb0e36dcdd73273bff4eef1396",
+       "hash": "sha256-oIR2iEiOBQ1VKouJTLqEiWWNzrMSJcnxK+m/j9Ia/m8="
    }
 
 Available Commands
@@ -179,8 +179,8 @@ You can generate a coverage report for the tests via
 changes
 =======
 
-v7.0.0 (unreleased)
--------------------
+v7.0.0
+------
 
 -  The output format changed. In previous versions the json and nix
    output included ``sha256`` as a field. This field was removed in
