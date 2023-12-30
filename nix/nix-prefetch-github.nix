@@ -1,5 +1,6 @@
 { buildPythonPackage, git, which, sphinxHook, sphinx-argparse, pytestCheckHook
-}:
+
+, parameterized }:
 let version = builtins.readFile ../nix_prefetch_github/VERSION;
 in buildPythonPackage {
   pname = "nix-prefetch-github";
@@ -13,7 +14,7 @@ in buildPythonPackage {
         wrapProgram "$f" --suffix PATH : "${git}/bin"
     done
   '';
-  checkInputs = [ git which pytestCheckHook ];
+  checkInputs = [ git which pytestCheckHook parameterized ];
   sphinxBuilders = [ "singlehtml" "man" ];
   sphinxRoot = "docs";
   DISABLED_TESTS = "network requires_nix_build";
