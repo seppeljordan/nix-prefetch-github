@@ -1,5 +1,8 @@
 import logging
+from datetime import datetime, timezone
 from unittest import TestCase
+
+from parameterized import parameterized
 
 from nix_prefetch_github.github import GithubAPIImpl
 from nix_prefetch_github.interfaces import GithubRepository
@@ -20,4 +23,30 @@ class GithubTests(TestCase):
                     name="nix-prefetch-github",
                 )
             )
+        )
+
+    @parameterized.expand(
+        [
+            (
+                "33285dcd1ee5850eccc0d620be7a03975b4ed2c0",
+                datetime(2023, 12, 30, 14, 5, 55, tzinfo=timezone.utc),
+            ),
+            (
+                "c2da1e1a6fb379285a34ca6458f01f372e28a24e",
+                datetime(2023, 7, 9, 10, 6, 1, tzinfo=timezone.utc),
+            ),
+        ]
+    )
+    def test_that_for_own_repo_can_determin_the_commit_time_of_specific_commit(
+        self, sha1: str, expected_datetime: datetime
+    ) -> None:
+        self.assertEqual(
+            self.api.get_commit_date(
+                GithubRepository(
+                    owner="seppeljordan",
+                    name="nix-prefetch-github",
+                ),
+                sha1,
+            ),
+            expected_datetime,
         )
