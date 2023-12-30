@@ -1,4 +1,4 @@
-from logging import INFO, WARNING
+from logging import DEBUG, ERROR, INFO, WARNING
 from unittest import TestCase
 
 from nix_prefetch_github.controller.arguments import get_options_argument_parser
@@ -68,6 +68,21 @@ class TestGetOptionsArgumentParser(TestCase):
         parser = get_options_argument_parser()
         arguments = parser.parse_args(["--verbose"])
         self.assertEqual(arguments.logging_configuration.log_level, INFO)
+
+    def test_that_verbosity_flag_twice_increases_log_level_to_DEBUG(self) -> None:
+        parser = get_options_argument_parser()
+        arguments = parser.parse_args(["--verbose", "--verbose"])
+        self.assertEqual(arguments.logging_configuration.log_level, DEBUG)
+
+    def test_that_quiet_decreases_log_level_to_ERROR(self) -> None:
+        parser = get_options_argument_parser()
+        arguments = parser.parse_args(["--quiet"])
+        self.assertEqual(arguments.logging_configuration.log_level, ERROR)
+
+    def test_that_quiet_and_verbose_option_result_in_log_level_WARNING(self) -> None:
+        parser = get_options_argument_parser()
+        arguments = parser.parse_args(["-q", "-v"])
+        self.assertEqual(arguments.logging_configuration.log_level, WARNING)
 
     def test_rendering_option_is_json_by_default(self) -> None:
         parser = get_options_argument_parser()
