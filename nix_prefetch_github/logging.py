@@ -1,7 +1,16 @@
 from __future__ import annotations
 
 from dataclasses import dataclass
-from logging import WARNING, Formatter, Logger, StreamHandler, getLogger
+from logging import (
+    DEBUG,
+    ERROR,
+    INFO,
+    WARNING,
+    Formatter,
+    Logger,
+    StreamHandler,
+    getLogger,
+)
 from typing import Protocol, TextIO
 
 
@@ -9,6 +18,24 @@ from typing import Protocol, TextIO
 class LoggingConfiguration:
     output_file: TextIO
     log_level: int = WARNING
+
+    def increase_log_level(self) -> None:
+        if self.log_level == INFO:
+            new_level = DEBUG
+        elif self.log_level == WARNING:
+            new_level = INFO
+        else:
+            new_level = WARNING
+        self.log_level = new_level
+
+    def decrease_log_level(self) -> None:
+        if self.log_level == DEBUG:
+            new_level = INFO
+        elif self.log_level == INFO:
+            new_level = WARNING
+        else:
+            new_level = ERROR
+        self.log_level = new_level
 
 
 class LoggerManager(Protocol):

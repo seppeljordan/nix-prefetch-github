@@ -1,6 +1,6 @@
 import argparse
 import sys
-from logging import INFO, WARNING
+from logging import WARNING
 from typing import Any, Optional, Type
 
 from nix_prefetch_github.interfaces import PrefetchOptions, RenderingFormat
@@ -10,32 +10,11 @@ from nix_prefetch_github.version import VERSION_STRING
 
 def set_argument(name: str, value: Any) -> Type[argparse.Action]:
     class _SetArgument(argparse.Action):
-        def __init__(  # type: ignore
-            self,
-            option_strings,
-            dest,
-            nargs=None,
-            const=None,
-            default=None,
-            type=None,
-            choices=None,
-            required=False,
-            help=None,
-            metavar=None,
+        def __init__(
+            self, option_strings: Any, dest: Any, nargs: Any = None, **kwargs: Any
         ) -> None:
-            assert nargs is None
-            return super().__init__(
-                option_strings,
-                dest,
-                0,
-                const,
-                default,
-                type,
-                choices,
-                required,
-                help,
-                metavar,
-            )
+            assert nargs is None, "Setting nargs is not allowed"
+            super().__init__(option_strings, dest, nargs=0, **kwargs)
 
         def __call__(
             self,
@@ -47,6 +26,42 @@ def set_argument(name: str, value: Any) -> Type[argparse.Action]:
             setattr(getattr(namespace, self.dest), name, value)
 
     return _SetArgument
+
+
+class increase_log_level(argparse.Action):
+    def __init__(
+        self, option_strings: Any, dest: Any, nargs: Any = None, **kwargs: Any
+    ) -> None:
+        assert nargs is None, "Setting nargs is not allowed"
+        super().__init__(option_strings, dest, nargs=0, **kwargs)
+
+    def __call__(
+        self,
+        parser: argparse.ArgumentParser,
+        namespace: argparse.Namespace,
+        values: Any,
+        option_string: Optional[str] = None,
+    ) -> None:
+        configuration = getattr(namespace, self.dest)
+        configuration.increase_log_level()
+
+
+class decrease_log_level(argparse.Action):
+    def __init__(
+        self, option_strings: Any, dest: Any, nargs: Any = None, **kwargs: Any
+    ) -> None:
+        assert nargs is None, "Setting nargs is not allowed"
+        super().__init__(option_strings, dest, nargs=0, **kwargs)
+
+    def __call__(
+        self,
+        parser: argparse.ArgumentParser,
+        namespace: argparse.Namespace,
+        values: Any,
+        option_string: Optional[str] = None,
+    ) -> None:
+        configuration = getattr(namespace, self.dest)
+        configuration.decrease_log_level()
 
 
 def get_options_argument_parser() -> argparse.ArgumentParser:
@@ -93,8 +108,15 @@ def get_options_argument_parser() -> argparse.ArgumentParser:
         "-v",
         dest="logging_configuration",
         default=LoggingConfiguration(output_file=sys.stderr, log_level=WARNING),
-        action=set_argument("log_level", INFO),
+        action=increase_log_level,
         help="Print additional information about the programs execution. This is useful if you want to issue a bug report.",
+    )
+    parser.add_argument(
+        "--quiet",
+        "-q",
+        dest="logging_configuration",
+        action=decrease_log_level,
+        help="Print less information about the programs execution.",
     )
     parser.add_argument(
         "--nix",

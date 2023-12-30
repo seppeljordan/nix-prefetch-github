@@ -19,8 +19,8 @@ Command Line Example
    {
        "owner": "seppeljordan",
        "repo": "nix-prefetch-github",
-       "rev": "0b35faf8532781cb0e36dcdd73273bff4eef1396",
-       "hash": "sha256-oIR2iEiOBQ1VKouJTLqEiWWNzrMSJcnxK+m/j9Ia/m8="
+       "rev": "c2da1e1a6fb379285a34ca6458f01f372e28a24e",
+       "hash": "sha256-qaDF4tsw924OQabYF2FrelStpQ6cXW9G2eD+XX9zy+8="
    }
 
 Available Commands
@@ -40,7 +40,7 @@ into the local nix store. It also prints the function arguments to
    usage: nix-prefetch-github [-h] [--fetch-submodules] [--no-fetch-submodules]
                   [--leave-dot-git] [--no-leave-dot-git]
                   [--deep-clone] [--no-deep-clone] [--verbose]
-                  [--nix] [--json] [--version] [--rev REV]
+                  [--quiet] [--nix] [--json] [--version] [--rev REV]
                   owner repo
 
    positional arguments:
@@ -63,6 +63,7 @@ into the local nix store. It also prints the function arguments to
      --verbose, -v         Print additional information about the programs
                execution. This is useful if you want to issue a bug
                report.
+     --quiet, -q           Print less information about the programs execution.
      --nix                 Output the results as valid nix code.
      --json                Output the results in the JSON format
      --version             show program's version number and exit
@@ -84,8 +85,8 @@ the ``origin`` remote repository similar to the command
                          [--leave-dot-git]
                          [--no-leave-dot-git]
                          [--deep-clone] [--no-deep-clone]
-                         [--verbose] [--nix] [--json]
-                         [--version]
+                         [--verbose] [--quiet] [--nix]
+                         [--json] [--version]
                          [--directory DIRECTORY]
                          [--remote REMOTE]
 
@@ -105,6 +106,7 @@ the ``origin`` remote repository similar to the command
      --verbose, -v         Print additional information about the programs
                execution. This is useful if you want to issue a bug
                report.
+     --quiet, -q           Print less information about the programs execution.
      --nix                 Output the results as valid nix code.
      --json                Output the results in the JSON format
      --version             show program's version number and exit
@@ -124,7 +126,8 @@ repository.
                          [--leave-dot-git]
                          [--no-leave-dot-git] [--deep-clone]
                          [--no-deep-clone] [--verbose]
-                         [--nix] [--json] [--version]
+                         [--quiet] [--nix] [--json]
+                         [--version]
                          owner repo
 
    positional arguments:
@@ -147,6 +150,7 @@ repository.
      --verbose, -v         Print additional information about the programs
                execution. This is useful if you want to issue a bug
                report.
+     --quiet, -q           Print less information about the programs execution.
      --nix                 Output the results as valid nix code.
      --json                Output the results in the JSON format
      --version             show program's version number and exit
@@ -178,6 +182,11 @@ You can generate a coverage report for the tests via
 
 changes
 =======
+
+v7.0.1
+------
+
+-  Add ``-q`` / ``--quiet`` option to decrease logging verbosity
 
 v7.0.0
 ------
