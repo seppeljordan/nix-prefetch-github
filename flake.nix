@@ -4,7 +4,7 @@
   inputs = {
     flake-utils.url = "github:numtide/flake-utils";
     nixpkgs.url = "github:NixOS/nixpkgs/nixos-unstable";
-    nixpkgs-stable.url = "github:NixOS/nixpkgs/nixos-23.05";
+    nixpkgs-stable.url = "github:NixOS/nixpkgs/nixos-23.11";
   };
 
   outputs = { self, nixpkgs, flake-utils, nixpkgs-stable, ... }:
@@ -22,19 +22,9 @@
           python = pkgs.python3;
         in {
           packages = { default = pkgs.nix-prefetch-github; };
-          devShells.default = pkgs.mkShell {
-            packages = (with pkgs; [ git nixfmt nix-prefetch-scripts pandoc ])
-              ++ (with python.pkgs; [
-                black
-                flake8
-                mypy
-                twine
-                virtualenv
-                isort
-                coverage
-                pydeps
-              ]);
-            inputsFrom = [ python.pkgs.nix-prefetch-github ];
+          devShells = {
+            default = pkgs.callPackage nix/dev-shell.nix { };
+            stable = pkgsStable.callPackage nix/dev-shell.nix { };
           };
           checks = {
             defaultPackage = self.packages.${system}.default;
