@@ -43,6 +43,31 @@ nix-prefetch-latest-release
    Use this program to generate a nix expression for the latest
    release of a github repository.
 
+output formats
+==============
+
+The different command line programs of this package provide different
+output formats. Those can be selected via different arguments provided
+to the program.
+
+JSON output
+-----------
+
+The ``--json`` argument is the default and will render
+the output as JSON to the standard output of the program. The
+resulting json value will consist of a single dictionary where all key
+value pairs correspond to the arguments to the ``fetchFromGitHub``
+function provided by ``nixpkgs``. It is intended to be used directly in
+nix code::
+
+  src = with builtins; fetchFromGitHub (fromJSON (readFile ./nix-prefetch-github-output.json))
+
+Nix output
+----------
+
+Consider this a legacy output format without any practical
+applications. The ``--nix`` argument will result in a valid nix
+expression produced by the respective program.
 
 Indices and tables
 ==================
