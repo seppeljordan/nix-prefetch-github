@@ -18,8 +18,8 @@
   {
       "owner": "seppeljordan",
       "repo": "nix-prefetch-github",
-      "rev": "c2da1e1a6fb379285a34ca6458f01f372e28a24e",
-      "hash": "sha256-qaDF4tsw924OQabYF2FrelStpQ6cXW9G2eD+XX9zy+8="
+      "rev": "22a1d51238702d7ca2c5c68cb0eeddbfce0f12f4",
+      "hash": "sha256-22itTJBoXyoQ76Rgh2bImQBzo3sYkOA2Zhiv2xqxDNM="
   }
   #+end_example
 
@@ -38,7 +38,8 @@
    usage: nix-prefetch-github [-h] [--fetch-submodules] [--no-fetch-submodules]
 			      [--leave-dot-git] [--no-leave-dot-git]
 			      [--deep-clone] [--no-deep-clone] [--verbose]
-			      [--quiet] [--nix] [--json] [--version] [--rev REV]
+			      [--quiet] [--nix] [--json] [--meta] [--version]
+			      [--rev REV]
 			      owner repo
 
    positional arguments:
@@ -64,6 +65,11 @@
      --quiet, -q           Print less information about the programs execution.
      --nix                 Output the results as valid nix code.
      --json                Output the results in the JSON format
+     --meta                Output the results in JSON format where the arguments
+			   to fetchFromGitHub are located under the src key of
+			   the resulting json dictionary and meta information
+			   about the prefetched repository is located under the
+			   meta key of the output.
      --version             show program's version number and exit
      --rev REV
    #+end_example
@@ -87,7 +93,7 @@
 						 [--no-leave-dot-git]
 						 [--deep-clone] [--no-deep-clone]
 						 [--verbose] [--quiet] [--nix]
-						 [--json] [--version]
+						 [--json] [--meta] [--version]
 						 [--directory DIRECTORY]
 						 [--remote REMOTE]
 
@@ -110,6 +116,11 @@
      --quiet, -q           Print less information about the programs execution.
      --nix                 Output the results as valid nix code.
      --json                Output the results in the JSON format
+     --meta                Output the results in JSON format where the arguments
+			   to fetchFromGitHub are located under the src key of
+			   the resulting json dictionary and meta information
+			   about the prefetched repository is located under the
+			   meta key of the output.
      --version             show program's version number and exit
      --directory DIRECTORY
      --remote REMOTE
@@ -130,7 +141,7 @@
 					     [--leave-dot-git]
 					     [--no-leave-dot-git] [--deep-clone]
 					     [--no-deep-clone] [--verbose]
-					     [--quiet] [--nix] [--json]
+					     [--quiet] [--nix] [--json] [--meta]
 					     [--version]
 					     owner repo
 
@@ -157,6 +168,11 @@
      --quiet, -q           Print less information about the programs execution.
      --nix                 Output the results as valid nix code.
      --json                Output the results in the JSON format
+     --meta                Output the results in JSON format where the arguments
+			   to fetchFromGitHub are located under the src key of
+			   the resulting json dictionary and meta information
+			   about the prefetched repository is located under the
+			   meta key of the output.
      --version             show program's version number and exit
    #+end_example
 
@@ -186,8 +202,10 @@
   
 
 * changes
-** v7.0.1
+** v7.1.0
    - Add =-q= / =--quiet= option to decrease logging verbosity
+   - Add =--meta= option to include the commit timestamp of the latest
+     prefetched commit in the output
 
 ** v7.0.0
    - The output format changed. In previous versions the json and nix

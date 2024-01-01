@@ -134,6 +134,13 @@ def get_options_argument_parser() -> argparse.ArgumentParser:
         help="Output the results in the JSON format",
     )
     parser.add_argument(
+        "--meta",
+        dest="rendering_format",
+        action="store_const",
+        const=RenderingFormat.meta,
+        help="Output the results in JSON format where the arguments to fetchFromGitHub are located under the src key of the resulting json dictionary and meta information about the prefetched repository is located under the meta key of the output.",
+    )
+    parser.add_argument(
         "--version", action="version", version="%(prog)s " + VERSION_STRING
     )
     return parser

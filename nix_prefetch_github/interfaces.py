@@ -2,6 +2,7 @@ from __future__ import annotations
 
 import enum
 from dataclasses import dataclass
+from datetime import datetime
 from typing import Dict, List, Optional, Protocol, Tuple, Union
 
 
@@ -53,6 +54,11 @@ class UrlHasher(Protocol):
 
 class GithubAPI(Protocol):
     def get_tag_of_latest_release(self, repository: GithubRepository) -> Optional[str]:
+        ...
+
+    def get_commit_date(
+        self, repository: GithubRepository, commit_sha1_hash: str
+    ) -> Optional[datetime]:
         ...
 
 
@@ -142,6 +148,7 @@ class Presenter(Protocol):
 class RenderingFormat(enum.Enum):
     nix = enum.auto()
     json = enum.auto()
+    meta = enum.auto()
 
 
 class RenderingFormatSelector(Protocol):

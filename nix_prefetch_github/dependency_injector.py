@@ -28,6 +28,7 @@ from nix_prefetch_github.prefetch import PrefetcherImpl
 from nix_prefetch_github.presenter import PresenterImpl
 from nix_prefetch_github.presenter.repository_renderer import (
     JsonRepositoryRenderer,
+    MetaRepositoryRenderer,
     NixRepositoryRenderer,
     RenderingSelectorImpl,
 )
@@ -108,11 +109,18 @@ class DependencyInjector:
     def get_json_repository_renderer(self) -> JsonRepositoryRenderer:
         return JsonRepositoryRenderer()
 
+    def get_meta_repository_renderer(self) -> MetaRepositoryRenderer:
+        return MetaRepositoryRenderer(
+            github_api=self.get_github_api(),
+            json_renderer=self.get_json_repository_renderer(),
+        )
+
     @lru_cache
     def get_rendering_format_selector(self) -> RenderingSelectorImpl:
         return RenderingSelectorImpl(
             nix_renderer=self.get_nix_repository_renderer(),
             json_renderer=self.get_json_repository_renderer(),
+            meta_renderer=self.get_meta_repository_renderer(),
         )
 
     def get_github_api(self) -> GithubAPI:

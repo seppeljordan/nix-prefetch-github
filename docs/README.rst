@@ -19,8 +19,8 @@ Command Line Example
    {
        "owner": "seppeljordan",
        "repo": "nix-prefetch-github",
-       "rev": "c2da1e1a6fb379285a34ca6458f01f372e28a24e",
-       "hash": "sha256-qaDF4tsw924OQabYF2FrelStpQ6cXW9G2eD+XX9zy+8="
+       "rev": "22a1d51238702d7ca2c5c68cb0eeddbfce0f12f4",
+       "hash": "sha256-22itTJBoXyoQ76Rgh2bImQBzo3sYkOA2Zhiv2xqxDNM="
    }
 
 Available Commands
@@ -40,7 +40,8 @@ into the local nix store. It also prints the function arguments to
    usage: nix-prefetch-github [-h] [--fetch-submodules] [--no-fetch-submodules]
                   [--leave-dot-git] [--no-leave-dot-git]
                   [--deep-clone] [--no-deep-clone] [--verbose]
-                  [--quiet] [--nix] [--json] [--version] [--rev REV]
+                  [--quiet] [--nix] [--json] [--meta] [--version]
+                  [--rev REV]
                   owner repo
 
    positional arguments:
@@ -66,6 +67,11 @@ into the local nix store. It also prints the function arguments to
      --quiet, -q           Print less information about the programs execution.
      --nix                 Output the results as valid nix code.
      --json                Output the results in the JSON format
+     --meta                Output the results in JSON format where the arguments
+               to fetchFromGitHub are located under the src key of
+               the resulting json dictionary and meta information
+               about the prefetched repository is located under the
+               meta key of the output.
      --version             show program's version number and exit
      --rev REV
 
@@ -86,7 +92,7 @@ the ``origin`` remote repository similar to the command
                          [--no-leave-dot-git]
                          [--deep-clone] [--no-deep-clone]
                          [--verbose] [--quiet] [--nix]
-                         [--json] [--version]
+                         [--json] [--meta] [--version]
                          [--directory DIRECTORY]
                          [--remote REMOTE]
 
@@ -109,6 +115,11 @@ the ``origin`` remote repository similar to the command
      --quiet, -q           Print less information about the programs execution.
      --nix                 Output the results as valid nix code.
      --json                Output the results in the JSON format
+     --meta                Output the results in JSON format where the arguments
+               to fetchFromGitHub are located under the src key of
+               the resulting json dictionary and meta information
+               about the prefetched repository is located under the
+               meta key of the output.
      --version             show program's version number and exit
      --directory DIRECTORY
      --remote REMOTE
@@ -126,7 +137,7 @@ repository.
                          [--leave-dot-git]
                          [--no-leave-dot-git] [--deep-clone]
                          [--no-deep-clone] [--verbose]
-                         [--quiet] [--nix] [--json]
+                         [--quiet] [--nix] [--json] [--meta]
                          [--version]
                          owner repo
 
@@ -153,6 +164,11 @@ repository.
      --quiet, -q           Print less information about the programs execution.
      --nix                 Output the results as valid nix code.
      --json                Output the results in the JSON format
+     --meta                Output the results in JSON format where the arguments
+               to fetchFromGitHub are located under the src key of
+               the resulting json dictionary and meta information
+               about the prefetched repository is located under the
+               meta key of the output.
      --version             show program's version number and exit
 
 development environment
@@ -183,10 +199,12 @@ You can generate a coverage report for the tests via
 changes
 =======
 
-v7.0.1
+v7.1.0
 ------
 
 -  Add ``-q`` / ``--quiet`` option to decrease logging verbosity
+-  Add ``--meta`` option to included time commit timestamp of the latest
+   prefetched commit in the output
 
 v7.0.0
 ------
