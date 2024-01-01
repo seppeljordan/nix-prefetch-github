@@ -62,6 +62,27 @@ nix code::
 
   src = with builtins; fetchFromGitHub (fromJSON (readFile ./nix-prefetch-github-output.json))
 
+
+Meta information output
+-----------------------
+
+The ``--meta`` argument produces output similar to the output produced
+by ``--json``. The difference is that a nested dictionary is produced
+with two top level keys: ``src`` and ``meta``. The ``src`` key will
+contain the same data as would have been yielded by ``--json`` whereas
+the ``meta`` key contains some meta data on the commit that was
+fetched. At the moment this will only be the date and time of day of
+the latest commit. This can be useful when providing nightly versions
+of a package::
+
+  let fetchedSourceCode = (fromJSON (readFile ./nix-prefetch-github-output.json));
+  in buildPackage {
+    pname = "my-package";
+    version = fetchedSourceCode.meta.commitDate;
+    src = fetchFromGitHub fetchedSourceCode.src;
+    ...
+  };
+
 Nix output
 ----------
 

@@ -14,9 +14,11 @@ class RenderingSelectorImplTests(BaseTestCase):
         super().setUp()
         self.nix_renderer = RepositoryRendererImpl("nix format")
         self.json_renderer = RepositoryRendererImpl("json format")
+        self.meta_renderer = RepositoryRendererImpl("meta format")
         self.rendering_selector = RenderingSelectorImpl(
             nix_renderer=self.nix_renderer,
             json_renderer=self.json_renderer,
+            meta_renderer=self.meta_renderer,
         )
 
     def test_by_default_json_format_is_selectored(self) -> None:
@@ -53,6 +55,13 @@ class RenderingSelectorImplTests(BaseTestCase):
             self.get_repository()
         )
         self.assertEqual(output, "nix format 2")
+
+    def test_that_meta_renderer_is_used_when_format_is_set_to_meta(self) -> None:
+        self.rendering_selector.set_rendering_format(RenderingFormat.meta)
+        output = self.rendering_selector.render_prefetched_repository(
+            self.get_repository()
+        )
+        self.assertEqual(output, "meta format")
 
     def get_repository(self) -> PrefetchedRepository:
         return PrefetchedRepository(

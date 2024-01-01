@@ -195,6 +195,32 @@ class JsonIntegrityTests(TestCase):
             cwd=self.directory,
         )
 
+    def test_can_use_json_output_as_input_when_meta_argument_is_specified(
+        self,
+    ) -> None:
+        expression = [
+            f"{self.output}/bin/nix-prefetch-github",
+            "seppeljordan",
+            "nix-prefetch-github",
+            "--meta",
+        ]
+        finished_process = subprocess.run(
+            expression, capture_output=True, check=True, universal_newlines=True
+        )
+        with open(Path(self.directory) / "output.json", "w") as handle:
+            handle.write(finished_process.stdout)
+        subprocess.run(
+            [
+                "nix",
+                "build",
+                "--impure",
+                "--expr",
+                "with import <nixpkgs> {}; with builtins; fetchFromGitHub (fromJSON (readFile ./output.json)).src",
+            ],
+            check=True,
+            cwd=self.directory,
+        )
+
 
 if __name__ == "__main__":
     unittest.main()
