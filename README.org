@@ -18,8 +18,8 @@
   {
       "owner": "seppeljordan",
       "repo": "nix-prefetch-github",
-      "rev": "22a1d51238702d7ca2c5c68cb0eeddbfce0f12f4",
-      "hash": "sha256-22itTJBoXyoQ76Rgh2bImQBzo3sYkOA2Zhiv2xqxDNM="
+      "rev": "1609f8195102f8aa66f600df4fefd8f2709cfe0c",
+      "hash": "sha256-+KcW9UTPKgfZ1rO/t70t4CtGSNzOIFqmNu0GPZVlsUU="
   }
   #+end_example
 
@@ -206,6 +206,8 @@
    - Add =-q= / =--quiet= option to decrease logging verbosity
    - Add =--meta= option to include the commit timestamp of the latest
      prefetched commit in the output
+   - Use content of ==GITHUB_TOKEN== environment variable for
+     authenticating with GitHub API
 
 ** v7.0.0
    - The output format changed. In previous versions the json and nix
