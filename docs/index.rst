@@ -89,10 +89,3 @@ Nix output
 Consider this a legacy output format without any practical
 applications. The ``--nix`` argument will result in a valid nix
 expression produced by the respective program.
-
-Indices and tables
-==================
-
-* :ref:`genindex`
-* :ref:`modindex`
-* :ref:`search`
