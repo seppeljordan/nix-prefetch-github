@@ -1,3 +1,4 @@
+import os
 from functools import lru_cache
 from logging import Logger
 
@@ -124,7 +125,7 @@ class DependencyInjector:
         )
 
     def get_github_api(self) -> GithubAPI:
-        return GithubAPIImpl(logger=self.get_logger())
+        return GithubAPIImpl(logger=self.get_logger(), environment=os.environ)
 
     def get_repository_detector(self) -> RepositoryDetector:
         return RepositoryDetectorImpl(

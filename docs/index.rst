@@ -43,6 +43,16 @@ nix-prefetch-latest-release
    Use this program to generate a nix expression for the latest
    release of a github repository.
 
+Configuration
+=============
+
+Github API Token
+----------------
+
+All the commands provided by this package will read the environment
+variable ``GITHUB_TOKEN`` and use its content verbatim as an
+authentication/authorization token when requesting from GitHubs API.
+
 output formats
 ==============
 

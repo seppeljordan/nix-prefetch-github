@@ -13,7 +13,7 @@ from nix_prefetch_github.tests import network
 class GithubTests(TestCase):
     def setUp(self) -> None:
         self.logger = logging.getLogger()
-        self.api = GithubAPIImpl(logger=self.logger)
+        self.api = GithubAPIImpl(logger=self.logger, environment=dict())
 
     def test_that_for_own_repo_latest_release_is_not_none(self) -> None:
         self.assertIsNotNone(

@@ -1,20 +1,25 @@
 import io
 import json
-from dataclasses import dataclass
 from datetime import datetime
 from http.client import HTTPResponse
 from json.decoder import JSONDecodeError
 from logging import Logger
-from typing import Any, Optional
+from typing import Any, Optional, Protocol
 from urllib.error import HTTPError
-from urllib.request import urlopen
+from urllib.request import Request, urlopen
 
 from nix_prefetch_github.interfaces import GithubRepository
 
 
-@dataclass
+class Environment(Protocol):
+    def get(self, key: str) -> Optional[str]:
+        ...
+
+
 class GithubAPIImpl:
-    logger: Logger
+    def __init__(self, logger: Logger, environment: Environment) -> None:
+        self.logger = logger
+        self._environment = environment
 
     def get_tag_of_latest_release(self, repository: GithubRepository) -> Optional[str]:
         self.logger.info(
@@ -45,8 +50,16 @@ class GithubAPIImpl:
 
     def _request_json_document(self, url: str) -> Optional[Any]:
         self.logger.debug("GET JSON document from %s", url)
+        request = Request(url)
+        environment_variable_name = "GITHUB_TOKEN"
+        if api_key := self._environment.get(environment_variable_name):
+            self.logger.debug(
+                "Authenticating via GitHub API token from environment variable '%s'",
+                environment_variable_name,
+            )
+            request.add_header("Authorization", f"Bearer {api_key}")
         try:
-            with urlopen(url) as response:
+            with urlopen(request) as response:
                 self.logger.debug(
                     "Response was %(status)s %(reason)s",
                     dict(status=response.status, reason=response.reason),
