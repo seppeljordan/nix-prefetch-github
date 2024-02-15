@@ -19,8 +19,8 @@ Command Line Example
    {
        "owner": "seppeljordan",
        "repo": "nix-prefetch-github",
-       "rev": "1609f8195102f8aa66f600df4fefd8f2709cfe0c",
-       "hash": "sha256-+KcW9UTPKgfZ1rO/t70t4CtGSNzOIFqmNu0GPZVlsUU="
+       "rev": "b89933bf5643c97f00c374b39af4f265eef83220",
+       "hash": "sha256-8veCTba0fhHEUPLge58FfWlk6tnYfAL852AYXWLu4Ss="
    }
 
 Available Commands
