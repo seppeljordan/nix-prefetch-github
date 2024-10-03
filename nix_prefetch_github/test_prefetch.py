@@ -30,6 +30,10 @@ class PrefetcherTests(TestCase):
         result = self.prefetch_repository()
         self.assertSuccess(result, lambda r: r.hash_sum == self.expected_hash)
 
+    def test_that_expected_store_path_is_returned(self) -> None:
+        result = self.prefetch_repository()
+        self.assertSuccess(result, lambda r: r.store_path == self.expected_store_path)
+
     def test_return_expected_revision_from_revision_index(self) -> None:
         result = self.prefetch_repository()
         self.assertSuccess(result, lambda r: r.rev == self.expected_revision)
@@ -76,7 +80,9 @@ class PrefetcherTests(TestCase):
         self.revision_index_factory = FakeRevisionIndexFactory()
         self.expected_hash = "test hash"
         self.expected_revision = "test ref"
+        self.expected_store_path = "test path"
         self.url_hasher.hash_sum = self.expected_hash
+        self.url_hasher.store_path = self.expected_store_path
         self.revision_index_factory.revision_index = RevisionIndexImpl(
             ListRemote(
                 symrefs={"HEAD": "refs/heads/master"},

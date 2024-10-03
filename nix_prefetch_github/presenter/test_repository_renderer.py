@@ -49,11 +49,15 @@ class GeneralRepositoryRendererTests(TestCase):
                 )
 
     def _make_repository(
-        self, leave_dot_git: bool = False, deep_clone: bool = False
+        self,
+        leave_dot_git: bool = False,
+        deep_clone: bool = False,
+        store_path: str = "/test/store/path",
     ) -> PrefetchedRepository:
         return PrefetchedRepository(
             repository=GithubRepository(owner="test", name="test"),
             rev="test",
             hash_sum="test",
             options=PrefetchOptions(leave_dot_git=leave_dot_git, deep_clone=deep_clone),
+            store_path=store_path,
         )

@@ -127,6 +127,7 @@ class FakePrefetcher:
             rev="",
             hash_sum="",
             options=prefetch_options,
+            store_path="",
         )
 
 

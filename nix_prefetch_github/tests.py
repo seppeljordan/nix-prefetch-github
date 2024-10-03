@@ -5,6 +5,7 @@ from unittest import TestCase, skipIf
 from nix_prefetch_github.interfaces import (
     CommandRunner,
     GithubRepository,
+    PrefetchedRessource,
     PrefetchOptions,
     RenderingFormat,
 )
@@ -25,14 +26,22 @@ class BaseTestCase(TestCase):
 class FakeUrlHasher:
     def __init__(self) -> None:
         self.hash_sum: Optional[str] = None
+        self.store_path: Optional[str] = None
 
     def calculate_hash_sum(
         self,
         repository: GithubRepository,
         revision: str,
         prefetch_options: PrefetchOptions,
-    ) -> Optional[str]:
-        return self.hash_sum
+    ) -> Optional[PrefetchedRessource]:
+        return (
+            PrefetchedRessource(
+                hash_sum=self.hash_sum,
+                store_path=self.store_path,
+            )
+            if self.hash_sum and self.store_path
+            else None
+        )
 
 
 class FakeRevisionIndexFactory:

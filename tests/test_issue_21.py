@@ -32,6 +32,7 @@ class TestIssue21(TestCase):
 
     def test_prefetch_sensu_go_5_11(self) -> None:
         self.url_hasher.hash_sum = "TEST_HASH_SUM"
+        self.url_hasher.store_path = "test/path"
         self.revision_index_factory.revision_index = RevisionIndexImpl(
             self.sensu_go_ls_remote_output
         )

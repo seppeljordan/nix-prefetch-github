@@ -28,8 +28,8 @@ Command Line Example
    {
        "owner": "seppeljordan",
        "repo": "nix-prefetch-github",
-       "rev": "3147340eb140103b8c06e0aa8bd2c65a28d10502",
-       "hash": "sha256-zQ7aoLrbawYRhqhcqyZimXY1jlYexSn6gtFn0Pep+b0="
+       "rev": "9578399cadb1cb2b252438cf14663333e8c3ee00",
+       "hash": "sha256-JFC1+y+FMs2TwWjJxlAKAyDbSLFBE9J65myp7+slp50="
    }
 
 Available Commands
@@ -216,6 +216,8 @@ v8.0.0 (not released yet)
 -  Drop nix-build based prefetcher. This means that users need to have
    ``nix-prefetch-git`` and ``nix-prefetch=url`` available in their
    PATH.
+-  Meta information the program outputs now contains the store path of
+   prefetched repositories.
 
 v7.1.0
 ------

@@ -39,13 +39,19 @@ class HashConverter(Protocol):
     def convert_sha256_to_sri(self, original: str) -> Optional[str]: ...
 
 
+@dataclass
+class PrefetchedRessource:
+    hash_sum: str
+    store_path: str
+
+
 class UrlHasher(Protocol):
     def calculate_hash_sum(
         self,
         repository: GithubRepository,
         revision: str,
         prefetch_options: PrefetchOptions,
-    ) -> Optional[str]: ...
+    ) -> Optional[PrefetchedRessource]: ...
 
 
 class GithubAPI(Protocol):
@@ -80,6 +86,7 @@ class PrefetchedRepository:
     rev: str
     hash_sum: str
     options: PrefetchOptions
+    store_path: str
 
 
 @dataclass
