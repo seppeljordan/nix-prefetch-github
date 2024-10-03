@@ -9,13 +9,11 @@ from typing import Dict, List, Optional, Protocol, Tuple, Union
 class Alerter(Protocol):
     def alert_user_about_unsafe_prefetch_options(
         self, prefetch_options: PrefetchOptions
-    ) -> None:
-        ...
+    ) -> None: ...
 
 
 class RevisionIndex(Protocol):
-    def get_revision_by_name(self, name: str) -> Optional[str]:
-        ...
+    def get_revision_by_name(self, name: str) -> Optional[str]: ...
 
 
 @dataclass(frozen=True)
@@ -38,8 +36,7 @@ class PrefetchOptions:
 
 
 class HashConverter(Protocol):
-    def convert_sha256_to_sri(self, original: str) -> Optional[str]:
-        ...
+    def convert_sha256_to_sri(self, original: str) -> Optional[str]: ...
 
 
 class UrlHasher(Protocol):
@@ -48,38 +45,33 @@ class UrlHasher(Protocol):
         repository: GithubRepository,
         revision: str,
         prefetch_options: PrefetchOptions,
-    ) -> Optional[str]:
-        ...
+    ) -> Optional[str]: ...
 
 
 class GithubAPI(Protocol):
-    def get_tag_of_latest_release(self, repository: GithubRepository) -> Optional[str]:
-        ...
+    def get_tag_of_latest_release(
+        self, repository: GithubRepository
+    ) -> Optional[str]: ...
 
     def get_commit_date(
         self, repository: GithubRepository, commit_sha1_hash: str
-    ) -> Optional[datetime]:
-        ...
+    ) -> Optional[datetime]: ...
 
 
 class RevisionIndexFactory(Protocol):
     def get_revision_index(
         self, repository: GithubRepository
-    ) -> Optional[RevisionIndex]:
-        ...
+    ) -> Optional[RevisionIndex]: ...
 
 
 class RepositoryDetector(Protocol):
     def detect_github_repository(
         self, directory: str, remote_name: Optional[str]
-    ) -> Optional[GithubRepository]:
-        ...
+    ) -> Optional[GithubRepository]: ...
 
-    def is_repository_dirty(self, directory: str) -> bool:
-        ...
+    def is_repository_dirty(self, directory: str) -> bool: ...
 
-    def get_current_revision(self, directory: str) -> Optional[str]:
-        ...
+    def get_current_revision(self, directory: str) -> Optional[str]: ...
 
 
 @dataclass(frozen=True)
@@ -114,8 +106,7 @@ class Prefetcher(Protocol):
         repository: GithubRepository,
         rev: Optional[str],
         prefetch_options: PrefetchOptions,
-    ) -> PrefetchResult:
-        ...
+    ) -> PrefetchResult: ...
 
 
 class CommandRunner(Protocol):
@@ -125,23 +116,19 @@ class CommandRunner(Protocol):
         cwd: Optional[str] = None,
         environment_variables: Optional[Dict[str, str]] = None,
         merge_stderr: bool = False,
-    ) -> Tuple[int, str]:
-        ...
+    ) -> Tuple[int, str]: ...
 
 
 class CommandAvailabilityChecker(Protocol):
-    def is_command_available(self, command: str) -> bool:
-        ...
+    def is_command_available(self, command: str) -> bool: ...
 
 
 class RepositoryRenderer(Protocol):
-    def render_prefetched_repository(self, repository: PrefetchedRepository) -> str:
-        ...
+    def render_prefetched_repository(self, repository: PrefetchedRepository) -> str: ...
 
 
 class Presenter(Protocol):
-    def present(self, prefetch_result: PrefetchResult) -> None:
-        ...
+    def present(self, prefetch_result: PrefetchResult) -> None: ...
 
 
 @enum.unique
@@ -152,8 +139,7 @@ class RenderingFormat(enum.Enum):
 
 
 class RenderingFormatSelector(Protocol):
-    def set_rendering_format(self, rendering_format: RenderingFormat) -> None:
-        ...
+    def set_rendering_format(self, rendering_format: RenderingFormat) -> None: ...
 
 
 @dataclass
@@ -164,5 +150,4 @@ class ViewModel:
 
 
 class CommandLineView(Protocol):
-    def render_view_model(self, model: ViewModel) -> None:
-        ...
+    def render_view_model(self, model: ViewModel) -> None: ...

@@ -13,8 +13,7 @@ from nix_prefetch_github.interfaces import (
 
 
 class PrefetchGithubRepositoryUseCase(Protocol):
-    def prefetch_github_repository(self, request: Request) -> None:
-        ...
+    def prefetch_github_repository(self, request: Request) -> None: ...
 
 
 @dataclass

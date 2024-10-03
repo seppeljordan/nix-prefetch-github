@@ -13,8 +13,7 @@ from nix_prefetch_github.interfaces import (
 
 
 class PrefetchDirectoryUseCase(Protocol):
-    def prefetch_directory(self, request: Request) -> None:
-        ...
+    def prefetch_directory(self, request: Request) -> None: ...
 
 
 @dataclass
