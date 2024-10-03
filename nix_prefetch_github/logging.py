@@ -39,8 +39,9 @@ class LoggingConfiguration:
 
 
 class LoggerManager(Protocol):
-    def set_logging_configuration(self, configuration: LoggingConfiguration) -> None:
-        ...
+    def set_logging_configuration(
+        self, configuration: LoggingConfiguration
+    ) -> None: ...
 
 
 class LoggerFactoryImpl:

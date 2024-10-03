@@ -19,8 +19,8 @@ Command Line Example
    {
        "owner": "seppeljordan",
        "repo": "nix-prefetch-github",
-       "rev": "b89933bf5643c97f00c374b39af4f265eef83220",
-       "hash": "sha256-8veCTba0fhHEUPLge58FfWlk6tnYfAL852AYXWLu4Ss="
+       "rev": "244024cbbda3638e93b1a18d10e0c36f3d62e6b4",
+       "hash": "sha256-eQd/MNlnuzXzgFzvwUMchvHoIvkIrbpGKV7iknO14Cc="
    }
 
 Available Commands
@@ -198,6 +198,12 @@ You can generate a coverage report for the tests via
 
 changes
 =======
+
+v8.0.0 (not released yet)
+-------------------------
+
+-  Drop official support for Python versions <3.11 and introduce
+   official support for Python version 3.12
 
 v7.1.0
 ------

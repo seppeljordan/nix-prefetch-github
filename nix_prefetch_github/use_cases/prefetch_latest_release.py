@@ -13,8 +13,7 @@ from nix_prefetch_github.interfaces import (
 
 
 class PrefetchLatestReleaseUseCase(Protocol):
-    def prefetch_latest_release(self, request: Request) -> None:
-        ...
+    def prefetch_latest_release(self, request: Request) -> None: ...
 
 
 @dataclass

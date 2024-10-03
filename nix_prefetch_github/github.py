@@ -12,8 +12,7 @@ from nix_prefetch_github.interfaces import GithubRepository
 
 
 class Environment(Protocol):
-    def get(self, key: str) -> Optional[str]:
-        ...
+    def get(self, key: str) -> Optional[str]: ...
 
 
 class GithubAPIImpl:

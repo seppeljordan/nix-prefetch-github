@@ -12,8 +12,7 @@ from nix_prefetch_github.use_cases.prefetch_directory import (
 
 
 class ProcessEnvironment(Protocol):
-    def get_cwd(self) -> str:
-        ...
+    def get_cwd(self) -> str: ...
 
 
 @dataclass
@@ -33,9 +32,9 @@ class PrefetchDirectoryController:
         self.use_case.prefetch_directory(
             request=Request(
                 prefetch_options=args.prefetch_options,
-                directory=args.directory
-                if args.directory
-                else self.environment.get_cwd(),
+                directory=(
+                    args.directory if args.directory else self.environment.get_cwd()
+                ),
                 remote=args.remote,
             )
         )
