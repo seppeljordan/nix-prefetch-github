@@ -24,6 +24,7 @@ class PresenterTests(TestCase):
             rev="test",
             hash_sum="test",
             options=PrefetchOptions(),
+            store_path="",
         )
 
     def test_write_to_error_output_when_presenting_prefetch_failure(self) -> None:

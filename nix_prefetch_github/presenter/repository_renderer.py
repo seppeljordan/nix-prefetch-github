@@ -64,6 +64,7 @@ class MetaRepositoryRenderer:
         commit_timestamp = self.github_api.get_commit_date(
             repository.repository, repository.rev
         )
+        meta_output["storePath"] = repository.store_path
         if commit_timestamp:
             meta_output["commitDate"] = commit_timestamp.date().isoformat()
             meta_output["commitTimeOfDay"] = commit_timestamp.time().isoformat()

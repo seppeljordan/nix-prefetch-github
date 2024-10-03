@@ -222,5 +222,33 @@ class JsonIntegrityTests(TestCase):
         )
 
 
+@network
+@requires_nix_build
+class StorePathOutputTests(TestCase):
+    def setUp(self) -> None:
+        self.directory = tempfile.mkdtemp()
+        self.output = path.join(self.directory, "result")
+        subprocess.run(
+            ["nix", "build", "--out-link", self.output], capture_output=True, check=True
+        )
+
+    def tearDown(self) -> None:
+        shutil.rmtree(self.directory)
+
+    def test_can_ls_store_path_from_output(self) -> None:
+        process = subprocess.run(
+            [
+                f"{self.output}/bin/nix-prefetch-github",
+                "seppeljordan",
+                "nix-prefetch-github",
+                "--meta",
+            ],
+            capture_output=True,
+            universal_newlines=True,
+        )
+        output_json = json.loads(process.stdout)
+        self.assertReturncode(["ls", output_json["meta"]["storePath"]], 0)
+
+
 if __name__ == "__main__":
     unittest.main()

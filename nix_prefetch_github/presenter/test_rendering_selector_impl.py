@@ -69,6 +69,7 @@ class RenderingSelectorImplTests(BaseTestCase):
             hash_sum="",
             options=PrefetchOptions(),
             rev="",
+            store_path="",
         )
 
 

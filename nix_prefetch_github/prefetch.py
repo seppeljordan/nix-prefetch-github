@@ -43,18 +43,21 @@ class PrefetcherImpl:
         revision: str,
         prefetch_options: PrefetchOptions,
     ) -> PrefetchResult:
-        calculated_hash = self._calculate_hash_sum(
-            repository, revision, prefetch_options
+        prefetched_repo = self.url_hasher.calculate_hash_sum(
+            repository=repository,
+            revision=revision,
+            prefetch_options=prefetch_options,
         )
-        if calculated_hash is None:
+        if prefetched_repo is None:
             return PrefetchFailure(
                 reason=PrefetchFailure.Reason.unable_to_calculate_hash_sum
             )
         return PrefetchedRepository(
             repository=repository,
-            hash_sum=calculated_hash,
+            hash_sum=prefetched_repo.hash_sum,
             rev=revision,
             options=prefetch_options,
+            store_path=prefetched_repo.store_path,
         )
 
     def _is_proper_revision_hash(self, revision: str) -> bool:
@@ -72,15 +75,3 @@ class PrefetcherImpl:
         else:
             actual_rev = revision_index.get_revision_by_name(revision)
         return actual_rev
-
-    def _calculate_hash_sum(
-        self,
-        repository: GithubRepository,
-        revision: str,
-        prefetch_options: PrefetchOptions,
-    ) -> Optional[str]:
-        return self.url_hasher.calculate_hash_sum(
-            repository=repository,
-            revision=revision,
-            prefetch_options=prefetch_options,
-        )
