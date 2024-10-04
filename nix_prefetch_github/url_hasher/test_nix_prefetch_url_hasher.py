@@ -4,11 +4,10 @@ from unittest import TestCase
 from nix_prefetch_github.command.command_runner import CommandRunnerImpl
 from nix_prefetch_github.hash_converter import HashConverterImpl
 from nix_prefetch_github.interfaces import GithubRepository, PrefetchOptions
-from nix_prefetch_github.tests import CommandRunnerTestImpl, network, requires_nix_build
+from nix_prefetch_github.tests import CommandRunnerTestImpl, network
 from nix_prefetch_github.url_hasher.nix_prefetch import NixPrefetchUrlHasherImpl
 
 
-@requires_nix_build
 @network
 class UrlHasherTests(TestCase):
     def setUp(self) -> None:

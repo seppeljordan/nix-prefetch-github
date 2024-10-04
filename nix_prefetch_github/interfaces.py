@@ -119,10 +119,6 @@ class CommandRunner(Protocol):
     ) -> Tuple[int, str]: ...
 
 
-class CommandAvailabilityChecker(Protocol):
-    def is_command_available(self, command: str) -> bool: ...
-
-
 class RepositoryRenderer(Protocol):
     def render_prefetched_repository(self, repository: PrefetchedRepository) -> str: ...
 
