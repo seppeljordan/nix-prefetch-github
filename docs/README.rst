@@ -7,6 +7,15 @@ you fetch sources from github when using ``fetchFromGitHub``.
 This program can be distributed under the conditions of the GNU Public
 License Version 3. Check out ``LICENSE.txt`` to read the license text.
 
+Dependencies
+============
+
+-  Python and its standard library
+-  nix-prefetch-url
+-  nix-prefech-github
+-  git
+-  nix
+
 Command Line Example
 ====================
 
@@ -19,8 +28,8 @@ Command Line Example
    {
        "owner": "seppeljordan",
        "repo": "nix-prefetch-github",
-       "rev": "244024cbbda3638e93b1a18d10e0c36f3d62e6b4",
-       "hash": "sha256-eQd/MNlnuzXzgFzvwUMchvHoIvkIrbpGKV7iknO14Cc="
+       "rev": "3147340eb140103b8c06e0aa8bd2c65a28d10502",
+       "hash": "sha256-zQ7aoLrbawYRhqhcqyZimXY1jlYexSn6gtFn0Pep+b0="
    }
 
 Available Commands
@@ -204,6 +213,9 @@ v8.0.0 (not released yet)
 
 -  Drop official support for Python versions <3.11 and introduce
    official support for Python version 3.12
+-  Drop nix-build based prefetcher. This means that users need to have
+   ``nix-prefetch-git`` and ``nix-prefetch=url`` available in their
+   PATH.
 
 v7.1.0
 ------

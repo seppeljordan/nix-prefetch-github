@@ -3,9 +3,6 @@ from functools import lru_cache
 from logging import Logger
 
 from nix_prefetch_github.alerter import CliAlerterImpl
-from nix_prefetch_github.command.command_availability_checker import (
-    CommandAvailabilityCheckerImpl,
-)
 from nix_prefetch_github.command.command_runner import CommandRunnerImpl
 from nix_prefetch_github.controller.nix_prefetch_github_controller import (
     NixPrefetchGithubController,
@@ -36,12 +33,7 @@ from nix_prefetch_github.presenter.repository_renderer import (
 from nix_prefetch_github.process_environment import ProcessEnvironmentImpl
 from nix_prefetch_github.repository_detector import RepositoryDetectorImpl
 from nix_prefetch_github.revision_index_factory import RevisionIndexFactoryImpl
-from nix_prefetch_github.url_hasher.nix_build import NixBuildUrlHasherImpl
 from nix_prefetch_github.url_hasher.nix_prefetch import NixPrefetchUrlHasherImpl
-from nix_prefetch_github.url_hasher.url_hasher_selector import (
-    CommandAvailabilityChecker,
-    UrlHasherSelector,
-)
 from nix_prefetch_github.use_cases.prefetch_directory import (
     PrefetchDirectoryUseCaseImpl,
 )
@@ -72,23 +64,6 @@ class DependencyInjector:
     def get_view(self) -> CommandLineViewImpl:
         return CommandLineViewImpl()
 
-    def get_url_hasher_selector(self) -> UrlHasherSelector:
-        return UrlHasherSelector(
-            availability_checker=self.get_command_availability_checker(),
-            nix_build_implementation=self.get_nix_build_url_hasher_impl(),
-            nix_prefetch_implementation=self.get_nix_prefetch_url_hasher_impl(),
-        )
-
-    def get_command_availability_checker(self) -> CommandAvailabilityChecker:
-        return CommandAvailabilityCheckerImpl(command_runner=self.get_command_runner())
-
-    def get_nix_build_url_hasher_impl(self) -> NixBuildUrlHasherImpl:
-        return NixBuildUrlHasherImpl(
-            command_runner=self.get_command_runner(),
-            logger=self.get_logger(),
-            hash_converter=self.get_hash_converter(),
-        )
-
     def get_nix_prefetch_url_hasher_impl(self) -> NixPrefetchUrlHasherImpl:
         return NixPrefetchUrlHasherImpl(
             command_runner=self.get_command_runner(),
@@ -101,7 +76,7 @@ class DependencyInjector:
 
     def get_prefetcher(self) -> PrefetcherImpl:
         return PrefetcherImpl(
-            self.get_url_hasher_selector(), self.get_revision_index_factory()
+            self.get_nix_prefetch_url_hasher_impl(), self.get_revision_index_factory()
         )
 
     def get_nix_repository_renderer(self) -> NixRepositoryRenderer:
