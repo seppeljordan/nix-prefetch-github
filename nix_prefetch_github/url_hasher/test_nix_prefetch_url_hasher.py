@@ -51,8 +51,8 @@ class UrlHasherTests(TestCase):
                 "test-repo-submodules",
                 "5a1dfa807759c39e3df891b6b46dfb2cf776c6ef",
                 PrefetchOptions(leave_dot_git=True),
-                "sha256-0Za18NiCiPL9KFG4OzgIsM11bXOeRofKoEHgScvlEQg=",
-                "/nix/store/rx3yji4dpkqzqb60zxp9rz8ql8sxwd60-test-repo-submodules-5a1dfa8",
+                "sha256-/idyL+RMBeSKkbK0+68kMvjCQGOBsMO89oXP6EBMPT0=",
+                "/nix/store/7a2cx1j5l23dpih6f7qgdn4hcfnh6aq7-test-repo-submodules-5a1dfa8",
             ),
             (
                 "seppeljordan",

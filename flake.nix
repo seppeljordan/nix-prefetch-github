@@ -4,12 +4,20 @@
   inputs = {
     flake-utils.url = "github:numtide/flake-utils";
     nixpkgs.url = "github:NixOS/nixpkgs/nixos-unstable";
-    nixpkgs-stable.url = "github:NixOS/nixpkgs/nixos-24.11";
+    nixpkgs-stable.url = "github:NixOS/nixpkgs/nixos-25.11";
   };
 
-  outputs = { self, nixpkgs, flake-utils, nixpkgs-stable, ... }:
+  outputs =
+    {
+      self,
+      nixpkgs,
+      flake-utils,
+      nixpkgs-stable,
+      ...
+    }:
     let
-      systemDependent = flake-utils.lib.eachSystem supportedSystems (system:
+      systemDependent = flake-utils.lib.eachSystem supportedSystems (
+        system:
         let
           pkgs = import nixpkgs {
             inherit system;
@@ -20,8 +28,11 @@
             overlays = [ self.overlays.default ];
           };
           python = pkgs.python3;
-        in {
-          packages = { default = pkgs.nix-prefetch-github; };
+        in
+        {
+          packages = {
+            default = pkgs.nix-prefetch-github;
+          };
           devShells = {
             default = pkgs.callPackage nix/dev-shell.nix { };
             stable = pkgsStable.callPackage nix/dev-shell.nix { };
@@ -29,10 +40,8 @@
           checks = {
             defaultPackage = self.packages.${system}.default;
             nixosStablePackage = pkgsStable.nix-prefetch-github;
-            nix-prefetch-github-python311 =
-              pkgs.python311.pkgs.nix-prefetch-github;
-            nix-prefetch-github-python312 =
-              pkgs.python312.pkgs.nix-prefetch-github;
+            nix-prefetch-github-python311 = pkgs.python311.pkgs.nix-prefetch-github;
+            nix-prefetch-github-python312 = pkgs.python312.pkgs.nix-prefetch-github;
             black-check = pkgs.runCommand "black-nix-prefetch-github" { } ''
               cd ${self}
               ${python.pkgs.black}/bin/black --check .
@@ -63,13 +72,14 @@
               mkdir $out
             '';
           };
-        });
+        }
+      );
       systemIndependent = {
         overlays.default = final: prev: {
-          pythonPackagesExtensions = prev.pythonPackagesExtensions
-            ++ [ (import nix/package-overrides.nix) ];
+          pythonPackagesExtensions = prev.pythonPackagesExtensions ++ [ (import nix/package-overrides.nix) ];
         };
       };
       supportedSystems = flake-utils.lib.defaultSystems;
-    in systemDependent // systemIndependent;
+    in
+    systemDependent // systemIndependent;
 }
