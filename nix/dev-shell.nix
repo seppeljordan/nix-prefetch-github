@@ -1,6 +1,19 @@
-{ mkShell, git, nixfmt, nix-prefetch-scripts, pandoc, python3 }:
+{
+  mkShell,
+  git,
+  nixfmt,
+  nix-prefetch-scripts,
+  pandoc,
+  python3,
+}:
 mkShell {
-  packages = [ git nixfmt nix-prefetch-scripts pandoc ] ++ (with python3.pkgs; [
+  packages = [
+    git
+    nixfmt
+    nix-prefetch-scripts
+    pandoc
+  ]
+  ++ (with python3.pkgs; [
     black
     flake8
     mypy
